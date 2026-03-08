@@ -8,11 +8,27 @@ OUTE é uma aplicação modular construída com **Svelte 5 + SvelteKit**, organi
 packages/
 ├── design-system/     ← Tailwind 4 + Componentes reutilizáveis
 ├── 00_dashboard/      ← Interface principal
-├── 01_auth-profile/   ← Serviço de autenticação
+├── 01_auth-profile/   ← ✅ REFATORADO: Hexagonal Architecture + DDD + TDD
 └── 02_projects/       ← Gerenciamento de projetos
 
 shared/               ← Tipos e utilitários compartilhados
 ```
+
+### ✅ 01_auth-profile - Refatoração Completa
+
+O serviço `01_auth-profile` foi completamente refatorado seguindo:
+
+- **Hexagonal Architecture**: Domain isolado, Ports & Adapters
+- **Domain-Driven Design**: Entities, Value Objects, Aggregates
+- **Clean Code**: SOLID principles, clear naming, small functions
+- **Test-Driven Development**: 178 testes (56 unit + 28 integration + 34 app + 39 presentation + 21 E2E)
+- **Professional Standards**: Definition of Done, Definition of Ready
+- **80%+ Code Coverage**: Tested in all layers
+
+**Status**: ✅ Production-ready com documentação completa
+
+**Próximas ações**: Aplicar o mesmo padrão a 00_dashboard e 02_projects.
+Ver: [APPLYING_PATTERN_TO_OTHER_SERVICES.md](./APPLYING_PATTERN_TO_OTHER_SERVICES.md)
 
 ## 🚀 Quick Start
 
@@ -65,10 +81,24 @@ API de gerenciamento de projetos com CRUD completo.
 
 ## 📚 Documentação
 
-- **[ARCHITECTURE.md](./ARCHITECTURE.md)** - Decisões arquiteturais e fluxos de dados
-- **[DEVELOPMENT.md](./DEVELOPMENT.md)** - Setup local, debugging, scripts
-- **[DEPLOYMENT.md](./DEPLOYMENT.md)** - Deploy em GCP Cloud Run
-- **[SUBMODULES.md](./SUBMODULES.md)** - Detalhes de cada domínio
+### 🎯 Refactoring & Arquitetura
+- **[EXECUTIVE_SUMMARY.md](./EXECUTIVE_SUMMARY.md)** - 📊 **LEIA PRIMEIRO**: Resumo executivo da refatoração completa
+- **[REFACTORING_COMPLETION.md](./REFACTORING_COMPLETION.md)** - 🏆 Relatório completo: Hexagonal Architecture + DDD + Clean Code + TDD
+- **[PHASE_1_SUMMARY.md](./packages/01_auth-profile/PHASE_1_SUMMARY.md)** - 📚 Domain Layer (Entities, Value Objects, Errors)
+- **[PHASE_2_SUMMARY.md](./packages/01_auth-profile/PHASE_2_SUMMARY.md)** - 🔧 Infrastructure Layer (Adapters, Repositories)
+- **[PHASE_3_SUMMARY.md](./packages/01_auth-profile/PHASE_3_SUMMARY.md)** - ⚙️ Application Layer (Use Cases, DTOs)
+- **[PHASE_4_SUMMARY.md](./packages/01_auth-profile/PHASE_4_SUMMARY.md)** - 🌐 Presentation Layer (Handlers, Routes)
+- **[PHASE_5_SUMMARY.md](./packages/01_auth-profile/PHASE_5_SUMMARY.md)** - 🧪 E2E Tests (Playwright, Test Suite)
+
+### 🚀 Implementação & Padrões
+- **[APPLYING_PATTERN_TO_OTHER_SERVICES.md](./APPLYING_PATTERN_TO_OTHER_SERVICES.md)** - 📋 Template para aplicar padrão a 00_dashboard e 02_projects
+- **[NEXT_STEPS_CHECKLIST.md](./NEXT_STEPS_CHECKLIST.md)** - ✅ Checklist de próximas ações e verificação
+
+### 📖 Documentação Técnica
+- **[ARCHITECTURE.md](./ARCHITECTURE.md)** - 🏗️ Decisões arquiteturais e fluxos de dados
+- **[DEVELOPMENT.md](./DEVELOPMENT.md)** - 💻 Setup local, debugging, scripts
+- **[DEPLOYMENT.md](./DEPLOYMENT.md)** - ☁️ Deploy em GCP Cloud Run
+- **[SUBMODULES.md](./SUBMODULES.md)** - 📦 Detalhes de cada domínio
 
 ## 🔄 Workflow
 
@@ -89,13 +119,24 @@ git push origin feature/meu-recurso
 
 ## 🛠️ Scripts Principais
 
+### Desenvolvimento
 ```bash
 npm run dev           # Todos os packages em dev
 npm run build         # Build todos os packages
-npm run test          # Rodas testes
 npm run lint          # ESLint + TS check
 npm run format        # Prettier format
+```
 
+### Testing (178 tests, 80%+ coverage)
+```bash
+npm run test          # Rodar todos os testes
+npm run test:e2e      # E2E tests (Playwright)
+npm run test -- --watch     # Watch mode
+npm run test -- --coverage  # Coverage report
+```
+
+### Docker
+```bash
 npm run docker:up     # Start Docker services
 npm run docker:down   # Stop Docker services
 npm run docker:logs   # Ver logs
