@@ -13,7 +13,7 @@ export class BcryptPasswordAdapter {
    * Hash plaintext password
    * Note: Real implementation would use bcrypt library
    */
-  async hash(plainPassword: string): Promise<Password> {
+  hash(plainPassword: string): Promise<Password> {
     // Validate password strength before hashing
     Password.validateStrength(plainPassword);
 
@@ -21,16 +21,16 @@ export class BcryptPasswordAdapter {
     // const hash = await bcrypt.hash(plainPassword, this.saltRounds);
     const hash = this.mockBcryptHash(plainPassword);
 
-    return Password.fromPlaintext(hash);
+    return Promise.resolve(Password.fromPlaintext(hash));
   }
 
   /**
    * Verify plaintext password against hash
    * Note: Real implementation would use bcrypt.compare
    */
-  async compare(plainPassword: string, hash: string): Promise<boolean> {
+  compare(plainPassword: string, hash: string): Promise<boolean> {
     // In reality: return await bcrypt.compare(plainPassword, hash);
-    return this.mockBcryptCompare(plainPassword, hash);
+    return Promise.resolve(this.mockBcryptCompare(plainPassword, hash));
   }
 
   /**

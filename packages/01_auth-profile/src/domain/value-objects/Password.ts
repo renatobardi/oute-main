@@ -19,14 +19,14 @@ export class Password {
    * Validates strength and returns Password with hashed value
    * Note: Real hashing should be done in infrastructure layer (BcryptPasswordAdapter)
    */
-  static async create(plainPassword: string): Promise<Password> {
+  static create(plainPassword: string): Promise<Password> {
     // Validate strength first
     Password.validateStrength(plainPassword);
 
     // For testing: create a simple mock hash
     // In production: use bcrypt.hash() via BcryptPasswordAdapter
     const mockHash = Buffer.from(plainPassword).toString('base64');
-    return new Password(`$2b$10$${mockHash}`);
+    return Promise.resolve(new Password(`$2b$10$${mockHash}`));
   }
 
   /**

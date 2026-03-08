@@ -21,59 +21,57 @@ export class ErrorMapper {
     if (error instanceof InvalidEmailError) {
       return {
         status: 400,
-        body: { error: 'Invalid email format', code: 'INVALID_EMAIL' }
+        body: { error: 'Invalid email format', code: 'INVALID_EMAIL' },
       };
     }
 
     if (error instanceof InvalidPasswordError) {
       return {
         status: 400,
-        body: { error: 'Password does not meet requirements', code: 'INVALID_PASSWORD' }
+        body: { error: 'Password does not meet requirements', code: 'INVALID_PASSWORD' },
       };
     }
 
     if (error instanceof InvalidCredentialsError) {
       return {
         status: 401,
-        body: { error: 'Invalid email or password', code: 'INVALID_CREDENTIALS' }
+        body: { error: 'Invalid email or password', code: 'INVALID_CREDENTIALS' },
       };
     }
 
     if (error instanceof UserNotFoundError) {
       return {
         status: 404,
-        body: { error: 'User not found', code: 'USER_NOT_FOUND' }
+        body: { error: 'User not found', code: 'USER_NOT_FOUND' },
       };
     }
 
     if (error instanceof InvalidUserError) {
       return {
         status: 400,
-        body: { error: (error as InvalidUserError).message, code: 'INVALID_USER' }
+        body: { error: (error as InvalidUserError).message, code: 'INVALID_USER' },
       };
     }
 
     if (error instanceof DomainError) {
       return {
         status: 400,
-        body: { error: (error as DomainError).message, code: (error as DomainError).code }
+        body: { error: (error as DomainError).message, code: (error as DomainError).code },
       };
     }
 
     // Handle generic errors
     if (error instanceof Error) {
-      console.error('Unexpected error:', error);
       return {
         status: 500,
-        body: { error: 'Internal server error' }
+        body: { error: 'Internal server error' },
       };
     }
 
     // Handle unknown errors
-    console.error('Unknown error:', error);
     return {
       status: 500,
-      body: { error: 'Internal server error' }
+      body: { error: 'Internal server error' },
     };
   }
 }
