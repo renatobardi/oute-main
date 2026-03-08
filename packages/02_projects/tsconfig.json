@@ -4,5 +4,5 @@
     "outDir": ".svelte-kit/output",
     "rootDir": "src"
   },
-  "include": ["src", "vitest.config.ts"]
+  "include": ["src", "vitest.config.ts", "playwright.config.ts"]
 }
