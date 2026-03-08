@@ -13,6 +13,7 @@
   },
   "private": true,
   "scripts": {
+    "build": "echo 'Shared package does not require build'",
     "test": "echo 'No tests configured for shared package'"
   },
   "devDependencies": {

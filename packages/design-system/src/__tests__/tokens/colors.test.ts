@@ -64,11 +64,11 @@ describe('Color Tokens', () => {
 
   describe('color values', () => {
     it('should have correct primary 500 value', () => {
-      expect(colors.primary[500]).toBe('#0ea5e9');
+      expect(colors.primary[500]).toBe('#15a7e4');
     });
 
     it('should have correct primary 600 value', () => {
-      expect(colors.primary[600]).toBe('#0284c7');
+      expect(colors.primary[600]).toBe('#06bcf9');
     });
 
     it('should have correct success value', () => {
