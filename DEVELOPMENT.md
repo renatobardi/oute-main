@@ -211,17 +211,188 @@ npm publish
 
 ## Testing
 
-### Unit tests
+### Running Tests
+
+**Run all tests:**
 ```bash
 npm run test
 ```
 
-Tests in `src/**/*.test.ts` and `src/**/*.spec.ts`
+**Run tests in watch mode (local development):**
+```bash
+npm run test -- --watch
+```
 
-### E2E tests (TODO)
+**Run tests with coverage report:**
+```bash
+npm run test -- --run --coverage
+```
+
+### Test File Conventions
+
+Tests are located in `src/**/*.test.ts` files:
+- `src/components/Button.test.ts` - Component tests
+- `src/utils/helpers.test.ts` - Utility function tests
+- `src/services/auth.test.ts` - Service/API tests
+
+**Note:** E2E tests (*.spec.ts) are separate and run with Playwright.
+
+### Coverage Requirements
+
+All PRs must maintain **minimum 80% code coverage** across all packages:
+
+- **Lines:** 80%
+- **Branches:** 75%
+- **Functions:** 80%
+- **Statements:** 80%
+
+Coverage is enforced by:
+1. Local check before committing: `npm run test -- --run --coverage`
+2. GitHub Actions PR checks
+3. SonarQube quality gate analysis
+
+**What's excluded from coverage:**
+- `node_modules/`
+- `dist/`, `build/` directories
+- Test files themselves (*.test.ts, *.spec.ts)
+- Index files (index.ts)
+
+### E2E Tests with Playwright
+
+E2E tests verify critical user workflows across the entire application.
+
+**Run E2E tests:**
 ```bash
 npm run test:e2e
 ```
+
+**E2E test file format:** `src/**/*.spec.ts`
+
+Example E2E test structure:
+```typescript
+// src/auth/login.spec.ts
+import { test, expect } from '@playwright/test';
+
+test('User can login and access dashboard', async ({ page }) => {
+  await page.goto('http://localhost:3000/auth/login');
+  await page.fill('input[name="email"]', 'user@example.com');
+  await page.fill('input[name="password"]', 'password123');
+  await page.click('button:has-text("Login")');
+
+  await expect(page).toHaveURL('http://localhost:3000/dashboard');
+  await expect(page.locator('h1')).toContainText('Dashboard');
+});
+```
+
+Critical workflows to test:
+- Authentication (login, logout, password reset)
+- Dashboard data loading and rendering
+- Project CRUD operations
+- Error handling and validation
+
+### Before Opening a Pull Request
+
+**ALWAYS run these locally:**
+```bash
+# 1. Run tests with coverage
+npm run test -- --run --coverage
+
+# 2. Check your coverage percentage
+# View in coverage/index.html or terminal output
+
+# 3. If coverage < 80%, add tests for uncovered lines
+
+# 4. Run linter
+npm run lint
+
+# 5. Run formatter
+npm run format
+
+# 6. Build project
+npm run build
+
+# 7. Only after all pass, commit and push
+git commit -m "feat: your feature description"
+git push origin feature/your-feature
+```
+
+### Quality Standards in CI/CD
+
+When you open a PR, GitHub Actions automatically runs:
+
+✅ **Code Quality Checks:**
+- ESLint with strict rules
+- Prettier code formatting
+- TypeScript strict mode checks
+
+✅ **Test Coverage Verification:**
+- All tests must pass
+- Coverage must be ≥80% on new code
+- SonarQube analyzes coverage
+
+✅ **Security Scans:**
+- npm audit for vulnerabilities (blocks on HIGH/CRITICAL)
+- Secret scanning for credentials
+- OWASP Dependency Check
+- SonarQube security analysis
+
+✅ **SonarQube Quality Gate (MANDATORY):**
+- Overall grade: A- or better
+- Security rating: A
+- Reliability rating: A
+- Maintainability rating: A
+- Code duplication: <3%
+- No critical code smells
+- No vulnerabilities
+
+**If any check fails, your PR cannot be merged.** See [QUALITY_STANDARDS.md](./QUALITY_STANDARDS.md) for detailed quality requirements and troubleshooting.
+
+### Debugging Tests
+
+**Debug a specific test file:**
+```bash
+npm run test -- src/utils/helpers.test.ts --watch
+```
+
+**Debug with verbose output:**
+```bash
+npm run test -- --reporter=verbose
+```
+
+**View coverage details:**
+```bash
+# After running test with coverage
+open coverage/index.html
+```
+
+**Common test issues:**
+- Test timeout: Increase timeout in vitest config or test file
+- Import errors: Check @oute/shared types are exported correctly
+- Assertion failures: Review test output for exact vs. expected values
+- E2E test flakiness: Add waitFor conditions, increase timeouts
+
+## Quality Standards Reference
+
+This project enforces strict code quality and security standards. All PRs must meet requirements detailed in [QUALITY_STANDARDS.md](./QUALITY_STANDARDS.md).
+
+### Quick Checklist Before PR
+
+- ✅ Code coverage ≥80% locally (`npm run test -- --run --coverage`)
+- ✅ All linting errors fixed (`npm run lint`)
+- ✅ Code formatted (`npm run format`)
+- ✅ Build succeeds (`npm run build`)
+- ✅ No console.log statements (ESLint blocks them)
+- ✅ No `any` types in TypeScript (ESLint blocks them)
+- ✅ All imports used (no unused variables)
+- ✅ No security vulnerabilities (`npm audit`)
+
+If any of these fail locally, fix them before pushing. GitHub Actions will enforce all of these plus additional security and quality scans.
+
+For detailed information on:
+- Quality gates and thresholds → [QUALITY_STANDARDS.md](./QUALITY_STANDARDS.md)
+- SonarQube analysis → [QUALITY_STANDARDS.md](./QUALITY_STANDARDS.md#sonarqube-analysis)
+- Security scanning → [QUALITY_STANDARDS.md](./QUALITY_STANDARDS.md#security-scanning)
+- Troubleshooting failed checks → [QUALITY_STANDARDS.md](./QUALITY_STANDARDS.md#troubleshooting-common-issues)
 
 ## Type Safety
 
@@ -304,20 +475,35 @@ git push origin main
 
 ### Before Pushing to main
 
-```bash
-# 1. Rodar testes localmente
-npm run test
+Always ensure code meets quality standards before pushing:
 
-# 2. Verificar linter
+```bash
+# 1. Run tests with coverage (MUST be ≥80%)
+npm run test -- --run --coverage
+
+# 2. Check test coverage output
+# If < 80%, add more tests before proceeding
+
+# 3. Run linter (ALL errors must be fixed)
 npm run lint
 
-# 3. Fazer build
+# 4. Run formatter
+npm run format
+
+# 5. Build all packages
 npm run build
 
-# 4. Se tudo passar, fazer commit e push
+# 6. If all checks pass, create PR instead of pushing directly
 git commit -m "feat: nova funcionalidade"
-git push origin main
+git push origin feature/your-feature
+
+# 7. Open PR to develop/staging branch
+# Wait for GitHub Actions to run all checks
+# Address any failing checks
+# Request review from team
 ```
+
+**Never push directly to `main`** - always use feature branches and open PRs for code review.
 
 ### Monitorar Pipeline
 
