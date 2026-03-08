@@ -87,6 +87,7 @@ jobs:
   sonarqube:
     name: SonarQube Quality Gate
     runs-on: ubuntu-latest
+    if: ${{ secrets.SONAR_TOKEN != '' }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -106,8 +107,8 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         with:
           args: >
-            -Dsonar.projectKey=oute
-            -Dsonar.organization=seu-org
+            -Dsonar.projectKey=oute-main
+            -Dsonar.organization=${{ secrets.SONAR_ORGANIZATION || 'oute-main' }}
             -Dsonar.sources=packages,shared
             -Dsonar.exclusions=**/node_modules/**,**/*.test.ts,**/*.spec.ts
 
@@ -122,9 +123,21 @@ jobs:
           if [ "${{ needs.lint.result }}" != "success" ] || \
              [ "${{ needs.typecheck.result }}" != "success" ] || \
              [ "${{ needs.test.result }}" != "success" ] || \
-             [ "${{ needs.docker-build.result }}" != "success" ] || \
-             [ "${{ needs.sonarqube.result }}" != "success" ]; then
+             [ "${{ needs.docker-build.result }}" != "success" ]; then
             echo "❌ Some checks failed"
             exit 1
           fi
+
+          # SonarQube is optional (skipped if SONAR_TOKEN not configured)
+          if [ "${{ needs.sonarqube.result }}" == "failure" ]; then
+            echo "❌ SonarQube quality gate failed"
+            exit 1
+          fi
+
+          if [ "${{ needs.sonarqube.result }}" == "skipped" ]; then
+            echo "⚠️  SonarQube skipped (SONAR_TOKEN not configured)"
+          else
+            echo "✅ SonarQube passed"
+          fi
+
           echo "✅ All checks passed"
