@@ -38,10 +38,10 @@ jobs:
         run: npm run lint
 
       - name: Build dashboard
-        run: npm run build -w 00_dashboard
+        run: npm run build -w oute-dashboard
 
       - name: Run tests (dashboard)
-        run: npm run test -w 00_dashboard
+        run: npm run test -w oute-dashboard
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
