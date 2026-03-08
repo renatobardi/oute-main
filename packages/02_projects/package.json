@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "@sveltejs/kit": "^2.0.0",
-    "jsonwebtoken": "^9.1.0",
+    "jsonwebtoken": "^9.0.3",
     "postgres": "^3.4.0",
     "svelte": "^5.0.0"
   },
