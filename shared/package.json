@@ -12,6 +12,9 @@
     "./utils": "./utils.ts"
   },
   "private": true,
+  "scripts": {
+    "test": "echo 'No tests configured for shared package'"
+  },
   "devDependencies": {
     "typescript": "^5.3.3"
   }

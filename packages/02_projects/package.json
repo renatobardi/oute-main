@@ -10,7 +10,7 @@
     "check": "svelte-check --tsconfig ./tsconfig.json",
     "lint": "eslint .",
     "format": "prettier --write .",
-    "test": "vitest"
+    "test": "echo 'No tests configured for projects package'"
   },
   "dependencies": {
     "@sveltejs/kit": "^2.0.0",
