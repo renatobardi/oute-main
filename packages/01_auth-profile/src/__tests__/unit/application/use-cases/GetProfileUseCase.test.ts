@@ -5,6 +5,7 @@ import { User } from '../../../../domain/entities/User';
 import { Email } from '../../../../domain/value-objects/Email';
 import { Password } from '../../../../domain/value-objects/Password';
 import { Role } from '../../../../domain/value-objects/Role';
+import { UserNotFoundError } from '../../../../domain/errors/UserNotFoundError';
 import type { IUserRepository } from '../../../../domain/repositories/IUserRepository';
 
 describe('GetProfileUseCase', () => {
