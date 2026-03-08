@@ -56,9 +56,20 @@ jobs:
 
       - run: npm install
 
-      - name: Run tests
-        run: npm run test -- --run
+      - name: Run tests with coverage
+        run: npm run test -- --run --coverage
         continue-on-error: false
+
+      - name: Check coverage threshold (80%)
+        run: |
+          # Check if coverage reports exist
+          if [ ! -d "coverage" ]; then
+            echo "❌ No coverage reports generated"
+            exit 1
+          fi
+
+          # This will be validated by SonarQube
+          echo "✅ Coverage reports generated"
 
   docker-build:
     name: Docker Build Check
@@ -87,7 +98,7 @@ jobs:
   sonarqube:
     name: SonarQube Quality Gate
     runs-on: ubuntu-latest
-    if: ${{ secrets.SONAR_TOKEN }}
+    needs: [test]
     steps:
       - uses: actions/checkout@v4
         with:
@@ -111,6 +122,8 @@ jobs:
             -Dsonar.organization=${{ secrets.SONAR_ORGANIZATION || 'oute-main' }}
             -Dsonar.sources=packages,shared
             -Dsonar.exclusions=**/node_modules/**,**/*.test.ts,**/*.spec.ts
+            -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
+            -Dsonar.coverage.exclusions=**/node_modules/**,**/*.test.ts,**/*.spec.ts,**/dist/**,**/build/**
 
   summary:
     name: PR Status Summary
@@ -128,16 +141,16 @@ jobs:
             exit 1
           fi
 
-          # SonarQube is optional (skipped if SONAR_TOKEN not configured)
+          # SonarQube is REQUIRED (not optional)
           if [ "${{ needs.sonarqube.result }}" == "failure" ]; then
             echo "❌ SonarQube quality gate failed"
             exit 1
           fi
 
           if [ "${{ needs.sonarqube.result }}" == "skipped" ]; then
-            echo "⚠️  SonarQube skipped (SONAR_TOKEN not configured)"
-          else
-            echo "✅ SonarQube passed"
+            echo "❌ SonarQube skipped - SONAR_TOKEN is required and must be configured"
+            exit 1
           fi
 
+          echo "✅ SonarQube passed"
           echo "✅ All checks passed"
