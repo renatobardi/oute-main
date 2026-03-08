@@ -259,9 +259,134 @@ gcloud logging read "resource.type=cloud_run_revision" --limit 50
 - Verify network connectivity
 - Check credentials in Secret Manager
 
+## ✅ Automated CI/CD Pipeline (GitHub Actions)
+
+O pipeline automático foi completamente configurado e testado. Toda vez que você faz push para `main`, a seguinte sequência ocorre automaticamente:
+
+### Workflow Sequencial (Sem Conflitos)
+
+```yaml
+1. build-and-test (1-2 minutos)
+   ├─ Checkout code
+   ├─ Setup Node.js 20
+   ├─ Install dependencies
+   ├─ Run linter
+   └─ Build dashboard package
+
+2. deploy-production (3-5 minutos) [após build-and-test]
+   ├─ Authenticate with GCP (Workload Identity)
+   ├─ Setup Cloud SDK
+   ├─ Configure Docker for Artifact Registry
+   ├─ Build multi-stage Docker image
+   ├─ Push to Artifact Registry (3 tags)
+   ├─ Deploy to Cloud Run
+   ├─ Run health checks
+   ├─ Create GitHub deployment record
+   ├─ Update deployment status
+   ├─ Create GitHub release
+   └─ Generate deployment summary
+```
+
+### Permissions Necessárias
+
+```yaml
+deploy-production:
+  permissions:
+    contents: write        # Create releases
+    id-token: write       # GCP Workload Identity Federation
+    deployments: write    # Track deployments
+    statuses: write       # Update commit status
+```
+
+### Workload Identity Federation (WIF)
+
+O pipeline usa **WIF** em vez de service account keys (mais seguro):
+- GitHub gera um token JWT assinado
+- GCP valida o token sem chaves armazenadas
+- Acesso temporário e auditável
+
+### Rastreamento de Deployments
+
+Cada deployment é registrado no GitHub:
+```bash
+# Ver deployments
+gh deployment list --repo renatobardi/oute-main
+
+# Ver status de um deployment
+gh deployment view <deployment-id>
+```
+
+### Monitorar Execução
+
+```bash
+# Ver workflow runs
+gh run list --repo renatobardi/oute-main --branch main
+
+# Ver logs completos
+gh run view <run-id> --log
+
+# Ver apenas erros
+gh run view <run-id> --log-failed
+```
+
+### Rollback Automático
+
+Se o health check falhar, o deployment é automaticamente revertido para a revision anterior.
+
+### Exemplo: Deploy em Produção
+
+```bash
+# 1. Faça mudanças e commit em uma branch
+git checkout -b feature/nova-funcao
+# ... mudanças ...
+git commit -m "feat: nova funcionalidade"
+
+# 2. Faça push e crie PR para develop
+git push origin feature/nova-funcao
+# (Abrir PR no GitHub)
+
+# 3. Após aprovação, merge para main
+# (O workflow automático é disparado)
+
+# 4. Ver progresso
+gh run list --repo renatobardi/oute-main --branch main --limit 1
+
+# 5. Ver logs em tempo real
+gh run view <run-id> --log
+
+# 6. Após sucesso, acessar em produção
+https://oute-dashboard-kx25r3idia-uc.a.run.app
+```
+
+### Cloud Run Service URLs
+
+- **Dashboard**: https://oute-dashboard-kx25r3idia-uc.a.run.app
+
+### Problemas Comuns
+
+**Pipeline falhando?**
+1. Verificar logs: `gh run view <id> --log`
+2. Procurar por "Error" nas anotações
+3. Causas comuns:
+   - Lint errors (rodar `npm run lint` localmente)
+   - Build failures (rodar `npm run build` localmente)
+   - Permission issues (verificar GCP IAM)
+
+**Health check falhando?**
+1. Verificar se service está rodando: `gcloud run services describe oute-dashboard`
+2. Ver logs: `gcloud run logs read oute-dashboard --follow`
+3. Testar endpoint: `curl https://oute-dashboard-kx25r3idia-uc.a.run.app`
+
+**Docker image muito grande?**
+- Verifique o Dockerfile multi-stage
+- Confirme que apenas `dist/` é copiado
+- Remova arquivos desnecessários
+
 ## Resources
 
 - [Cloud Run Docs](https://cloud.google.com/run/docs)
 - [Cloud SQL Docs](https://cloud.google.com/sql/docs)
 - [Artifact Registry Docs](https://cloud.google.com/artifact-registry/docs)
 - [GCP Pricing Calculator](https://cloud.google.com/products/calculator)
+- [GitHub Actions Docs](https://docs.github.com/en/actions)
+- [Workload Identity Federation](https://cloud.google.com/docs/authentication/workload-identity-federation)

@@ -277,9 +277,87 @@ npm run test      # Tests
    - Implement proper data loading
    - Enable Adapter auto mode
 
+## CI/CD Pipeline
+
+### Automatic Deployment (GitHub Actions)
+
+Cada push para `main` dispara um pipeline automático:
+
+```
+git push origin main
+    ↓
+✓ Build & Test (~2 min)
+    ├─ ESLint
+    ├─ TypeScript check
+    ├─ Build dashboard
+    └─ Upload artifacts
+    ↓
+✓ Deploy Production (~5 min)
+    ├─ Docker build & push
+    ├─ Deploy to Cloud Run
+    ├─ Health checks
+    ├─ Create GitHub release
+    └─ Post deployment summary
+    ↓
+✅ Live em produção!
+```
+
+### Before Pushing to main
+
+```bash
+# 1. Rodar testes localmente
+npm run test
+
+# 2. Verificar linter
+npm run lint
+
+# 3. Fazer build
+npm run build
+
+# 4. Se tudo passar, fazer commit e push
+git commit -m "feat: nova funcionalidade"
+git push origin main
+```
+
+### Monitorar Pipeline
+
+```bash
+# Ver últimos workflows
+gh run list --repo renatobardi/oute-main --limit 3
+
+# Ver logs detalhados
+gh run view <run-id> --log
+
+# Aguardar conclusão
+gh run watch <run-id>
+
+# Acessar em produção após sucesso
+https://oute-dashboard-kx25r3idia-uc.a.run.app
+```
+
+### Rollback em Produção
+
+Se algo der errado em produção:
+
+```bash
+# Listar revisions anteriores
+gcloud run revisions list --service=oute-dashboard --region=us-central1
+
+# Reverter para revision anterior
+gcloud run services update-traffic oute-dashboard \
+  --region=us-central1 \
+  --to-revisions=<REVISION-ID>=100
+```
+
+Para mais detalhes, ver [.github/CI_CD_PIPELINE.md](./.github/CI_CD_PIPELINE.md)
+
 ## Resources
 
 - [SvelteKit Docs](https://kit.svelte.dev)
 - [Svelte 5 Docs](https://svelte.dev)
 - [Tailwind CSS](https://tailwindcss.com)
 - [SonarQube](https://www.sonarqube.org)
+- [CI/CD Pipeline Docs](./.github/CI_CD_PIPELINE.md)
+- [Deployment Guide](./DEPLOYMENT.md)
+- [GitHub Actions Docs](https://docs.github.com/en/actions)
+- [Cloud Run Docs](https://cloud.google.com/run/docs)
