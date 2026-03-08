@@ -87,7 +87,7 @@ jobs:
   sonarqube:
     name: SonarQube Quality Gate
     runs-on: ubuntu-latest
-    if: ${{ secrets.SONAR_TOKEN != '' }}
+    if: ${{ secrets.SONAR_TOKEN }}
     steps:
       - uses: actions/checkout@v4
         with:
