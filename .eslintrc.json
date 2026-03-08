@@ -34,7 +34,8 @@
     "@typescript-eslint/no-misused-promises": "warn",
     "@typescript-eslint/await-thenable": "warn",
     "@typescript-eslint/no-unnecessary-type-assertion": "warn",
-    "@typescript-eslint/strict-boolean-expressions": ["warn", { "allowString": false, "allowNumber": false, "allowNullableObject": false }]
+    "@typescript-eslint/strict-boolean-expressions": ["warn", { "allowString": false, "allowNumber": false, "allowNullableObject": false }],
+    "svelte/no-at-html-tags": "off"
   },
   "overrides": [
     {
@@ -54,6 +55,9 @@
         "**/tailwind.config.js"
       ],
       "parser": "@typescript-eslint/parser",
+      "parserOptions": {
+        "project": null
+      },
       "rules": {
         "@typescript-eslint/no-floating-promises": "off",
         "@typescript-eslint/no-misused-promises": "off",

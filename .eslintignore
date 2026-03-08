@@ -1,0 +1,8 @@
+node_modules/
+dist/
+build/
+.svelte-kit/
+coverage/
+*.d.ts
+!src/**/*.d.ts
+packages/design-system/src/tokens/*.d.ts
