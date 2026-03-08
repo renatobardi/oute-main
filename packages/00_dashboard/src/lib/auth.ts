@@ -30,6 +30,7 @@ export function initializeAuth(): void {
         try {
           user.set(JSON.parse(userData));
         } catch {
+          // eslint-disable-next-line no-console
           console.error('Failed to parse user data');
         }
       }

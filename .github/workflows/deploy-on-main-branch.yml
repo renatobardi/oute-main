@@ -44,7 +44,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: dashboard-build
-          path: packages/00_dashboard/build
+          path: packages/00_dashboard/dist
           retention-days: 1
 
   deploy-production:
@@ -160,8 +160,8 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           state: 'success'
-          deployment_id: ${{ steps.deployment.outputs.deployment_id }}
-          environment_url: ${{ steps.deploy.outputs.service_url }}
+          deployment-id: ${{ steps.deployment.outputs.deployment_id }}
+          environment-url: ${{ steps.deploy.outputs.service_url }}
           description: 'Successfully deployed to production'
 
       - name: Update deployment status (failure)
@@ -170,7 +170,7 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           state: 'failure'
-          deployment_id: ${{ steps.deployment.outputs.deployment_id }}
+          deployment-id: ${{ steps.deployment.outputs.deployment_id }}
           description: 'Production deployment failed'
 
       - name: Create release
@@ -258,30 +258,23 @@ jobs:
           ```
           EOF
 
-      - name: Slack Notification (success)
-        if: success()
-        uses: 8398a7/action-slack@v3
-        with:
-          status: ${{ job.status }}
-          text: |
-            ✅ Production Deployment Successful
-            Service: oute-dashboard v${{ github.run_number }}
-            Commit: ${{ github.sha }}
-            Author: ${{ github.actor }}
-            URL: ${{ steps.deploy.outputs.service_url }}
-          webhook_url: ${{ secrets.SLACK_WEBHOOK }}
-        continue-on-error: true
-
-      - name: Slack Notification (failure)
-        if: failure()
-        uses: 8398a7/action-slack@v3
-        with:
-          status: ${{ job.status }}
-          text: |
-            ❌ Production Deployment Failed
-            Service: oute-dashboard
-            Commit: ${{ github.sha }}
-            Author: ${{ github.actor }}
-            Rollback to: ${{ steps.previous-revision.outputs.revision }}
-          webhook_url: ${{ secrets.SLACK_WEBHOOK }}
-        continue-on-error: true
+      # Slack notifications commented out - action requires webhook URL setup
+      # Uncomment and configure when SLACK_WEBHOOK secret is available
+      # - name: Slack Notification (success)
+      #   if: success()
+      #   uses: slackapi/slack-github-action@v1.24.0
+      #   with:
+      #     webhook-url: ${{ secrets.SLACK_WEBHOOK }}
+      #     payload: |
+      #       {
+      #         "text": "✅ Production Deployment Successful",
+      #         "blocks": [
+      #           {
+      #             "type": "section",
+      #             "text": {
+      #               "type": "mrkdwn",
+      #               "text": "✅ *Production Deployment Successful*\n*Service:* oute-dashboard v${{ github.run_number }}\n*Commit:* ${{ github.sha }}\n*Author:* ${{ github.actor }}\n*URL:* ${{ steps.deploy.outputs.service_url }}"
+      #             }
+      #           }
+      #         ]
+      #       }
