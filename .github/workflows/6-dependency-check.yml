@@ -23,7 +23,6 @@ jobs:
           args: >
             --enableExperimental
             --enableRetired
-            --suppression dependency-check-suppressions.xml
 
       - name: Upload Dependency Check results
         uses: github/codeql-action/upload-sarif@v2
