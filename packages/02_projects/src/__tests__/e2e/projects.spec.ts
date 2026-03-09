@@ -21,7 +21,7 @@ test.describe('Projects API - CRUD Operations', () => {
       },
     });
 
-    if (loginResponse.ok) {
+    if (loginResponse.ok === true) {
       const loginData = await loginResponse.json();
       authToken = loginData.token;
     }
@@ -31,7 +31,7 @@ test.describe('Projects API - CRUD Operations', () => {
    * Test: Create new project
    */
   test('should create a new project', async ({ page }) => {
-    test.skip(!authToken, 'Requires authentication token');
+    test.skip(authToken.length === 0, 'Requires authentication token');
 
     const createResponse = await page.request.post('/api/projects', {
       headers: {
@@ -63,8 +63,8 @@ test.describe('Projects API - CRUD Operations', () => {
    * Test: Get project by ID
    */
   test('should retrieve project by ID', async ({ page }) => {
-    test.skip(!authToken, 'Requires authentication token');
-    test.skip(!createdProjectId, 'Requires created project ID');
+    test.skip(authToken.length === 0, 'Requires authentication token');
+    test.skip(createdProjectId.length === 0, 'Requires created project ID');
 
     const getResponse = await page.request.get(`/api/projects/${createdProjectId}`, {
       headers: {
@@ -85,7 +85,7 @@ test.describe('Projects API - CRUD Operations', () => {
    * Test: List all projects
    */
   test('should list all projects', async ({ page }) => {
-    test.skip(!authToken, 'Requires authentication token');
+    test.skip(authToken.length === 0, 'Requires authentication token');
 
     const listResponse = await page.request.get('/api/projects', {
       headers: {
@@ -105,8 +105,8 @@ test.describe('Projects API - CRUD Operations', () => {
    * Test: Update project
    */
   test('should update project details', async ({ page }) => {
-    test.skip(!authToken, 'Requires authentication token');
-    test.skip(!createdProjectId, 'Requires created project ID');
+    test.skip(authToken.length === 0, 'Requires authentication token');
+    test.skip(createdProjectId.length === 0, 'Requires created project ID');
 
     const updateResponse = await page.request.put(`/api/projects/${createdProjectId}`, {
       headers: {
@@ -131,8 +131,8 @@ test.describe('Projects API - CRUD Operations', () => {
    * Test: Delete project
    */
   test('should delete project', async ({ page }) => {
-    test.skip(!authToken, 'Requires authentication token');
-    test.skip(!createdProjectId, 'Requires created project ID');
+    test.skip(authToken.length === 0, 'Requires authentication token');
+    test.skip(createdProjectId.length === 0, 'Requires created project ID');
 
     const deleteResponse = await page.request.delete(`/api/projects/${createdProjectId}`, {
       headers: {
@@ -218,7 +218,7 @@ test.describe('Projects Validation', () => {
       },
     });
 
-    if (loginResponse.ok) {
+    if (loginResponse.ok === true) {
       const loginData = await loginResponse.json();
       authToken = loginData.token;
     }
@@ -228,7 +228,7 @@ test.describe('Projects Validation', () => {
    * Test: Reject project creation with missing name
    */
   test('should reject project creation with missing name', async ({ page }) => {
-    test.skip(!authToken, 'Requires authentication token');
+    test.skip(authToken.length === 0, 'Requires authentication token');
 
     const createResponse = await page.request.post('/api/projects', {
       headers: {
@@ -250,7 +250,7 @@ test.describe('Projects Validation', () => {
    * Test: Reject access to non-existent project
    */
   test('should reject access to non-existent project', async ({ page }) => {
-    test.skip(!authToken, 'Requires authentication token');
+    test.skip(authToken.length === 0, 'Requires authentication token');
 
     const getResponse = await page.request.get('/api/projects/non-existent-id', {
       headers: {
@@ -268,7 +268,7 @@ test.describe('Projects Validation', () => {
    * Test: Validate project name length
    */
   test('should validate project name length', async ({ page }) => {
-    test.skip(!authToken, 'Requires authentication token');
+    test.skip(authToken.length === 0, 'Requires authentication token');
 
     // Try with very long name
     const longName = 'a'.repeat(500);

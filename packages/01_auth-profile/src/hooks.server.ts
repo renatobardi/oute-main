@@ -3,6 +3,7 @@
  * Sets up Dependency Injection container at startup
  */
 
+import type { Handle } from '@sveltejs/kit';
 import { LoginUseCase } from './application/use-cases/login/LoginUseCase';
 import { RegisterUseCase } from './application/use-cases/register/RegisterUseCase';
 import { GetProfileUseCase } from './application/use-cases/get-profile/GetProfileUseCase';
@@ -48,8 +49,8 @@ if (typeof global !== 'undefined') {
   (global as unknown).__authDeps = deps;
 }
 
-export const handle = async ({ event, resolve }: { event: any; resolve: any }): Promise<any> => {
+export const handle: Handle = async ({ event, resolve }) => {
   // Inject dependencies into event.locals
   event.locals.deps = deps;
-  return resolve(event);
+  return await resolve(event);
 };

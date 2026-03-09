@@ -114,7 +114,7 @@ export class JwtTokenAdapter {
       const payload = JSON.parse(Buffer.from(parts[1], 'base64').toString());
 
       // Check expiration
-      if (payload.exp && Date.now() >= payload.exp * 1000) {
+      if (payload.exp != null && Date.now() >= payload.exp * 1000) {
         return null;
       }
 

@@ -162,7 +162,9 @@ describe('User Entity', () => {
       user.recordLogin();
       const secondLogin = user.lastLogin;
 
-      expect(secondLogin?.getTime()).toBeGreaterThanOrEqual(firstLogin?.getTime() || 0);
+      const firstLoginTime = firstLogin?.getTime() ?? 0;
+      const secondLoginTime = secondLogin?.getTime() ?? 0;
+      expect(secondLoginTime).toBeGreaterThanOrEqual(firstLoginTime);
     });
   });
 
