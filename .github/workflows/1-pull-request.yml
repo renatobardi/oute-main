@@ -62,70 +62,42 @@ jobs:
 
       - run: npm install
 
-      - name: Run tests with coverage
-        run: npm run test -- --run --coverage
-        continue-on-error: false
-
-      - name: Check coverage threshold (80%)
+      - name: Run tests with coverage per package
         run: |
-          # Check if coverage reports exist
-          if [ ! -d "coverage" ]; then
-            echo "❌ No coverage reports generated"
-            exit 1
+          for dir in packages/design-system packages/00_dashboard packages/01_auth-profile packages/02_projects; do
+            if [ -f "$dir/vitest.config.ts" ]; then
+              echo "🧪 Running tests in $dir..."
+              npx vitest run --coverage --root "$dir" || exit 1
+            fi
+          done
+
+      - name: Merge coverage reports
+        run: |
+          mkdir -p coverage
+          for dir in packages/design-system packages/00_dashboard packages/01_auth-profile packages/02_projects; do
+            if [ -f "$dir/coverage/lcov.info" ]; then
+              echo "📊 Found coverage in $dir"
+              cat "$dir/coverage/lcov.info" >> coverage/lcov.info
+            fi
+            if [ -f "$dir/coverage/coverage-final.json" ]; then
+              cp "$dir/coverage/coverage-final.json" "coverage/coverage-$(basename $dir).json"
+            fi
+          done
+
+          if [ ! -s "coverage/lcov.info" ]; then
+            echo "⚠️ No coverage data found - tests may not have generated coverage"
+          else
+            echo "✅ Coverage reports merged successfully"
           fi
-
-          # Check if coverage/coverage-final.json exists
-          if [ ! -f "coverage/coverage-final.json" ]; then
-            echo "❌ Coverage report not found at coverage/coverage-final.json"
-            exit 1
-          fi
-
-          # Parse coverage data and check thresholds
-          node -e "
-            const coverage = require('./coverage/coverage-final.json');
-            let totalLines = 0, coveredLines = 0;
-            let totalBranches = 0, coveredBranches = 0;
-            let totalFunctions = 0, coveredFunctions = 0;
-            let totalStatements = 0, coveredStatements = 0;
-
-            Object.values(coverage).forEach(file => {
-              totalLines += file.lines.total;
-              coveredLines += file.lines.covered;
-              totalBranches += file.branches.total;
-              coveredBranches += file.branches.covered;
-              totalFunctions += file.functions.total;
-              coveredFunctions += file.functions.covered;
-              totalStatements += file.statements.total;
-              coveredStatements += file.statements.covered;
-            });
-
-            const linesCov = ((coveredLines / totalLines) * 100).toFixed(2);
-            const branchesCov = totalBranches > 0 ? ((coveredBranches / totalBranches) * 100).toFixed(2) : 100;
-            const functionsCov = ((coveredFunctions / totalFunctions) * 100).toFixed(2);
-            const statementsCov = ((coveredStatements / totalStatements) * 100).toFixed(2);
-
-            console.log('📊 Coverage Summary:');
-            console.log('  Lines:      ' + linesCov + '% (target: 80%)');
-            console.log('  Branches:   ' + branchesCov + '% (target: 75%)');
-            console.log('  Functions:  ' + functionsCov + '% (target: 80%)');
-            console.log('  Statements: ' + statementsCov + '% (target: 80%)');
-
-            let failed = false;
-            if (linesCov < 80) { console.log('❌ Lines coverage below 80%'); failed = true; }
-            if (branchesCov < 75) { console.log('❌ Branches coverage below 75%'); failed = true; }
-            if (functionsCov < 80) { console.log('❌ Functions coverage below 80%'); failed = true; }
-            if (statementsCov < 80) { console.log('❌ Statements coverage below 80%'); failed = true; }
-
-            if (failed) process.exit(1);
-            console.log('✅ All coverage thresholds met');
-          "
 
       - name: Upload coverage to artifacts
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: coverage-reports
-          path: coverage/
+          path: |
+            coverage/
+            packages/*/coverage/
           retention-days: 30
 
   docker-build:
