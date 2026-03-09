@@ -13,7 +13,7 @@ export function formatDate(date: Date): string {
  * Parse JWT payload without verification (for client-side)
  * WARNING: Always verify on server!
  */
-export function parseJWT(token: string): Record<string, any> | null {
+export function parseJWT(token: string): Record<string, unknown> | null {
   try {
     const base64Url = token.split('.')[1];
     const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
@@ -74,7 +74,7 @@ export function isValidPassword(password: string): boolean {
 /**
  * Debounce function
  */
-export function debounce<T extends (...args: any[]) => any>(
+export function debounce<T extends (...args: unknown[]) => unknown>(
   func: T,
   wait: number
 ): (...args: Parameters<T>) => void {

@@ -1,6 +1,9 @@
 import type { RequestHandler } from './$types';
 import { ProfileHandler } from '../../../presentation/handlers/ProfileHandler';
-import { createAuthenticateMiddleware, extractAuthHeader } from '../../../presentation/middleware/authenticate';
+import {
+  createAuthenticateMiddleware,
+  extractAuthHeader,
+} from '../../../presentation/middleware/authenticate';
 import { ErrorMapper } from '../../../presentation/errors/ErrorMapper';
 
 /**
@@ -11,12 +14,12 @@ import { ErrorMapper } from '../../../presentation/errors/ErrorMapper';
 export const GET: RequestHandler = async ({ request }) => {
   try {
     // Get dependencies from somewhere (DI container or globals)
-    const deps = (global as any).__authDeps;
+    const deps = (global as unknown).__authDeps;
 
     if (!deps) {
       return new Response(JSON.stringify({ error: 'Service not initialized' }), {
         status: 500,
-        headers: { 'Content-Type': 'application/json' }
+        headers: { 'Content-Type': 'application/json' },
       });
     }
 
@@ -28,7 +31,7 @@ export const GET: RequestHandler = async ({ request }) => {
     if (!auth) {
       return new Response(JSON.stringify({ error: 'Unauthorized' }), {
         status: 401,
-        headers: { 'Content-Type': 'application/json' }
+        headers: { 'Content-Type': 'application/json' },
       });
     }
 
@@ -38,13 +41,13 @@ export const GET: RequestHandler = async ({ request }) => {
 
     return new Response(JSON.stringify(result.body), {
       status: result.status,
-      headers: { 'Content-Type': 'application/json' }
+      headers: { 'Content-Type': 'application/json' },
     });
   } catch (error) {
     const errorResponse = ErrorMapper.toHttpResponse(error);
     return new Response(JSON.stringify(errorResponse.body), {
       status: errorResponse.status,
-      headers: { 'Content-Type': 'application/json' }
+      headers: { 'Content-Type': 'application/json' },
     });
   }
 };

@@ -36,7 +36,7 @@ function initializeDependencies() {
     tokenGenerator,
     loginUseCase,
     registerUseCase,
-    getProfileUseCase
+    getProfileUseCase,
   };
 }
 
@@ -45,7 +45,7 @@ const deps = initializeDependencies();
 
 // Export to global for use in route handlers
 if (typeof global !== 'undefined') {
-  (global as any).__authDeps = deps;
+  (global as unknown).__authDeps = deps;
 }
 
 export const handle = async ({ event, resolve }) => {
