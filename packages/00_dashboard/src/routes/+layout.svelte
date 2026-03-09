@@ -11,13 +11,13 @@
 
     // Redirect to login if not authenticated and not already on login page
     if (!$authToken && $page.url.pathname !== '/login') {
-      goto('/login');
+      await goto('/login');
     }
   });
 
   async function handleLogout() {
     logout();
-    goto('/login');
+    await goto('/login');
   }
 </script>
 

@@ -13,7 +13,7 @@ describe('UserMapper', () => {
     testUser = User.create({
       email: Email.fromString('test@example.com'),
       passwordHash: hashedPassword,
-      name: 'Test User'
+      name: 'Test User',
     });
   });
 

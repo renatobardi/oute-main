@@ -75,6 +75,7 @@ packages/XX_service/
 #### Domain Layer
 
 **Key Entities**:
+
 ```typescript
 // domain/entities/Dashboard.ts
 export class Dashboard {
@@ -88,11 +89,7 @@ export class Dashboard {
     public updatedAt: Date
   ) {}
 
-  static create(props: {
-    userId: UserId;
-    name: string;
-    description: string;
-  }): Dashboard {
+  static create(props: { userId: UserId; name: string; description: string }): Dashboard {
     // Factory method with validation
   }
 
@@ -104,7 +101,7 @@ export class Dashboard {
   }
 
   removeWidget(widgetId: WidgetId): void {
-    this.widgets = this.widgets.filter(w => !w.id.equals(widgetId));
+    this.widgets = this.widgets.filter((w) => !w.id.equals(widgetId));
   }
 
   getWidgets(): Widget[] {
@@ -139,6 +136,7 @@ export class Widget {
 ```
 
 **Key Value Objects**:
+
 ```typescript
 // domain/value-objects/DashboardId.ts
 export class DashboardId {
@@ -172,7 +170,7 @@ export class WidgetType {
 
   static fromString(value: string): WidgetType {
     const types = [WidgetType.CHART, WidgetType.TABLE, WidgetType.METRIC, WidgetType.CUSTOM];
-    const type = types.find(t => t.value === value);
+    const type = types.find((t) => t.value === value);
     if (!type) throw new InvalidWidgetTypeError();
     return type;
   }
@@ -184,6 +182,7 @@ export class WidgetType {
 ```
 
 **Key Ports**:
+
 ```typescript
 // domain/repositories/IDashboardRepository.ts
 export interface IDashboardRepository {
@@ -205,6 +204,7 @@ export interface IWidgetRepository {
 #### Application Layer
 
 **Use Cases**:
+
 ```typescript
 // application/use-cases/create-dashboard/CreateDashboardUseCase.ts
 export class CreateDashboardUseCase {
@@ -222,7 +222,7 @@ export class CreateDashboardUseCase {
     const dashboard = Dashboard.create({
       userId: UserId.fromString(user.id),
       name: input.name,
-      description: input.description
+      description: input.description,
     });
 
     // Persist
@@ -231,7 +231,7 @@ export class CreateDashboardUseCase {
     return new CreateDashboardOutput({
       id: dashboard.id.getValue(),
       name: dashboard.name,
-      description: dashboard.description
+      description: dashboard.description,
     });
   }
 }
@@ -255,7 +255,7 @@ export class AddWidgetUseCase {
       dashboardId: dashboard.id,
       title: input.title,
       type: WidgetType.fromString(input.type),
-      config: input.config
+      config: input.config,
     });
 
     // Add to dashboard
@@ -380,6 +380,7 @@ describe('Dashboard E2E', () => {
 #### Domain Layer
 
 **Key Entities**:
+
 ```typescript
 // domain/entities/Project.ts
 export class Project {
@@ -394,11 +395,7 @@ export class Project {
     public updatedAt: Date
   ) {}
 
-  static create(props: {
-    name: ProjectName;
-    description: string;
-    owner: UserId;
-  }): Project {
+  static create(props: { name: ProjectName; description: string; owner: UserId }): Project {
     const project = new Project(
       ProjectId.generate(),
       props.name,
@@ -416,14 +413,14 @@ export class Project {
   }
 
   addMember(userId: UserId, role: MemberRole): void {
-    if (this.members.some(m => m.userId.equals(userId))) {
+    if (this.members.some((m) => m.userId.equals(userId))) {
       throw new UserAlreadyMemberError();
     }
 
     const member = ProjectMember.create({
       projectId: this.id,
       userId,
-      role
+      role,
     });
 
     this.members.push(member);
@@ -434,11 +431,11 @@ export class Project {
       throw new CannotRemoveOwnerError();
     }
 
-    this.members = this.members.filter(m => !m.userId.equals(userId));
+    this.members = this.members.filter((m) => !m.userId.equals(userId));
   }
 
   canUserEdit(userId: UserId): boolean {
-    const member = this.members.find(m => m.userId.equals(userId));
+    const member = this.members.find((m) => m.userId.equals(userId));
     return member?.isEditor() ?? false;
   }
 
@@ -451,7 +448,7 @@ export class Project {
     const validTransitions: Record<string, ProjectStatus[]> = {
       [ProjectStatus.DRAFT]: [ProjectStatus.ACTIVE],
       [ProjectStatus.ACTIVE]: [ProjectStatus.COMPLETED, ProjectStatus.DRAFT],
-      [ProjectStatus.COMPLETED]: []
+      [ProjectStatus.COMPLETED]: [],
     };
 
     if (!validTransitions[this.status.value].includes(newStatus)) {
@@ -473,11 +470,7 @@ export class ProjectMember {
     public readonly joinedAt: Date
   ) {}
 
-  static create(props: {
-    projectId: ProjectId;
-    userId: UserId;
-    role: MemberRole;
-  }): ProjectMember {
+  static create(props: { projectId: ProjectId; userId: UserId; role: MemberRole }): ProjectMember {
     return new ProjectMember(
       ProjectMemberId.generate(),
       props.projectId,
@@ -498,6 +491,7 @@ export class ProjectMember {
 ```
 
 **Key Value Objects**:
+
 ```typescript
 // domain/value-objects/ProjectName.ts
 export class ProjectName {
@@ -533,7 +527,7 @@ export class ProjectStatus {
 
   static fromString(value: string): ProjectStatus {
     const statuses = [ProjectStatus.DRAFT, ProjectStatus.ACTIVE, ProjectStatus.COMPLETED];
-    const status = statuses.find(s => s.value === value);
+    const status = statuses.find((s) => s.value === value);
     if (!status) throw new InvalidProjectStatusError();
     return status;
   }
@@ -553,7 +547,7 @@ export class MemberRole {
 
   static fromString(value: string): MemberRole {
     const roles = [MemberRole.OWNER, MemberRole.EDITOR, MemberRole.VIEWER];
-    const role = roles.find(r => r.value === value);
+    const role = roles.find((r) => r.value === value);
     if (!role) throw new InvalidMemberRoleError();
     return role;
   }
@@ -565,6 +559,7 @@ export class MemberRole {
 ```
 
 **Key Ports**:
+
 ```typescript
 // domain/repositories/IProjectRepository.ts
 export interface IProjectRepository {
@@ -588,6 +583,7 @@ export interface IProjectMemberRepository {
 #### Application Layer
 
 **Use Cases**:
+
 ```typescript
 // application/use-cases/create-project/CreateProjectUseCase.ts
 export class CreateProjectUseCase {
@@ -600,7 +596,7 @@ export class CreateProjectUseCase {
     const project = Project.create({
       name: projectName,
       description: input.description,
-      owner: ownerUserId
+      owner: ownerUserId,
     });
 
     await this.projectRepository.save(project);
@@ -611,10 +607,10 @@ export class CreateProjectUseCase {
       description: project.description,
       owner: project.owner.getValue(),
       status: project.status.value,
-      members: project.getMembers().map(m => ({
+      members: project.getMembers().map((m) => ({
         userId: m.userId.getValue(),
-        role: m.role.value
-      }))
+        role: m.role.value,
+      })),
     });
   }
 }
@@ -627,9 +623,7 @@ export class AddMemberUseCase {
   ) {}
 
   async execute(input: AddMemberInput): Promise<void> {
-    const project = await this.projectRepository.findById(
-      ProjectId.fromString(input.projectId)
-    );
+    const project = await this.projectRepository.findById(ProjectId.fromString(input.projectId));
     if (!project) throw new ProjectNotFoundError();
 
     // Only owner can add members
@@ -640,7 +634,7 @@ export class AddMemberUseCase {
     const member = ProjectMember.create({
       projectId: project.id,
       userId: UserId.fromString(input.userId),
-      role: MemberRole.fromString(input.role)
+      role: MemberRole.fromString(input.role),
     });
 
     project.addMember(member.userId, member.role);
@@ -656,6 +650,7 @@ export class AddMemberUseCase {
 ## Implementation Roadmap
 
 ### Step 1: Domain Layer (1-2 weeks)
+
 1. **Identify Entities**: What are the core business concepts?
 2. **Define Value Objects**: What validates, immutable objects do we need?
 3. **Design Repositories**: What persistence operations are required?
@@ -665,6 +660,7 @@ export class AddMemberUseCase {
 **Deliverables**: Domain layer complete with 60+ unit tests
 
 ### Step 2: Infrastructure Layer (1 week)
+
 1. **Implement Repositories**: Persist entities
 2. **Create Adapters**: External integrations (APIs, databases)
 3. **Setup DI**: Configure dependencies
@@ -673,6 +669,7 @@ export class AddMemberUseCase {
 **Deliverables**: Infrastructure layer complete with 30+ integration tests
 
 ### Step 3: Application Layer (1 week)
+
 1. **Create Use Cases**: Orchestrate domain + infrastructure
 2. **Design DTOs**: Input/output contracts
 3. **Implement Mappers**: Entity → DTO conversion
@@ -681,6 +678,7 @@ export class AddMemberUseCase {
 **Deliverables**: Application layer complete with 40+ tests
 
 ### Step 4: Presentation Layer (1 week)
+
 1. **Create Handlers**: HTTP request orchestration
 2. **Setup Routes**: SvelteKit API routes
 3. **Implement Middleware**: Authentication, authorization
@@ -689,6 +687,7 @@ export class AddMemberUseCase {
 **Deliverables**: Presentation layer complete with 40+ tests
 
 ### Step 5: E2E Tests (1 week)
+
 1. **Setup Playwright**: Configuration & fixtures
 2. **Write Flows**: Complete user workflows
 3. **Security Tests**: Authentication, authorization
@@ -731,9 +730,10 @@ echo "✅ Service generated: $SERVICE_NAME"
 ## Reusable Patterns
 
 ### 1. Entity Factory Pattern
+
 ```typescript
 export class Entity {
-  private constructor(...props) { }
+  private constructor(...props) {}
 
   // Create new instance with validation
   static create(props: CreateProps): Entity {
@@ -751,6 +751,7 @@ export class Entity {
 ```
 
 ### 2. Value Object Pattern
+
 ```typescript
 export class ValueObject {
   private constructor(value: string) {
@@ -781,6 +782,7 @@ export class ValueObject {
 ```
 
 ### 3. Repository Port Pattern
+
 ```typescript
 export interface IRepository {
   save(entity: Entity): Promise<void>;
@@ -791,6 +793,7 @@ export interface IRepository {
 ```
 
 ### 4. Use Case Pattern
+
 ```typescript
 export class UseCase {
   constructor(
@@ -809,6 +812,7 @@ export class UseCase {
 ```
 
 ### 5. Handler Pattern
+
 ```typescript
 export class Handler {
   async handle(request: Request): Promise<Response> {
@@ -824,6 +828,7 @@ export class Handler {
 ```
 
 ### 6. Error Mapping Pattern
+
 ```typescript
 export class ErrorMapper {
   static toHttpResponse(error: unknown): HttpResponse {
@@ -837,12 +842,12 @@ export class ErrorMapper {
     const mapping: Record<string, number> = {
       InvalidEmailError: 400,
       UserNotFoundError: 404,
-      UnauthorizedError: 401
+      UnauthorizedError: 401,
     };
 
     return {
       status: mapping[error.constructor.name] || 500,
-      body: { error: error.message, code: error.code }
+      body: { error: error.message, code: error.code },
     };
   }
 }
@@ -855,16 +860,19 @@ export class ErrorMapper {
 Each service should have:
 
 ### Unit Tests (60%+)
+
 - Domain layer (entities, value objects, errors)
 - Application layer (use cases, DTOs)
 - Utilities and helpers
 
 ### Integration Tests (20%+)
+
 - Infrastructure adapters
 - Repository implementations
 - External service integrations
 
 ### E2E Tests (15%+)
+
 - Complete user workflows
 - API contracts
 - Cross-service communication
@@ -887,6 +895,7 @@ npm run test:e2e --workspaces
 ## Checklist for Each Service
 
 ### Before Starting
+
 - [ ] Clear domain understanding
 - [ ] Key entities identified
 - [ ] Value objects designed
@@ -894,6 +903,7 @@ npm run test:e2e --workspaces
 - [ ] API contracts sketched
 
 ### Domain Layer
+
 - [ ] Entities created with factories
 - [ ] Value objects with validation
 - [ ] Repository ports defined
@@ -903,6 +913,7 @@ npm run test:e2e --workspaces
 - [ ] Business logic isolated
 
 ### Infrastructure Layer
+
 - [ ] Repository adapters implemented
 - [ ] Database/API integrations
 - [ ] Dependency injection setup
@@ -910,6 +921,7 @@ npm run test:e2e --workspaces
 - [ ] Adapters swappable (mock support)
 
 ### Application Layer
+
 - [ ] Use cases implemented
 - [ ] DTOs designed
 - [ ] Mappers created
@@ -918,6 +930,7 @@ npm run test:e2e --workspaces
 - [ ] No business logic in adapters
 
 ### Presentation Layer
+
 - [ ] HTTP handlers created
 - [ ] SvelteKit routes setup
 - [ ] Error mapping working
@@ -926,6 +939,7 @@ npm run test:e2e --workspaces
 - [ ] CORS configured
 
 ### E2E Tests
+
 - [ ] 20+ E2E tests
 - [ ] Happy path scenarios
 - [ ] Error scenarios
@@ -949,6 +963,7 @@ npm run test:e2e --workspaces
 ## Resources
 
 ### From 01_auth-profile (Template)
+
 - Domain layer: `packages/01_auth-profile/src/domain/`
 - Infrastructure: `packages/01_auth-profile/src/infrastructure/`
 - Application: `packages/01_auth-profile/src/application/`
@@ -956,6 +971,7 @@ npm run test:e2e --workspaces
 - E2E tests: `packages/01_auth-profile/src/__tests__/e2e/`
 
 ### Documentation
+
 - `REFACTORING_COMPLETION.md` - Overall refactoring details
 - `PHASE_1_SUMMARY.md` - Domain layer deep-dive
 - `PHASE_2_SUMMARY.md` - Infrastructure deep-dive
@@ -964,6 +980,7 @@ npm run test:e2e --workspaces
 - `PHASE_5_SUMMARY.md` - E2E testing deep-dive
 
 ### Tools & Commands
+
 ```bash
 # Generate new service
 ./scripts/generate-service.sh 03_new-service "Service Description"
@@ -984,14 +1001,14 @@ npm run format --workspaces
 
 ## Timeline Estimate
 
-| Phase | 00_dashboard | 02_projects |
-|-------|--------------|------------|
-| Domain | 1-2 weeks | 1-2 weeks |
-| Infrastructure | 1 week | 1 week |
-| Application | 1 week | 1 week |
-| Presentation | 1 week | 1 week |
-| E2E Tests | 1 week | 1 week |
-| **Total** | **5-6 weeks** | **5-6 weeks** |
+| Phase          | 00_dashboard  | 02_projects   |
+| -------------- | ------------- | ------------- |
+| Domain         | 1-2 weeks     | 1-2 weeks     |
+| Infrastructure | 1 week        | 1 week        |
+| Application    | 1 week        | 1 week        |
+| Presentation   | 1 week        | 1 week        |
+| E2E Tests      | 1 week        | 1 week        |
+| **Total**      | **5-6 weeks** | **5-6 weeks** |
 
 **Total for both services: 10-12 weeks**
 

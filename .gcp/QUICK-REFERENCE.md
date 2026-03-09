@@ -221,12 +221,14 @@ gcloud run services describe oute-dashboard-staging --region=us-central1 --forma
 ## Environment Variables
 
 **Set during deployment:**
+
 ```bash
 gcloud run deploy oute-dashboard-staging \
   --set-env-vars="NODE_ENV=staging,DEBUG=false,LOG_LEVEL=info"
 ```
 
 **View current:**
+
 ```bash
 gcloud run services describe oute-dashboard-staging --region=us-central1 \
   --format='value(spec.template.spec.containers[0].env[].{name:name,value:value})'
@@ -269,6 +271,7 @@ gh api repos/renatobardi/oute-main/contents/.github/workflows --paginate
 ---
 
 **For full details, see:**
+
 - `.gcp/README.md` - Script documentation
 - `GCP-DEPLOYMENT.md` - Complete deployment guide
 - `gcloud --help` - GCP CLI reference

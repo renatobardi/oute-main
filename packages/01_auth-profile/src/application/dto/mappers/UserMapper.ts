@@ -17,7 +17,7 @@ export class UserMapper {
       id: user.id.getValue(),
       email: user.email.getValue(),
       name: user.name,
-      roles: user.roles.map(r => r.getValue())
+      roles: user.roles.map((r) => r.getValue()),
     };
   }
 
@@ -29,7 +29,7 @@ export class UserMapper {
       id: user.id.getValue(),
       email: user.email.getValue(),
       name: user.name,
-      roles: user.roles.map(r => r.getValue())
+      roles: user.roles.map((r) => r.getValue()),
     };
   }
 
@@ -41,9 +41,9 @@ export class UserMapper {
       id: user.id.getValue(),
       email: user.email.getValue(),
       name: user.name,
-      roles: user.roles.map(r => r.getValue()),
+      roles: user.roles.map((r) => r.getValue()),
       createdAt: user.createdAt.toISOString(),
-      lastLogin: user.lastLogin ? user.lastLogin.toISOString() : null
+      lastLogin: user.lastLogin !== null ? user.lastLogin.toISOString() : null,
     };
   }
 }

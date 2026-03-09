@@ -19,12 +19,14 @@ packages/
 **Purpose**: Centralized design tokens and reusable components
 
 **Tech Stack**:
+
 - Svelte 5 components
 - Tailwind 4
 - Storybook for documentation
 - TypeScript
 
 **Key Files**:
+
 ```
 src/
 ├── tokens/           ← Design tokens
@@ -42,10 +44,12 @@ src/
 **Version**: Semantic versioning (v1.0.0, v1.1.0, etc.)
 
 **Publishing**:
+
 - Published to GCP Artifact Registry as `@oute/design-system`
 - Imported by 00_dashboard as dependency
 
 **Example Usage**:
+
 ```typescript
 import { Button, Card } from '@oute/design-system';
 import { colors } from '@oute/design-system/tokens';
@@ -54,6 +58,7 @@ import { colors } from '@oute/design-system/tokens';
 ```
 
 **Storybook**:
+
 ```bash
 npm run dev:storybook --workspace=design-system
 # http://localhost:6006
@@ -70,12 +75,14 @@ npm run dev:storybook --workspace=design-system
 **Port**: 3000
 
 **Tech Stack**:
+
 - SvelteKit
 - Svelte 5
 - @oute/design-system
 - TypeScript
 
 **Routes**:
+
 ```
 /                ← Dashboard home (protected)
 /login           ← Login page (public)
@@ -85,6 +92,7 @@ npm run dev:storybook --workspace=design-system
 ```
 
 **Key Files**:
+
 ```
 src/
 ├── routes/
@@ -101,6 +109,7 @@ src/
 ```
 
 **Responsibilities**:
+
 1. Render pages
 2. Login integration (calls 01_auth-profile)
 3. Projects listing (calls 02_projects)
@@ -108,12 +117,14 @@ src/
 5. User-facing UI
 
 **Environment**:
+
 ```
 AUTH_SERVICE_URL=http://localhost:3001
 PROJECTS_SERVICE_URL=http://localhost:3002
 ```
 
 **API Calls**:
+
 ```typescript
 // Login
 POST /auth/login { email, password }
@@ -136,6 +147,7 @@ Header: Authorization: Bearer <JWT>
 **Port**: 3001
 
 **Tech Stack**:
+
 - SvelteKit
 - Node.js
 - PostgreSQL
@@ -144,6 +156,7 @@ Header: Authorization: Bearer <JWT>
 - TypeScript
 
 **Routes**:
+
 ```
 POST   /auth/login          ← Login user
 POST   /auth/logout         ← Logout
@@ -155,6 +168,7 @@ GET    /profile/verify      ← Verify JWT
 ```
 
 **Key Files**:
+
 ```
 src/
 ├── routes/
@@ -174,6 +188,7 @@ src/
 ```
 
 **Responsibilities**:
+
 1. User login (validate credentials, issue JWT)
 2. User registration (hash password, store)
 3. JWT validation
@@ -181,6 +196,7 @@ src/
 5. Token refresh
 
 **Database Tables**:
+
 ```sql
 CREATE TABLE users (
   id UUID PRIMARY KEY,
@@ -198,6 +214,7 @@ CREATE TABLE sessions (
 ```
 
 **Environment**:
+
 ```
 DATABASE_URL=postgresql://...
 JWT_SECRET=your-secret-key
@@ -205,6 +222,7 @@ JWT_EXPIRY=24h
 ```
 
 **Example Flow**:
+
 ```
 1. POST /auth/login { email: "user@example.com", password: "..." }
 2. Hash provided password, compare with stored hash
@@ -223,6 +241,7 @@ JWT_EXPIRY=24h
 **Port**: 3002
 
 **Tech Stack**:
+
 - SvelteKit
 - Node.js
 - PostgreSQL
@@ -230,6 +249,7 @@ JWT_EXPIRY=24h
 - TypeScript
 
 **Routes**:
+
 ```
 GET    /projects             ← List user's projects (protected)
 POST   /projects             ← Create project (protected)
@@ -239,6 +259,7 @@ DELETE /projects/:id         ← Delete project (protected)
 ```
 
 **Key Files**:
+
 ```
 src/
 ├── routes/
@@ -253,12 +274,14 @@ src/
 ```
 
 **Responsibilities**:
+
 1. Validate JWT (from 01_auth-profile)
 2. Get user_id from JWT
 3. Fetch projects for that user
 4. Create/Update/Delete projects
 
 **Database Tables**:
+
 ```sql
 CREATE TABLE projects (
   id UUID PRIMARY KEY,
@@ -272,6 +295,7 @@ CREATE TABLE projects (
 ```
 
 **Environment**:
+
 ```
 DATABASE_URL=postgresql://...
 AUTH_SERVICE_URL=http://localhost:3001
@@ -279,6 +303,7 @@ JWT_SECRET=your-secret-key
 ```
 
 **Example Flow**:
+
 ```
 1. GET /projects
    Header: Authorization: Bearer <JWT>
@@ -288,6 +313,7 @@ JWT_SECRET=your-secret-key
 ```
 
 **JWT Validation Middleware** (lib/auth.ts):
+
 ```typescript
 export async function validateJWT(token: string) {
   try {
@@ -306,6 +332,7 @@ export async function validateJWT(token: string) {
 **Purpose**: Shared types and utilities
 
 **Files**:
+
 ```
 shared/
 ├── types.ts       ← Common interfaces (User, Project, etc)
@@ -314,6 +341,7 @@ shared/
 ```
 
 **Example** (types.ts):
+
 ```typescript
 export interface User {
   id: string;
@@ -331,7 +359,7 @@ export interface Project {
 }
 
 export interface JWTPayload {
-  sub: string;  // user_id
+  sub: string; // user_id
   email: string;
   iat: number;
   exp: number;
@@ -339,6 +367,7 @@ export interface JWTPayload {
 ```
 
 **Import from shared**:
+
 ```typescript
 import type { User, Project } from '@oute/shared';
 ```
@@ -360,12 +389,12 @@ To add a new package (e.g., `03_notifications`):
 
 ## Version Matrix
 
-| Package | Current | Status |
-|---------|---------|--------|
-| design-system | 1.0.0 | ✅ Production |
-| 00_dashboard | 1.0.0 | ✅ Production |
-| 01_auth-profile | 1.0.0 | ✅ Production |
-| 02_projects | 1.0.0 | ✅ Production |
+| Package         | Current | Status        |
+| --------------- | ------- | ------------- |
+| design-system   | 1.0.0   | ✅ Production |
+| 00_dashboard    | 1.0.0   | ✅ Production |
+| 01_auth-profile | 1.0.0   | ✅ Production |
+| 02_projects     | 1.0.0   | ✅ Production |
 
 ---
 

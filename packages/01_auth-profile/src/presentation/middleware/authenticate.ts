@@ -6,11 +6,9 @@ import type { ITokenGenerator } from '../../application/ports/ITokenGenerator';
  * Extracts and returns user ID if valid
  */
 export function createAuthenticateMiddleware(tokenGenerator: ITokenGenerator) {
-  return function authenticate(
-    authHeader?: string
-  ): { userId: string } | null {
+  return function authenticate(authHeader?: string): { userId: string } | null {
     // Step 1: Check if authorization header exists
-    if (!authHeader) {
+    if (authHeader === undefined || authHeader.length === 0) {
       return null;
     }
 
@@ -29,7 +27,7 @@ export function createAuthenticateMiddleware(tokenGenerator: ITokenGenerator) {
     // Step 4: Verify token and extract payload
     try {
       const payload = tokenGenerator.decode(token);
-      if (!payload || !payload.userId) {
+      if (payload === null || typeof payload.userId !== 'string') {
         return null;
       }
 

@@ -2,7 +2,7 @@
 const config = {
   kit: {
     alias: {
-      '$lib': 'src/lib',
+      $lib: 'src/lib',
     },
   },
 };

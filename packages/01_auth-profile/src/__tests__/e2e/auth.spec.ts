@@ -17,8 +17,8 @@ test.describe('Authentication Flow', () => {
     const loginResponse = await page.request.post('/api/auth?action=login', {
       data: {
         email: 'test@example.com',
-        password: 'SecurePass123!'
-      }
+        password: 'SecurePass123!',
+      },
     });
 
     // Verify response status
@@ -45,8 +45,8 @@ test.describe('Authentication Flow', () => {
     const loginResponse = await page.request.post('/api/auth?action=login', {
       data: {
         email: 'invalid-email',
-        password: 'SecurePass123!'
-      }
+        password: 'SecurePass123!',
+      },
     });
 
     // Should return 400 Bad Request
@@ -64,8 +64,8 @@ test.describe('Authentication Flow', () => {
     const loginResponse = await page.request.post('/api/auth?action=login', {
       data: {
         email: 'test@example.com',
-        password: 'WrongPassword123!'
-      }
+        password: 'WrongPassword123!',
+      },
     });
 
     // Should return 401 Unauthorized
@@ -82,8 +82,8 @@ test.describe('Authentication Flow', () => {
   test('should reject login with missing email', async ({ page }) => {
     const loginResponse = await page.request.post('/api/auth?action=login', {
       data: {
-        password: 'SecurePass123!'
-      }
+        password: 'SecurePass123!',
+      },
     });
 
     expect(loginResponse.status()).toBe(400);
@@ -97,8 +97,8 @@ test.describe('Authentication Flow', () => {
       data: {
         email: 'newuser@example.com',
         password: 'SecurePass123!',
-        name: 'New User'
-      }
+        name: 'New User',
+      },
     });
 
     // Should return 201 Created
@@ -124,8 +124,8 @@ test.describe('Authentication Flow', () => {
       data: {
         email: 'user@example.com',
         password: 'weak', // Too weak
-        name: 'User'
-      }
+        name: 'User',
+      },
     });
 
     // Should return 400 Bad Request
@@ -143,8 +143,8 @@ test.describe('Authentication Flow', () => {
       data: {
         email: 'not-an-email',
         password: 'SecurePass123!',
-        name: 'User'
-      }
+        name: 'User',
+      },
     });
 
     expect(registerResponse.status()).toBe(400);
@@ -159,8 +159,8 @@ test.describe('Authentication Flow', () => {
     const registerResponse = await page.request.post('/api/auth?action=register', {
       data: {
         email: 'user@example.com',
-        password: 'SecurePass123!'
-      }
+        password: 'SecurePass123!',
+      },
     });
 
     expect(registerResponse.status()).toBe(400);
@@ -173,8 +173,8 @@ test.describe('Authentication Flow', () => {
     const loginResponse = await page.request.post('/api/auth?action=login', {
       data: {
         email: 'test@example.com',
-        password: 'SecurePass123!'
-      }
+        password: 'SecurePass123!',
+      },
     });
 
     const loginData = await loginResponse.json();

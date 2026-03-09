@@ -7,6 +7,7 @@ Este monorepo utiliza uma arquitetura multi-pacote com TypeScript configurado em
 ### Por que múltiplos tsconfig.json?
 
 Cada pacote tem necessidades diferentes:
+
 - **Pacotes SvelteKit**: Precisam de configuração especial para Vite e SvelteKit
 - **Design System**: Biblioteca de componentes isolada
 - **Shared**: Código utilitário compartilhado
@@ -37,6 +38,7 @@ ESLint usa o TypeScript compiler para validar tipos e regras avançadas.
 ## Configuração: parserOptions.project
 
 ### Problema Original
+
 ```json
 "parserOptions": {
   "project": "./tsconfig.json"  // ❌ Só procura na raiz!
@@ -46,6 +48,7 @@ ESLint usa o TypeScript compiler para validar tipos e regras avançadas.
 Isso fazia ESLint procurar por `packages/00_dashboard/src/app.ts` em `./tsconfig.json`, mas esse arquivo não estava incluído lá.
 
 ### Solução Implementada
+
 ```json
 "parserOptions": {
   "project": [
@@ -63,6 +66,7 @@ Agora ESLint pode encontrar o tsconfig.json correto para cada pacote.
 ### Padrão Geral
 
 Cada `tsconfig.json` deve incluir:
+
 1. **Código fonte**: `src/**/*`
 2. **Arquivos de config** que serão lintados
 
@@ -132,6 +136,7 @@ Se você adicionar um novo pacote ao monorepo:
 - [ ] ESLint encontrará automaticamente (padrão glob já existe)
 
 Exemplo:
+
 ```json
 {
   "extends": "../../tsconfig.json",
@@ -145,6 +150,7 @@ Exemplo:
 ## Debbugando Problemas de ESLint
 
 ### Comando Útil
+
 ```bash
 # Ver qual tsconfig.json ESLint está usando
 npm run lint -- --debug 2>&1 | grep tsconfig
@@ -168,6 +174,7 @@ npm run lint -- packages/seu-pacote/src/file.ts --debug
 - **off** 🚫: Ignorado
 
 Todas as regras críticas estão em **warn** para manter pragmatismo:
+
 - Código funciona
 - Warnings alertam sobre melhorias
 - Fácil de atualizar para `error` quando cobertura melhorar
@@ -175,11 +182,13 @@ Todas as regras críticas estão em **warn** para manter pragmatismo:
 ## Performance
 
 O padrão glob `./packages/*/tsconfig.json` é eficiente porque:
+
 1. Node.js cache os globos resolvidos
 2. ESLint cache os resultados de parsing
 3. TypeScript cache incrementalmente
 
 Para repositórios maiores, considere ser específico:
+
 ```json
 "project": [
   "./tsconfig.json",

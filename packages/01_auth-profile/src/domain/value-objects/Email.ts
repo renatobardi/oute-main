@@ -25,7 +25,7 @@ export class Email {
    * Validate email format
    */
   private static validate(email: string): void {
-    if (!email || email.trim().length === 0) {
+    if (email.length === 0 || email.trim().length === 0) {
       throw new InvalidEmailError('Email cannot be empty');
     }
 

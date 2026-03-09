@@ -34,7 +34,7 @@ export class Password {
    * This should be called from infrastructure layer with bcrypt
    */
   static fromPlaintext(hash: string): Password {
-    if (!hash || hash.trim().length === 0) {
+    if (hash.length === 0 || hash.trim().length === 0) {
       throw new InvalidPasswordError('Password hash cannot be empty');
     }
     return new Password(hash);
@@ -56,7 +56,7 @@ export class Password {
    * - At least 1 number
    */
   static validateStrength(plainPassword: string): void {
-    if (!plainPassword) {
+    if (plainPassword.length === 0) {
       throw new InvalidPasswordError('Password cannot be empty');
     }
 

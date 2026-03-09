@@ -15,7 +15,7 @@ describe('LoginHandler', () => {
   beforeEach(async () => {
     // Mock use case
     loginUseCase = {
-      execute: vi.fn()
+      execute: vi.fn(),
     } as any;
 
     handler = new LoginHandler(loginUseCase);
@@ -25,7 +25,7 @@ describe('LoginHandler', () => {
     testUser = User.create({
       email: Email.fromString('test@example.com'),
       passwordHash: hashedPassword,
-      name: 'Test User'
+      name: 'Test User',
     });
   });
 
@@ -39,8 +39,8 @@ describe('LoginHandler', () => {
           id: testUser.id.getValue(),
           email: 'test@example.com',
           name: 'Test User',
-          roles: ['USER']
-        }
+          roles: ['USER'],
+        },
       });
 
       const result = await handler.handle(body);
@@ -103,8 +103,8 @@ describe('LoginHandler', () => {
           id: 'user-id',
           email: 'test@example.com',
           name: 'Test User',
-          roles: ['USER']
-        }
+          roles: ['USER'],
+        },
       });
 
       await handler.handle(body);

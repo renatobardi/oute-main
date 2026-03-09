@@ -3,6 +3,7 @@
 Complete guide to deploy OUTE Dashboard on Google Cloud Platform using Cloud Run, with GitHub Actions CI/CD integration.
 
 ## Table of Contents
+
 1. [Prerequisites](#prerequisites)
 2. [Initial Setup](#initial-setup)
 3. [Building & Pushing Images](#building--pushing-images)
@@ -17,17 +18,20 @@ Complete guide to deploy OUTE Dashboard on Google Cloud Platform using Cloud Run
 ## Prerequisites
 
 ### Required Tools
+
 - **gcloud CLI** - [Install](https://cloud.google.com/sdk/docs/install)
 - **Docker** - [Install](https://docs.docker.com/get-docker/)
 - **gh CLI** (optional) - [Install](https://cli.github.com/)
 - **Node.js 20+** - [Install](https://nodejs.org/)
 
 ### Required Access
+
 - GCP account with billing enabled
 - GitHub repository access (push + secrets)
 - Sufficient GCP quotas (Cloud Run, Cloud SQL, Artifact Registry)
 
 ### Verify Installation
+
 ```bash
 gcloud version
 docker version
@@ -66,6 +70,7 @@ bash .gcp/setup.sh $PROJECT_ID $GCP_REGION YOUR_BILLING_ACCOUNT_ID
 ```
 
 **What this script does:**
+
 - Creates GCP project
 - Enables required APIs
 - Creates Artifact Registry docker repository
@@ -376,6 +381,7 @@ gcloud monitoring time-series list \
 ### Deployment Fails
 
 #### Image Not Found in Artifact Registry
+
 ```bash
 # Check if image was pushed
 gcloud artifacts docker images list \
@@ -393,6 +399,7 @@ docker push ${REGISTRY}/${PROJECT_ID}/docker-repo/oute-dashboard:latest
 ```
 
 #### Service Account Permission Denied
+
 ```bash
 # Verify service account has required roles
 gcloud projects get-iam-policy $PROJECT_ID \
@@ -407,6 +414,7 @@ gcloud projects add-iam-policy-binding $PROJECT_ID \
 ```
 
 #### Database Connection Failed
+
 ```bash
 # Check PostgreSQL instance status
 gcloud sql instances describe oute-postgres
@@ -427,6 +435,7 @@ echo "new-connection-string" | \
 ```
 
 #### Service Not Responding (HTTP 500/502)
+
 ```bash
 # Check latest logs for errors
 gcloud run logs read oute-dashboard-staging \
@@ -448,6 +457,7 @@ bash .gcp/deploy.sh dashboard staging staging-latest
 ### GitHub Actions Workflow Fails
 
 #### Auth Failure: Invalid GCP_SA_KEY
+
 ```bash
 # Verify secret is set correctly
 gh secret list | grep GCP_SA_KEY
@@ -465,6 +475,7 @@ gcloud iam service-accounts keys list \
 ```
 
 #### Docker Build Fails
+
 ```bash
 # Build locally to see full error
 docker build \
@@ -478,6 +489,7 @@ docker build --no-cache \
 ```
 
 #### Push to Artifact Registry Fails
+
 ```bash
 # Verify Docker auth
 docker login -u _json_key --password-stdin \
@@ -630,6 +642,7 @@ gcloud run deploy oute-dashboard-staging \
 ```
 
 View current env vars:
+
 ```bash
 gcloud run services describe oute-dashboard-staging \
   --region=$GCP_REGION \
@@ -641,16 +654,19 @@ gcloud run services describe oute-dashboard-staging \
 ## Cost Optimization
 
 ### Cloud Run
+
 - **Always On**: Set minimum instances to 0 (scale to 0 when idle)
 - **Memory**: Start with 256Mi for this app, increase if needed
 - **CPU**: 1 CPU sufficient, increase only if CPU-bound
 
 ### Cloud SQL
+
 - **Tier**: db-f1-micro for dev/staging, db-n1-standard-1+ for production
 - **Backups**: Automatic daily, retained for 7 days
 - **Unused**: Delete instances that aren't needed
 
 ### Artifact Registry
+
 - **Retention**: Delete old images (keep only last 5-10 versions)
 - **Access**: Use fine-grained IAM roles
 
@@ -683,6 +699,7 @@ gcloud run services describe oute-dashboard-staging \
 ## Support
 
 For issues or questions:
+
 1. Check logs: `gcloud run logs read SERVICE_NAME --region=REGION --follow`
 2. Review this guide's Troubleshooting section
 3. Check GCP Cloud Console for quota/billing issues

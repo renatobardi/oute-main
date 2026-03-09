@@ -49,14 +49,14 @@ export class ErrorMapper {
     if (error instanceof InvalidUserError) {
       return {
         status: 400,
-        body: { error: (error as InvalidUserError).message, code: 'INVALID_USER' },
+        body: { error: error.message, code: 'INVALID_USER' },
       };
     }
 
     if (error instanceof DomainError) {
       return {
         status: 400,
-        body: { error: (error as DomainError).message, code: (error as DomainError).code },
+        body: { error: error.message, code: error.code },
       };
     }
 

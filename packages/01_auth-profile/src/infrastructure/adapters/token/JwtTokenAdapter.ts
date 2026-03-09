@@ -15,7 +15,7 @@ export class JwtTokenAdapter {
   private readonly expiresIn: string = '24h'; // 24 hours
 
   constructor(secret: string) {
-    if (!secret || secret.trim().length === 0) {
+    if (secret.length === 0 || secret.trim().length === 0) {
       throw new Error('JWT secret cannot be empty');
     }
     this.secret = secret;
@@ -25,29 +25,29 @@ export class JwtTokenAdapter {
    * Generate JWT token
    * Note: Real implementation would use jsonwebtoken.sign()
    */
-  async generate(payload: TokenPayload): Promise<string> {
+  generate(payload: TokenPayload): Promise<string> {
     // In reality:
     // import jwt from 'jsonwebtoken';
     // return jwt.sign(payload, this.secret, { expiresIn: this.expiresIn });
 
     // Mock token generation for now
-    return this.mockJwtSign(payload);
+    return Promise.resolve(this.mockJwtSign(payload));
   }
 
   /**
    * Verify JWT token
    * Note: Real implementation would use jsonwebtoken.verify()
    */
-  async verify(token: string): Promise<TokenPayload | null> {
+  verify(token: string): Promise<TokenPayload | null> {
     try {
       // In reality:
       // import jwt from 'jsonwebtoken';
       // return jwt.verify(token, this.secret) as TokenPayload;
 
       // Mock verification for now
-      return this.mockJwtVerify(token);
+      return Promise.resolve(this.mockJwtVerify(token));
     } catch {
-      return null;
+      return Promise.resolve(null);
     }
   }
 
@@ -73,7 +73,7 @@ export class JwtTokenAdapter {
    */
   isExpired(token: string): boolean {
     const decoded = this.decode(token);
-    if (!decoded || !decoded.exp) {
+    if (decoded === null || decoded.exp === null || decoded.exp === undefined) {
       return true;
     }
 
@@ -93,7 +93,7 @@ export class JwtTokenAdapter {
       JSON.stringify({
         ...payload,
         iat: Math.floor(Date.now() / 1000),
-        exp: expiresAt
+        exp: expiresAt,
       })
     ).toString('base64');
     const signature = Buffer.from(`${header}.${tokenPayload}.${this.secret}`).toString('base64');
@@ -121,7 +121,7 @@ export class JwtTokenAdapter {
       return {
         userId: payload.userId,
         email: payload.email,
-        roles: payload.roles
+        roles: payload.roles,
       };
     } catch {
       return null;

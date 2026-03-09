@@ -106,7 +106,7 @@ jobs:
 
       - name: Deploy to Cloud Run (staging)
         env:
-          SERVICES: "oute-dashboard oute-auth-profile oute-projects"
+          SERVICES: 'oute-dashboard oute-auth-profile oute-projects'
         run: |
           for SERVICE in $SERVICES; do
             echo "Deploying $SERVICE to staging..."

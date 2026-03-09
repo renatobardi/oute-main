@@ -8,7 +8,7 @@ const config = {
       precompress: false,
     }),
     alias: {
-      '$lib': 'src/lib',
+      $lib: 'src/lib',
       '@oute/design-system': '../../packages/design-system/src',
       '@oute/shared': '../../shared',
     },

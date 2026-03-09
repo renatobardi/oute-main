@@ -18,10 +18,10 @@ export class RegisterHandler {
   }> {
     try {
       // Step 1: Validate request structure
-      if (!body.email || !body.password || !body.name) {
+      if (typeof body.email !== 'string' || typeof body.password !== 'string' || typeof body.name !== 'string') {
         return {
           status: 400,
-          body: { error: 'Email, password, and name are required' }
+          body: { error: 'Email, password, and name are required' },
         };
       }
 
@@ -40,15 +40,15 @@ export class RegisterHandler {
         status: 201,
         body: {
           token: response.token,
-          user: response.user
-        }
+          user: response.user,
+        },
       };
     } catch (error) {
       // Step 5: Map domain errors to HTTP errors
       const errorResponse = ErrorMapper.toHttpResponse(error);
       return {
         status: errorResponse.status,
-        body: errorResponse.body
+        body: errorResponse.body,
       };
     }
   }

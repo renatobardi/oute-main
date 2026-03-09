@@ -33,6 +33,7 @@ Ver: [APPLYING_PATTERN_TO_OTHER_SERVICES.md](./APPLYING_PATTERN_TO_OTHER_SERVICE
 ## 🚀 Quick Start
 
 ### Pré-requisitos
+
 - Node.js 20+ (LTS)
 - npm 10+
 - Docker & Docker Compose (para desenvolvimento local)
@@ -55,6 +56,7 @@ npm run dev
 ```
 
 Serviços rodando:
+
 - **Dashboard**: http://localhost:3000
 - **Auth-Profile**: http://localhost:3001
 - **Projects**: http://localhost:3002
@@ -64,6 +66,7 @@ Serviços rodando:
 ## 📦 Packages
 
 ### 1. **design-system** (packages/design-system)
+
 Sistema de design modular com Tailwind 4, componentes reutilizáveis e Storybook.
 
 ```bash
@@ -71,17 +74,21 @@ npm run dev:storybook --workspace=design-system
 ```
 
 ### 2. **00_dashboard** (packages/00_dashboard)
+
 Interface web principal. Acessa auth-profile e projects.
 
 ### 3. **01_auth-profile** (packages/01_auth-profile)
+
 Serviço de autenticação que emite JWTs. Todos os outros serviços validam tokens aqui.
 
 ### 4. **02_projects** (packages/02_projects)
+
 API de gerenciamento de projetos com CRUD completo.
 
 ## 📚 Documentação
 
 ### 🎯 Refactoring & Arquitetura
+
 - **[EXECUTIVE_SUMMARY.md](./EXECUTIVE_SUMMARY.md)** - 📊 **LEIA PRIMEIRO**: Resumo executivo da refatoração completa
 - **[REFACTORING_COMPLETION.md](./REFACTORING_COMPLETION.md)** - 🏆 Relatório completo: Hexagonal Architecture + DDD + Clean Code + TDD
 - **[PHASE_1_SUMMARY.md](./packages/01_auth-profile/PHASE_1_SUMMARY.md)** - 📚 Domain Layer (Entities, Value Objects, Errors)
@@ -91,10 +98,12 @@ API de gerenciamento de projetos com CRUD completo.
 - **[PHASE_5_SUMMARY.md](./packages/01_auth-profile/PHASE_5_SUMMARY.md)** - 🧪 E2E Tests (Playwright, Test Suite)
 
 ### 🚀 Implementação & Padrões
+
 - **[APPLYING_PATTERN_TO_OTHER_SERVICES.md](./APPLYING_PATTERN_TO_OTHER_SERVICES.md)** - 📋 Template para aplicar padrão a 00_dashboard e 02_projects
 - **[NEXT_STEPS_CHECKLIST.md](./NEXT_STEPS_CHECKLIST.md)** - ✅ Checklist de próximas ações e verificação
 
 ### 📖 Documentação Técnica
+
 - **[ARCHITECTURE.md](./ARCHITECTURE.md)** - 🏗️ Decisões arquiteturais e fluxos de dados
 - **[DEVELOPMENT.md](./DEVELOPMENT.md)** - 💻 Setup local, debugging, scripts
 - **[DEPLOYMENT.md](./DEPLOYMENT.md)** - ☁️ Deploy em GCP Cloud Run
@@ -103,10 +112,11 @@ API de gerenciamento de projetos com CRUD completo.
 ## 🔄 Workflow
 
 ### Branches
+
 - **main** → Produção
 - **staging** → Pré-produção (homolog)
 - **develop** → Desenvolvimento
-- **feature/*** → Novas features
+- **feature/\*** → Novas features
 
 ### Criar uma feature
 
@@ -120,6 +130,7 @@ git push origin feature/meu-recurso
 ## 🛠️ Scripts Principais
 
 ### Desenvolvimento
+
 ```bash
 npm run dev           # Todos os packages em dev
 npm run build         # Build todos os packages
@@ -128,6 +139,7 @@ npm run format        # Prettier format
 ```
 
 ### Testing (178 tests, 80%+ coverage)
+
 ```bash
 npm run test          # Rodar todos os testes
 npm run test:e2e      # E2E tests (Playwright)
@@ -136,6 +148,7 @@ npm run test -- --coverage  # Coverage report
 ```
 
 ### Docker
+
 ```bash
 npm run docker:up     # Start Docker services
 npm run docker:down   # Stop Docker services
@@ -162,10 +175,12 @@ Push → Build & Test → Docker Build → Artifact Registry → Cloud Run Deplo
 ```
 
 **Pipeline por Branch:**
+
 - **PR** → Lint checks, TypeScript validation, Tests
 - **main** → Build completo + Deploy em produção + Release automático
 
 **Features do Pipeline:**
+
 - ✅ Build de imagem Docker multi-estágio
 - ✅ Push automático para Artifact Registry
 - ✅ Deploy em Cloud Run com zero downtime
@@ -176,15 +191,17 @@ Push → Build & Test → Docker Build → Artifact Registry → Cloud Run Deplo
 - ✅ Logs disponíveis em Cloud Run
 
 **Permissões do Workflow:**
+
 ```yaml
 permissions:
-  contents: write          # Criar releases
-  id-token: write         # Autenticar com GCP (Workload Identity)
-  deployments: write      # Rastrear deployments
-  statuses: write         # Atualizar status
+  contents: write # Criar releases
+  id-token: write # Autenticar com GCP (Workload Identity)
+  deployments: write # Rastrear deployments
+  statuses: write # Atualizar status
 ```
 
 **Acessar Serviço em Produção:**
+
 ```bash
 # Ver logs
 gcloud run logs read oute-dashboard --region=us-central1 --follow

@@ -9,7 +9,7 @@ export {
   GetProfileRequest,
   GetProfileResponse,
   type GetProfileResponseData,
-  UserMapper
+  UserMapper,
 } from './dto';
 
 // Use Cases

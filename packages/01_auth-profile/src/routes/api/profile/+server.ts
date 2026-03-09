@@ -16,7 +16,7 @@ export const GET: RequestHandler = async ({ request }) => {
     // Get dependencies from somewhere (DI container or globals)
     const deps = (global as unknown).__authDeps;
 
-    if (!deps) {
+    if (deps === null || deps === undefined) {
       return new Response(JSON.stringify({ error: 'Service not initialized' }), {
         status: 500,
         headers: { 'Content-Type': 'application/json' },
@@ -28,7 +28,7 @@ export const GET: RequestHandler = async ({ request }) => {
     const authHeader = extractAuthHeader(request);
     const auth = authenticate(authHeader);
 
-    if (!auth) {
+    if (auth === null) {
       return new Response(JSON.stringify({ error: 'Unauthorized' }), {
         status: 401,
         headers: { 'Content-Type': 'application/json' },

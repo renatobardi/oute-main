@@ -3,6 +3,7 @@
 ## Setup Local
 
 ### 1. Prerequisites
+
 - Node.js 20+
 - npm 10+
 - Docker & Docker Compose
@@ -25,11 +26,13 @@ cp .env.example .env.local
 ### 3. Start Development
 
 **Option A: With Docker (Recommended)**
+
 ```bash
 npm run docker:up
 ```
 
 Services available:
+
 - Dashboard: http://localhost:3000
 - Auth API: http://localhost:3001
 - Projects API: http://localhost:3002
@@ -37,6 +40,7 @@ Services available:
 - Design System: http://localhost:6006
 
 **Option B: Local without Docker**
+
 ```bash
 npm run dev
 
@@ -49,6 +53,7 @@ cd packages/02_projects && npm run dev
 ## Scripts
 
 ### Root level
+
 ```bash
 npm run dev              # All packages dev mode
 npm run build            # All packages build
@@ -65,6 +70,7 @@ npm run storybook:design-system  # Start Storybook for design-system
 ```
 
 ### Per package
+
 ```bash
 cd packages/00_dashboard
 npm run dev              # Dev server
@@ -92,6 +98,7 @@ npx husky install
 ## Debugging
 
 ### View logs
+
 ```bash
 npm run docker:logs
 
@@ -100,6 +107,7 @@ docker logs oute-dashboard -f
 ```
 
 ### Database
+
 ```bash
 # Connect to PostgreSQL
 psql -h localhost -U app-user -d oute_db
@@ -112,19 +120,23 @@ SELECT * FROM users;
 ```
 
 ### Browser DevTools
+
 SvelteKit includes Svelte DevTools in development.
 
 ## Creating Features
 
 ### 1. Create branch
+
 ```bash
 git checkout -b feature/my-feature develop
 ```
 
 ### 2. Make changes
+
 Edit files, test locally, etc.
 
 ### 3. Commit
+
 ```bash
 git commit -m "feat(dashboard): add new button component"
 ```
@@ -132,6 +144,7 @@ git commit -m "feat(dashboard): add new button component"
 **Commit types**: feat, fix, docs, style, refactor, test, chore, ci
 
 ### 4. Push & PR
+
 ```bash
 git push origin feature/my-feature
 ```
@@ -139,7 +152,9 @@ git push origin feature/my-feature
 Open PR on GitHub to `develop` branch.
 
 ### 5. Merge
+
 After reviews and checks pass:
+
 ```bash
 git checkout develop
 git pull
@@ -158,6 +173,7 @@ touch packages/design-system/src/components/MyComponent.svelte
 ```
 
 **MyComponent.svelte**
+
 ```svelte
 <script lang="ts">
   export let variant: 'primary' | 'secondary' = 'primary';
@@ -174,11 +190,13 @@ touch packages/design-system/src/components/MyComponent.svelte
 ```
 
 ### Create Storybook story
+
 ```bash
 touch packages/design-system/stories/MyComponent.stories.svelte
 ```
 
 **MyComponent.stories.svelte**
+
 ```svelte
 <script>
   import MyComponent from '../src/components/MyComponent.svelte';
@@ -196,6 +214,7 @@ touch packages/design-system/stories/MyComponent.stories.svelte
 ```
 
 ### Publish new version
+
 ```bash
 cd packages/design-system
 
@@ -214,16 +233,19 @@ npm publish
 ### Running Tests
 
 **Run all tests:**
+
 ```bash
 npm run test
 ```
 
 **Run tests in watch mode (local development):**
+
 ```bash
 npm run test -- --watch
 ```
 
 **Run tests with coverage report:**
+
 ```bash
 npm run test -- --run --coverage
 ```
@@ -231,11 +253,12 @@ npm run test -- --run --coverage
 ### Test File Conventions
 
 Tests are located in `src/**/*.test.ts` files:
+
 - `src/components/Button.test.ts` - Component tests
 - `src/utils/helpers.test.ts` - Utility function tests
 - `src/services/auth.test.ts` - Service/API tests
 
-**Note:** E2E tests (*.spec.ts) are separate and run with Playwright.
+**Note:** E2E tests (\*.spec.ts) are separate and run with Playwright.
 
 ### Coverage Requirements
 
@@ -247,14 +270,16 @@ All PRs must maintain **minimum 80% code coverage** across all packages:
 - **Statements:** 80%
 
 Coverage is enforced by:
+
 1. Local check before committing: `npm run test -- --run --coverage`
 2. GitHub Actions PR checks
 3. SonarQube quality gate analysis
 
 **What's excluded from coverage:**
+
 - `node_modules/`
 - `dist/`, `build/` directories
-- Test files themselves (*.test.ts, *.spec.ts)
+- Test files themselves (_.test.ts, _.spec.ts)
 - Index files (index.ts)
 
 ### E2E Tests with Playwright
@@ -262,6 +287,7 @@ Coverage is enforced by:
 E2E tests verify critical user workflows across the entire application.
 
 **Run E2E tests:**
+
 ```bash
 npm run test:e2e
 ```
@@ -269,6 +295,7 @@ npm run test:e2e
 **E2E test file format:** `src/**/*.spec.ts`
 
 Example E2E test structure:
+
 ```typescript
 // src/auth/login.spec.ts
 import { test, expect } from '@playwright/test';
@@ -285,6 +312,7 @@ test('User can login and access dashboard', async ({ page }) => {
 ```
 
 Critical workflows to test:
+
 - Authentication (login, logout, password reset)
 - Dashboard data loading and rendering
 - Project CRUD operations
@@ -293,6 +321,7 @@ Critical workflows to test:
 ### Before Opening a Pull Request
 
 **ALWAYS run these locally:**
+
 ```bash
 # 1. Run tests with coverage
 npm run test -- --run --coverage
@@ -321,22 +350,26 @@ git push origin feature/your-feature
 When you open a PR, GitHub Actions automatically runs:
 
 ✅ **Code Quality Checks:**
+
 - ESLint with strict rules
 - Prettier code formatting
 - TypeScript strict mode checks
 
 ✅ **Test Coverage Verification:**
+
 - All tests must pass
 - Coverage must be ≥80% on new code
 - SonarQube analyzes coverage
 
 ✅ **Security Scans:**
+
 - npm audit for vulnerabilities (blocks on HIGH/CRITICAL)
 - Secret scanning for credentials
 - OWASP Dependency Check
 - SonarQube security analysis
 
 ✅ **SonarQube Quality Gate (MANDATORY):**
+
 - Overall grade: A- or better
 - Security rating: A
 - Reliability rating: A
@@ -350,22 +383,26 @@ When you open a PR, GitHub Actions automatically runs:
 ### Debugging Tests
 
 **Debug a specific test file:**
+
 ```bash
 npm run test -- src/utils/helpers.test.ts --watch
 ```
 
 **Debug with verbose output:**
+
 ```bash
 npm run test -- --reporter=verbose
 ```
 
 **View coverage details:**
+
 ```bash
 # After running test with coverage
 open coverage/index.html
 ```
 
 **Common test issues:**
+
 - Test timeout: Increase timeout in vitest config or test file
 - Import errors: Check @oute/shared types are exported correctly
 - Assertion failures: Review test output for exact vs. expected values
@@ -389,6 +426,7 @@ This project enforces strict code quality and security standards. All PRs must m
 If any of these fail locally, fix them before pushing. GitHub Actions will enforce all of these plus additional security and quality scans.
 
 For detailed information on:
+
 - Quality gates and thresholds → [QUALITY_STANDARDS.md](./QUALITY_STANDARDS.md)
 - SonarQube analysis → [QUALITY_STANDARDS.md](./QUALITY_STANDARDS.md#sonarqube-analysis)
 - Security scanning → [QUALITY_STANDARDS.md](./QUALITY_STANDARDS.md#security-scanning)
@@ -397,11 +435,13 @@ For detailed information on:
 ## Type Safety
 
 Check TypeScript across all packages:
+
 ```bash
 npm run lint  # includes tsc --noEmit
 ```
 
 Import from shared types:
+
 ```typescript
 import type { User, Project } from '@oute/shared';
 ```
@@ -409,24 +449,29 @@ import type { User, Project } from '@oute/shared';
 ## Troubleshooting
 
 ### Port already in use
+
 ```bash
 lsof -i :3000 | grep LISTEN | awk '{print $2}' | xargs kill -9
 ```
 
 ### Node modules corrupted
+
 ```bash
 rm -rf node_modules packages/*/node_modules
 npm install
 ```
 
 ### Docker issues
+
 ```bash
 docker-compose down -v
 npm run docker:up
 ```
 
 ### Git pre-commit hook failing
+
 If hooks are failing, check what's failing:
+
 ```bash
 npm run lint      # ESLint
 npm run format    # Prettier

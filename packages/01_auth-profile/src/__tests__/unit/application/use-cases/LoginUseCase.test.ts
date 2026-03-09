@@ -26,19 +26,19 @@ describe('LoginUseCase', () => {
       findByEmail: vi.fn(),
       delete: vi.fn(),
       exists: vi.fn(),
-      count: vi.fn()
+      count: vi.fn(),
     };
 
     passwordHasher = {
       hash: vi.fn(),
-      compare: vi.fn()
+      compare: vi.fn(),
     };
 
     tokenGenerator = {
       generate: vi.fn(),
       verify: vi.fn(),
       decode: vi.fn(),
-      isExpired: vi.fn()
+      isExpired: vi.fn(),
     };
 
     // Create test user
@@ -46,7 +46,7 @@ describe('LoginUseCase', () => {
     testUser = User.create({
       email: Email.fromString(testEmail),
       passwordHash: hashedPassword,
-      name: 'Test User'
+      name: 'Test User',
     });
 
     useCase = new LoginUseCase(userRepository, passwordHasher, tokenGenerator);
@@ -132,7 +132,7 @@ describe('LoginUseCase', () => {
       expect(tokenGenerator.generate).toHaveBeenCalledWith({
         userId: testUser.id.getValue(),
         email: testUser.email.getValue(),
-        roles: testUser.roles.map(r => r.getValue())
+        roles: testUser.roles.map((r) => r.getValue()),
       });
     });
 

@@ -25,17 +25,14 @@ export class LoginUseCase {
 
     // Step 2: Find user by email
     const user = await this.userRepository.findByEmail(email);
-    if (!user) {
+    if (user === null) {
       // Security: Use generic message to prevent user enumeration
       throw new InvalidCredentialsError('Invalid email or password');
     }
 
     // Step 3: Verify password
     const passwordHash = user.getPasswordHash();
-    const isPasswordValid = await this.passwordHasher.compare(
-      request.password,
-      passwordHash
-    );
+    const isPasswordValid = await this.passwordHasher.compare(request.password, passwordHash);
     if (!isPasswordValid) {
       throw new InvalidCredentialsError('Invalid email or password');
     }
@@ -50,7 +47,7 @@ export class LoginUseCase {
     const token = await this.tokenGenerator.generate({
       userId: user.id.getValue(),
       email: user.email.getValue(),
-      roles: user.roles.map(r => r.getValue())
+      roles: user.roles.map((r) => r.getValue()),
     });
 
     // Step 7: Return response with token and user data

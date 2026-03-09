@@ -30,7 +30,7 @@ export class PostgresUserRepository implements IUserRepository {
 
   findById(id: UserId): Promise<User | null> {
     // Mock: retrieve from memory
-    return Promise.resolve(this.users.get(id.getValue()) || null);
+    return Promise.resolve(this.users.get(id.getValue()) ?? null);
 
     // Real implementation:
     // const result = await client.query('SELECT * FROM users WHERE id = $1', [id.getValue()]);

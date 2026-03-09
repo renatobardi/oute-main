@@ -15,7 +15,7 @@ describe('RegisterHandler', () => {
   beforeEach(async () => {
     // Mock use case
     registerUseCase = {
-      execute: vi.fn()
+      execute: vi.fn(),
     } as any;
 
     handler = new RegisterHandler(registerUseCase);
@@ -25,7 +25,7 @@ describe('RegisterHandler', () => {
     testUser = User.create({
       email: Email.fromString('newuser@example.com'),
       passwordHash: hashedPassword,
-      name: 'New User'
+      name: 'New User',
     });
   });
 
@@ -34,7 +34,7 @@ describe('RegisterHandler', () => {
       const body = {
         email: 'newuser@example.com',
         password: 'SecurePass123!',
-        name: 'New User'
+        name: 'New User',
       };
 
       vi.mocked(registerUseCase.execute).mockResolvedValue({
@@ -43,8 +43,8 @@ describe('RegisterHandler', () => {
           id: testUser.id.getValue(),
           email: 'newuser@example.com',
           name: 'New User',
-          roles: ['USER']
-        }
+          roles: ['USER'],
+        },
       });
 
       const result = await handler.handle(body);
@@ -85,7 +85,7 @@ describe('RegisterHandler', () => {
       const body = {
         email: 'existing@example.com',
         password: 'SecurePass123!',
-        name: 'Existing User'
+        name: 'Existing User',
       };
 
       // Generic error gets mapped to 500 (should be a domain error in real scenario)
@@ -115,7 +115,7 @@ describe('RegisterHandler', () => {
       const body = {
         email: 'newuser@example.com',
         password: 'weak',
-        name: 'New User'
+        name: 'New User',
       };
 
       vi.mocked(registerUseCase.execute).mockRejectedValue(
@@ -132,7 +132,7 @@ describe('RegisterHandler', () => {
       const body = {
         email: 'newuser@example.com',
         password: 'SecurePass123!',
-        name: 'New User'
+        name: 'New User',
       };
 
       vi.mocked(registerUseCase.execute).mockResolvedValue({
@@ -141,8 +141,8 @@ describe('RegisterHandler', () => {
           id: testUser.id.getValue(),
           email: 'newuser@example.com',
           name: 'New User',
-          roles: ['USER']
-        }
+          roles: ['USER'],
+        },
       });
 
       await handler.handle(body);

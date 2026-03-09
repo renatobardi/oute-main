@@ -21,7 +21,7 @@ describe('GetProfileUseCase', () => {
       findByEmail: vi.fn(),
       delete: vi.fn(),
       exists: vi.fn(),
-      count: vi.fn()
+      count: vi.fn(),
     };
 
     // Create test user
@@ -29,7 +29,7 @@ describe('GetProfileUseCase', () => {
     testUser = User.create({
       email: Email.fromString('test@example.com'),
       passwordHash: hashedPassword,
-      name: 'Test User'
+      name: 'Test User',
     });
 
     useCase = new GetProfileUseCase(userRepository);

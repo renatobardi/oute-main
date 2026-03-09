@@ -18,18 +18,15 @@ export class LoginHandler {
   }> {
     try {
       // Step 1: Validate request structure
-      if (!body.email || !body.password) {
+      if (typeof body.email !== 'string' || typeof body.password !== 'string') {
         return {
           status: 400,
-          body: { error: 'Email and password are required' }
+          body: { error: 'Email and password are required' },
         };
       }
 
       // Step 2: Create request DTO (will validate format)
-      const request = new LoginRequest(
-        String(body.email),
-        String(body.password)
-      );
+      const request = new LoginRequest(String(body.email), String(body.password));
 
       // Step 3: Execute use case
       const response = await this.loginUseCase.execute(request);
@@ -39,15 +36,15 @@ export class LoginHandler {
         status: 200,
         body: {
           token: response.token,
-          user: response.user
-        }
+          user: response.user,
+        },
       };
     } catch (error) {
       // Step 5: Map domain errors to HTTP errors
       const errorResponse = ErrorMapper.toHttpResponse(error);
       return {
         status: errorResponse.status,
-        body: errorResponse.body
+        body: errorResponse.body,
       };
     }
   }

@@ -18,7 +18,7 @@ import { JwtTokenAdapter } from './infrastructure/adapters/token/JwtTokenAdapter
  */
 function initializeDependencies() {
   // Get configuration from environment
-  const jwtSecret = process.env.JWT_SECRET || 'test-secret-key';
+  const jwtSecret = process.env.JWT_SECRET ?? 'test-secret-key';
 
   // Create infrastructure adapters
   const userRepository = new PostgresUserRepository();
@@ -48,7 +48,7 @@ if (typeof global !== 'undefined') {
   (global as unknown).__authDeps = deps;
 }
 
-export const handle = async ({ event, resolve }) => {
+export const handle = async ({ event, resolve }: { event: any; resolve: any }): Promise<any> => {
   // Inject dependencies into event.locals
   event.locals.deps = deps;
   return resolve(event);

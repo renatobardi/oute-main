@@ -8,7 +8,10 @@
   },
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
-  "files": ["dist", "src"],
+  "files": [
+    "dist",
+    "src"
+  ],
   "publishConfig": {
     "registry": "https://us-central1-npm.pkg.dev/oute-app/npm/"
   },

@@ -11,6 +11,7 @@ bash .gcp/setup.sh oute-app us-central1
 ```
 
 This script:
+
 - ✅ Creates GCP project
 - ✅ Enables required APIs
 - ✅ Creates Artifact Registry
@@ -27,6 +28,7 @@ bash .gcp/create-secrets.sh
 ```
 
 This script:
+
 - ✅ Generates secure DATABASE_URL
 - ✅ Generates secure JWT_SECRET
 - ✅ Stores in Google Secret Manager
@@ -85,21 +87,25 @@ git push origin main
 ### `setup.sh` - Initial Infrastructure
 
 **Usage:**
+
 ```bash
 bash setup.sh [PROJECT_ID] [REGION] [BILLING_ACCOUNT_ID]
 ```
 
 **Arguments:**
+
 - `PROJECT_ID`: GCP project ID (default: "oute-app")
 - `REGION`: GCP region (default: "us-central1")
 - `BILLING_ACCOUNT_ID`: Billing account ID (optional)
 
 **Example:**
+
 ```bash
 bash setup.sh oute-app us-central1 01ABCD-EF1234-GH5678
 ```
 
 **What it creates:**
+
 - GCP Project
 - Enabled APIs (Cloud Run, Cloud SQL, Artifact Registry, Secret Manager, etc.)
 - Cloud SQL PostgreSQL 15 instance
@@ -112,16 +118,19 @@ bash setup.sh oute-app us-central1 01ABCD-EF1234-GH5678
 ### `deploy.sh` - Deploy to Cloud Run
 
 **Usage:**
+
 ```bash
 bash deploy.sh <service> <environment> [image_tag]
 ```
 
 **Arguments:**
+
 - `service`: Service to deploy (dashboard, auth-profile, projects)
 - `environment`: Target environment (staging, production)
 - `image_tag`: Docker image tag (default: latest)
 
 **Examples:**
+
 ```bash
 # Deploy dashboard to staging with specific tag
 bash deploy.sh dashboard staging staging-latest
@@ -134,6 +143,7 @@ bash deploy.sh projects staging abc123-sha
 ```
 
 **What it does:**
+
 - ✅ Verifies image exists in Artifact Registry
 - ✅ Deploys to Cloud Run with correct configuration
 - ✅ Sets environment variables (NODE_ENV)
@@ -146,15 +156,18 @@ bash deploy.sh projects staging abc123-sha
 ### `create-secrets.sh` - Setup Secrets Manager
 
 **Usage:**
+
 ```bash
 bash create-secrets.sh
 ```
 
 **What it creates:**
+
 - `DATABASE_URL` secret with connection string to PostgreSQL
 - `JWT_SECRET` secret with random 32-byte key
 
 **Output:**
+
 - Displays secret values (save them!)
 - Shows commands to retrieve/update secrets later
 
@@ -250,16 +263,19 @@ gcloud run logs read oute-dashboard \
 Three workflows automate deployments based on git branches:
 
 ### `.github/workflows/deploy-staging-manual.yml`
+
 - **Trigger:** Manual (click "Run workflow" in GitHub UI)
 - **Deploy to:** Staging environment
 - **Inputs:** Service, image tag
 
 ### `.github/workflows/deploy-on-staging-branch.yml`
+
 - **Trigger:** Push to `staging` branch
 - **Deploy to:** Staging environment (oute-dashboard-staging)
 - **Automatic:** Builds, tests, pushes image, deploys
 
 ### `.github/workflows/deploy-on-main-branch.yml`
+
 - **Trigger:** Push to `main` branch
 - **Deploy to:** Production environment (oute-dashboard)
 - **Automatic:** Builds, tests, pushes image, deploys, creates release
@@ -318,11 +334,13 @@ docker push us-central1-docker.pkg.dev/oute-app/docker-repo/oute-dashboard:stagi
 ### Service deployed but returning 500 errors
 
 Check logs:
+
 ```bash
 gcloud run logs read oute-dashboard-staging --region=us-central1 --follow
 ```
 
 Common issues:
+
 - DATABASE_URL secret missing or invalid
 - Service account lacks Cloud SQL permissions
 - PostgreSQL instance not running
@@ -342,6 +360,7 @@ Common issues:
 ## Security Notes
 
 ⚠️ **Important:**
+
 - Never commit `.gcp/keys/` to git (already in .gitignore)
 - Never commit secret values to git
 - Store secret values in password manager (1Password, Bitwarden, etc.)

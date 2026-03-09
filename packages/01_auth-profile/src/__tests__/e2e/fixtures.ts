@@ -31,7 +31,7 @@ export const test = base.extend<{ authenticatedUser: AuthContext }>({
        */
       async login(email: string, password: string) {
         const response = await page.request.post('/api/auth?action=login', {
-          data: { email, password }
+          data: { email, password },
         });
 
         if (response.status() !== 200) {
@@ -49,7 +49,7 @@ export const test = base.extend<{ authenticatedUser: AuthContext }>({
        */
       async register(email: string, password: string, name: string) {
         const response = await page.request.post('/api/auth?action=register', {
-          data: { email, password, name }
+          data: { email, password, name },
         });
 
         if (response.status() !== 201) {
@@ -60,14 +60,14 @@ export const test = base.extend<{ authenticatedUser: AuthContext }>({
         context.token = data.token;
         context.userId = data.user.id;
         context.email = email;
-      }
+      },
     };
 
     // Pre-login for tests that need authenticated user
     await context.login('test@example.com', 'SecurePass123!');
 
     await use(context);
-  }
+  },
 });
 
 export { expect } from '@playwright/test';
@@ -96,7 +96,7 @@ export const testData = {
   validCredentials: {
     email: 'test@example.com',
     password: 'SecurePass123!',
-    name: 'Test User'
+    name: 'Test User',
   },
 
   /**
@@ -107,8 +107,8 @@ export const testData = {
     invalidEmail: 'not-an-email',
     emptyEmail: '',
     emptyPassword: '',
-    emptyName: ''
-  }
+    emptyName: '',
+  },
 };
 
 /**
@@ -124,12 +124,12 @@ export const apiHelpers = {
     endpoint: string,
     token: string,
     data?: unknown
-  ) {
+  ): Promise<any> {
     const options: Parameters<typeof page.request.post>[1] = {
       headers: {
         Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json'
-      }
+        'Content-Type': 'application/json',
+      },
     };
 
     if (data) {
@@ -157,7 +157,7 @@ export const apiHelpers = {
     password: string
   ): Promise<{ token: string; userId: string }> {
     const response = await page.request.post('/api/auth?action=login', {
-      data: { email, password }
+      data: { email, password },
     });
 
     if (response.status() !== 200) {
@@ -167,7 +167,7 @@ export const apiHelpers = {
     const data = await response.json();
     return {
       token: data.token,
-      userId: data.user.id
+      userId: data.user.id,
     };
   },
 
@@ -181,7 +181,7 @@ export const apiHelpers = {
     name: string
   ): Promise<{ token: string; userId: string }> {
     const response = await page.request.post('/api/auth?action=register', {
-      data: { email, password, name }
+      data: { email, password, name },
     });
 
     if (response.status() !== 201) {
@@ -191,18 +191,18 @@ export const apiHelpers = {
     const data = await response.json();
     return {
       token: data.token,
-      userId: data.user.id
+      userId: data.user.id,
     };
   },
 
   /**
    * Get profile with token
    */
-  async getProfile(page: Page, token: string) {
+  async getProfile(page: Page, token: string): Promise<any> {
     const response = await page.request.get('/api/profile', {
       headers: {
-        Authorization: `Bearer ${token}`
-      }
+        Authorization: `Bearer ${token}`,
+      },
     });
 
     if (response.status() !== 200) {
@@ -210,7 +210,7 @@ export const apiHelpers = {
     }
 
     return response.json();
-  }
+  },
 };
 
 /**
@@ -226,13 +226,13 @@ export const assertions = {
 
     // Each part should be base64url encoded
     const base64urlRegex = /^[A-Za-z0-9_-]+$/;
-    return parts.every(part => base64urlRegex.test(part));
+    return parts.every((part) => base64urlRegex.test(part));
   },
 
   /**
    * Assert valid login response
    */
-  assertValidLoginResponse(data: unknown) {
+  assertValidLoginResponse(data: unknown): void {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const loginData = data as any;
 
@@ -247,7 +247,7 @@ export const assertions = {
   /**
    * Assert valid profile response
    */
-  assertValidProfileResponse(data: unknown) {
+  assertValidProfileResponse(data: unknown): void {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const profile = data as any;
 
@@ -257,5 +257,5 @@ export const assertions = {
     if (!Array.isArray(profile.roles)) throw new Error('Invalid roles in profile');
     if (!profile.createdAt) throw new Error('Missing createdAt in profile');
     if (typeof profile.createdAt !== 'string') throw new Error('Invalid createdAt format');
-  }
+  },
 };

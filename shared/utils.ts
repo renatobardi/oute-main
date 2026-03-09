@@ -34,9 +34,9 @@ export function parseJWT(token: string): Record<string, unknown> | null {
  */
 export function isTokenExpired(token: string): boolean {
   const payload = parseJWT(token);
-  if (!payload) return true;
+  if (payload === null) return true;
 
-  const expiryTime = payload.exp * 1000; // convert to milliseconds
+  const expiryTime = (payload.exp as number) * 1000; // convert to milliseconds
   return Date.now() >= expiryTime;
 }
 
@@ -94,6 +94,6 @@ export function debounce<T extends (...args: unknown[]) => unknown>(
 /**
  * Sleep utility
  */
-export async function sleep(ms: number): Promise<void> {
+export function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }

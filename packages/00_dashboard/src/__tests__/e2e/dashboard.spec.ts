@@ -49,7 +49,7 @@ test.describe('Dashboard Navigation', () => {
     const homeLink = page.locator('a[href="/"]');
 
     // If home link exists, click it
-    if (await homeLink.count() > 0) {
+    if ((await homeLink.count()) > 0) {
       await homeLink.click();
       await expect(page).toHaveURL('/');
     }
@@ -80,7 +80,7 @@ test.describe('Dashboard Navigation', () => {
 
     // Check for header
     const header = page.locator('header');
-    if (await header.count() > 0) {
+    if ((await header.count()) > 0) {
       await expect(header).toBeVisible();
     }
 
@@ -90,7 +90,7 @@ test.describe('Dashboard Navigation', () => {
 
     // Check for navigation
     const nav = page.locator('nav');
-    if (await nav.count() > 0) {
+    if ((await nav.count()) > 0) {
       await expect(nav).toBeVisible();
     }
   });
@@ -143,7 +143,7 @@ test.describe('Login Flow', () => {
 
     // Check for error message (adjust selector based on your app)
     const errorMessage = page.locator('[role="alert"]');
-    if (await errorMessage.count() > 0) {
+    if ((await errorMessage.count()) > 0) {
       await expect(errorMessage).toBeVisible();
     }
   });
@@ -158,9 +158,7 @@ test.describe('Login Flow', () => {
     await page.fill('input[type="password"]', 'SecurePass123!');
 
     const emailInput = page.locator('input[type="email"]');
-    const isRequired = await emailInput.evaluate((el) =>
-      (el as HTMLInputElement).required
-    );
+    const isRequired = await emailInput.evaluate((el) => (el as HTMLInputElement).required);
 
     expect(isRequired).toBe(true);
   });
@@ -175,9 +173,7 @@ test.describe('Login Flow', () => {
     await page.fill('input[type="email"]', 'test@example.com');
 
     const passwordInput = page.locator('input[type="password"]');
-    const isRequired = await passwordInput.evaluate((el) =>
-      (el as HTMLInputElement).required
-    );
+    const isRequired = await passwordInput.evaluate((el) => (el as HTMLInputElement).required);
 
     expect(isRequired).toBe(true);
   });
@@ -189,9 +185,7 @@ test.describe('Login Flow', () => {
     await page.goto('/login');
 
     const passwordInput = page.locator('input[type="password"]');
-    const inputType = await passwordInput.evaluate((el) =>
-      (el as HTMLInputElement).type
-    );
+    const inputType = await passwordInput.evaluate((el) => (el as HTMLInputElement).type);
 
     expect(inputType).toBe('password');
   });
@@ -242,9 +236,7 @@ test.describe('Dashboard Accessibility', () => {
 
     // Tab through form elements
     await page.keyboard.press('Tab');
-    const focusedElement = await page.evaluate(() =>
-      document.activeElement?.tagName
-    );
+    const focusedElement = await page.evaluate(() => document.activeElement?.tagName);
 
     expect(focusedElement).toBeTruthy();
   });

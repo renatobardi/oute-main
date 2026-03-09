@@ -17,8 +17,8 @@ test.describe('Projects API - CRUD Operations', () => {
     const loginResponse = await page.request.post('/api/auth?action=login', {
       data: {
         email: 'test@example.com',
-        password: 'SecurePass123!'
-      }
+        password: 'SecurePass123!',
+      },
     });
 
     if (loginResponse.ok) {
@@ -35,13 +35,13 @@ test.describe('Projects API - CRUD Operations', () => {
 
     const createResponse = await page.request.post('/api/projects', {
       headers: {
-        Authorization: `Bearer ${authToken}`
+        Authorization: `Bearer ${authToken}`,
       },
       data: {
         name: `Test Project ${Date.now()}`,
         description: 'A test project for E2E testing',
-        status: 'ACTIVE'
-      }
+        status: 'ACTIVE',
+      },
     });
 
     // Should return 201 Created
@@ -68,8 +68,8 @@ test.describe('Projects API - CRUD Operations', () => {
 
     const getResponse = await page.request.get(`/api/projects/${createdProjectId}`, {
       headers: {
-        Authorization: `Bearer ${authToken}`
-      }
+        Authorization: `Bearer ${authToken}`,
+      },
     });
 
     expect(getResponse.status()).toBe(200);
@@ -89,8 +89,8 @@ test.describe('Projects API - CRUD Operations', () => {
 
     const listResponse = await page.request.get('/api/projects', {
       headers: {
-        Authorization: `Bearer ${authToken}`
-      }
+        Authorization: `Bearer ${authToken}`,
+      },
     });
 
     expect(listResponse.status()).toBe(200);
@@ -110,12 +110,12 @@ test.describe('Projects API - CRUD Operations', () => {
 
     const updateResponse = await page.request.put(`/api/projects/${createdProjectId}`, {
       headers: {
-        Authorization: `Bearer ${authToken}`
+        Authorization: `Bearer ${authToken}`,
       },
       data: {
         name: `Updated Project ${Date.now()}`,
-        description: 'Updated description'
-      }
+        description: 'Updated description',
+      },
     });
 
     expect(updateResponse.status()).toBe(200);
@@ -136,8 +136,8 @@ test.describe('Projects API - CRUD Operations', () => {
 
     const deleteResponse = await page.request.delete(`/api/projects/${createdProjectId}`, {
       headers: {
-        Authorization: `Bearer ${authToken}`
-      }
+        Authorization: `Bearer ${authToken}`,
+      },
     });
 
     expect(deleteResponse.status()).toBe(204);
@@ -145,8 +145,8 @@ test.describe('Projects API - CRUD Operations', () => {
     // Verify project is deleted
     const getResponse = await page.request.get(`/api/projects/${createdProjectId}`, {
       headers: {
-        Authorization: `Bearer ${authToken}`
-      }
+        Authorization: `Bearer ${authToken}`,
+      },
     });
 
     expect(getResponse.status()).toBe(404);
@@ -166,8 +166,8 @@ test.describe('Projects Authorization', () => {
     const createResponse = await page.request.post('/api/projects', {
       data: {
         name: 'Unauthorized Project',
-        description: 'Should fail'
-      }
+        description: 'Should fail',
+      },
     });
 
     expect(createResponse.status()).toBe(401);
@@ -191,8 +191,8 @@ test.describe('Projects Authorization', () => {
   test('should reject access with invalid token', async ({ page }) => {
     const listResponse = await page.request.get('/api/projects', {
       headers: {
-        Authorization: 'Bearer invalid-token-format'
-      }
+        Authorization: 'Bearer invalid-token-format',
+      },
     });
 
     expect(listResponse.status()).toBe(401);
@@ -214,8 +214,8 @@ test.describe('Projects Validation', () => {
     const loginResponse = await page.request.post('/api/auth?action=login', {
       data: {
         email: 'test@example.com',
-        password: 'SecurePass123!'
-      }
+        password: 'SecurePass123!',
+      },
     });
 
     if (loginResponse.ok) {
@@ -232,12 +232,12 @@ test.describe('Projects Validation', () => {
 
     const createResponse = await page.request.post('/api/projects', {
       headers: {
-        Authorization: `Bearer ${authToken}`
+        Authorization: `Bearer ${authToken}`,
       },
       data: {
-        description: 'Missing name'
+        description: 'Missing name',
         // name field is missing
-      }
+      },
     });
 
     expect(createResponse.status()).toBe(400);
@@ -254,8 +254,8 @@ test.describe('Projects Validation', () => {
 
     const getResponse = await page.request.get('/api/projects/non-existent-id', {
       headers: {
-        Authorization: `Bearer ${authToken}`
-      }
+        Authorization: `Bearer ${authToken}`,
+      },
     });
 
     expect(getResponse.status()).toBe(404);
@@ -275,12 +275,12 @@ test.describe('Projects Validation', () => {
 
     const createResponse = await page.request.post('/api/projects', {
       headers: {
-        Authorization: `Bearer ${authToken}`
+        Authorization: `Bearer ${authToken}`,
       },
       data: {
         name: longName,
-        description: 'Test'
-      }
+        description: 'Test',
+      },
     });
 
     // Should either accept or reject with proper error

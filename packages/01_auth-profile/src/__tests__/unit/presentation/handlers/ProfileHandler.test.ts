@@ -15,7 +15,7 @@ describe('ProfileHandler', () => {
   beforeEach(async () => {
     // Mock use case
     getProfileUseCase = {
-      execute: vi.fn()
+      execute: vi.fn(),
     } as any;
 
     handler = new ProfileHandler(getProfileUseCase);
@@ -25,7 +25,7 @@ describe('ProfileHandler', () => {
     testUser = User.create({
       email: Email.fromString('test@example.com'),
       passwordHash: hashedPassword,
-      name: 'Test User'
+      name: 'Test User',
     });
   });
 
@@ -40,8 +40,8 @@ describe('ProfileHandler', () => {
           name: 'Test User',
           roles: ['USER'],
           createdAt: new Date().toISOString(),
-          lastLogin: null
-        }
+          lastLogin: null,
+        },
       });
 
       const result = await handler.handle(userId);
@@ -61,7 +61,9 @@ describe('ProfileHandler', () => {
     it('should return 404 when user not found', async () => {
       const userId = '550e8400-e29b-41d4-a716-446655440000';
 
-      vi.mocked(getProfileUseCase.execute).mockRejectedValue(new UserNotFoundError('User not found'));
+      vi.mocked(getProfileUseCase.execute).mockRejectedValue(
+        new UserNotFoundError('User not found')
+      );
 
       const result = await handler.handle(userId);
 
@@ -91,8 +93,8 @@ describe('ProfileHandler', () => {
           name: 'Test User',
           roles: ['USER'],
           createdAt: new Date().toISOString(),
-          lastLogin: null
-        }
+          lastLogin: null,
+        },
       });
 
       await handler.handle(userId);
@@ -112,8 +114,8 @@ describe('ProfileHandler', () => {
           name: 'Test User',
           roles: ['USER', 'ADMIN'],
           createdAt,
-          lastLogin
-        }
+          lastLogin,
+        },
       });
 
       const result = await handler.handle(userId);

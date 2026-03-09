@@ -1,5 +1,8 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { JwtTokenAdapter, TokenPayload } from '../../../infrastructure/adapters/token/JwtTokenAdapter';
+import {
+  JwtTokenAdapter,
+  TokenPayload,
+} from '../../../infrastructure/adapters/token/JwtTokenAdapter';
 
 describe('JwtTokenAdapter (Integration)', () => {
   let adapter: JwtTokenAdapter;
@@ -7,7 +10,7 @@ describe('JwtTokenAdapter (Integration)', () => {
   const payload: TokenPayload = {
     userId: '550e8400-e29b-41d4-a716-446655440000',
     email: 'user@example.com',
-    roles: ['USER', 'ADMIN']
+    roles: ['USER', 'ADMIN'],
   };
 
   beforeEach(() => {

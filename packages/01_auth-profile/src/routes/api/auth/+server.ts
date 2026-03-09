@@ -14,7 +14,7 @@ export const POST: RequestHandler = async ({ request, url }) => {
     // For now, we'll create them here (should come from proper DI setup)
     const deps = (global as unknown).__authDeps;
 
-    if (!deps) {
+    if (deps === null || deps === undefined) {
       return new Response(JSON.stringify({ error: 'Service not initialized' }), {
         status: 500,
         headers: { 'Content-Type': 'application/json' },
@@ -25,7 +25,7 @@ export const POST: RequestHandler = async ({ request, url }) => {
     const body = await request.json().catch(() => ({}));
 
     // Determine action from query parameter
-    const action = url.searchParams.get('action') || 'login';
+    const action = url.searchParams.get('action') ?? 'login';
 
     if (action === 'login') {
       // Handle login

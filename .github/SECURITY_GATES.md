@@ -11,11 +11,13 @@ Este documento descreve os security gates implementados para garantir segurança
 **Objetivo**: Detectar vulnerabilidades de código em tempo de build
 
 **Configuração**:
+
 - ✅ Obrigatório em PRs
 - ✅ Falha se houver vulnerabilidades de segurança críticas
 - ✅ Integrado com análise de código duplication e code smells
 
 **Vulnerabilidades Detectadas**:
+
 - SQL Injection
 - Cross-Site Scripting (XSS)
 - Insecure Cryptography
@@ -31,6 +33,7 @@ Este documento descreve os security gates implementados para garantir segurança
 **Objetivo**: Detectar vulnerabilidades em dependências
 
 **Configuração**:
+
 ```
 - CRITICAL: Bloqueia PR ❌
 - HIGH: Bloqueia PR ❌
@@ -39,10 +42,12 @@ Este documento descreve os security gates implementados para garantir segurança
 ```
 
 **Execução**:
+
 - Automática em PRs que modificam `package.json`
 - Agendada semanalmente (segunda-feira 9 AM UTC)
 
 **Remediação Local**:
+
 ```bash
 npm audit fix                   # Fix automaticamente
 npm audit fix --force          # Fix forçado (pode quebrar compatibilidade)
@@ -58,15 +63,18 @@ npm audit                       # Ver todas as vulnerabilidades
 **Objetivo**: Análise de vulnerabilidades conhecidas em dependências (CVE database)
 
 **Configuração**:
+
 - Experimental scanning habilitado
 - Retired libraries detection habilitado
 - Resultados em SARIF format
 
 **Execução**:
+
 - Automática em PRs que modificam `package.json`
 - Agendada semanalmente
 
 **Resultados**:
+
 - Integrado com GitHub Security Advisories
 - Visível em "Security" tab do repositório
 
@@ -79,10 +87,12 @@ npm audit                       # Ver todas as vulnerabilidades
 **Objetivo**: Detectar credenciais acidentalmente commitadas
 
 **Ferramentas**:
+
 - `git-secrets`: Detecta padrões comuns (AWS keys, tokens, etc)
 - `TruffleHog`: Busca por secrets no histórico de commits
 
 **Detecções Comuns**:
+
 - AWS Keys
 - GitHub Tokens
 - API Keys
@@ -98,11 +108,13 @@ npm audit                       # Ver todas as vulnerabilidades
 **Objetivo**: Detectar vulnerabilidades em imagens Docker
 
 **Configuração**:
+
 - Bloqueia build de imagens com vulnerabilidades CRITICAL
 - Escaneia todas as camadas da imagem
 - Inclui dependências de sistema (apt, yum, etc)
 
 **Execução**:
+
 - Automática em PRs com mudanças em Dockerfile
 
 **Workflow**: `.github/workflows/5-security-scan.yml`
@@ -114,6 +126,7 @@ npm audit                       # Ver todas as vulnerabilidades
 **Objetivo**: Garantir que apenas licenses permitidas sejam usadas
 
 **Licenses Permitidas**:
+
 - MIT
 - Apache-2.0
 - BSD (3-Clause)
@@ -121,10 +134,12 @@ npm audit                       # Ver todas as vulnerabilidades
 - MPL-2.0
 
 **Execução**:
+
 - Automática em PRs que modificam dependências
 - Relatório gerado em artifact
 
 **Adicionar License**:
+
 ```bash
 # 1. Propor adição em issue/PR
 # 2. Passar por review de segurança
@@ -163,14 +178,14 @@ PR Bloqueada ou Aprovada
 
 ## Status Quo - Security Dashboard
 
-| Check | Status | Severity |
-|-------|--------|----------|
-| SonarQube SAST | ✅ Configured | CRITICAL |
-| npm audit | ✅ HIGH/CRITICAL block | CRITICAL |
-| OWASP Dependency Check | ✅ Configured | HIGH |
-| Secret Scanning | ✅ Configured | HIGH |
-| Trivy Container | ✅ Configured | CRITICAL |
-| License Check | ✅ Configured | MEDIUM |
+| Check                  | Status                 | Severity |
+| ---------------------- | ---------------------- | -------- |
+| SonarQube SAST         | ✅ Configured          | CRITICAL |
+| npm audit              | ✅ HIGH/CRITICAL block | CRITICAL |
+| OWASP Dependency Check | ✅ Configured          | HIGH     |
+| Secret Scanning        | ✅ Configured          | HIGH     |
+| Trivy Container        | ✅ Configured          | CRITICAL |
+| License Check          | ✅ Configured          | MEDIUM   |
 
 ---
 

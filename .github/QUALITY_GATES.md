@@ -55,21 +55,23 @@ A configuração ESLint utiliza um padrão de glob para encontrar todos os tscon
 
 As regras foram ajustadas para serem pragmáticas, permitindo warnings mas bloqueando apenas erros críticos:
 
-| Regra | Severidade | Objetivo |
-|-------|-----------|----------|
-| `no-console` | warn | Evitar logs de debug em produção |
-| `require-await` | warn | Detectar funções async sem await |
-| `@typescript-eslint/no-explicit-any` | warn | Encorajar type safety |
-| `@typescript-eslint/no-floating-promises` | warn | Prevenir promises não tratadas |
-| `@typescript-eslint/strict-boolean-expressions` | warn | Comparações explícitas em condicionais |
+| Regra                                           | Severidade | Objetivo                               |
+| ----------------------------------------------- | ---------- | -------------------------------------- |
+| `no-console`                                    | warn       | Evitar logs de debug em produção       |
+| `require-await`                                 | warn       | Detectar funções async sem await       |
+| `@typescript-eslint/no-explicit-any`            | warn       | Encorajar type safety                  |
+| `@typescript-eslint/no-floating-promises`       | warn       | Prevenir promises não tratadas         |
+| `@typescript-eslint/strict-boolean-expressions` | warn       | Comparações explícitas em condicionais |
 
 ### Overrides Especiais
 
 #### 1. Arquivos Svelte
+
 - Parser: `svelte-eslint-parser`
 - Regras padrão aplicadas com suporte a TypeScript
 
 #### 2. Config Files (vite.config.ts, vitest.config.ts, etc.)
+
 - Regras de type-checking desabilitadas
 - Permite flexibilidade na configuração
 - Regras desabilitadas:
@@ -81,32 +83,39 @@ As regras foram ajustadas para serem pragmáticas, permitindo warnings mas bloqu
 ## Lint Status
 
 ### Resultado Atual
+
 - **Erros**: 0 ❌ (bloqueador)
 - **Warnings**: 127 ⚠️ (não-bloqueador)
 
 ### Execução Local
+
 ```bash
 npm run lint
 ```
 
 ### Execução em CI/CD
+
 O lint executa automaticamente em:
+
 - Pull Requests (job: `Lint & Format`)
 - Merge em main (job: `Auto Deploy on Main Branch Push`)
 
 ## Próximas Fases
 
 ### Phase 2: Test Coverage
+
 - [ ] Implementar unit tests em todos os pacotes
 - [ ] Target: 80% code coverage mínimo
 - [ ] Coverage gates em PRs
 
 ### Phase 3: Security
+
 - [ ] Configurar SonarQube obrigatório
 - [ ] npm audit com fail em HIGH+CRITICAL
 - [ ] OWASP Dependency Check
 
 ### Phase 4: E2E Tests
+
 - [ ] Playwright para caminhos críticos
 - [ ] Auth flow testing
 - [ ] Dashboard integration tests
@@ -116,6 +125,7 @@ O lint executa automaticamente em:
 ### Erro: "ESLint was configured to run on ... However, that TSConfig does not include this file"
 
 **Solução**: Verificar se o arquivo está incluído no tsconfig.json correto:
+
 1. Para arquivos em `packages/*/src/*` → verificar `packages/*/tsconfig.json`
 2. Para config files → verificar se `include` contém o padrão do arquivo
 3. Para arquivos em `shared/` → verificar `shared/tsconfig.json`

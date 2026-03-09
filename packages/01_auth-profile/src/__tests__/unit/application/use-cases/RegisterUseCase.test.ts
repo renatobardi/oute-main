@@ -21,19 +21,19 @@ describe('RegisterUseCase', () => {
       findByEmail: vi.fn(),
       delete: vi.fn(),
       exists: vi.fn(),
-      count: vi.fn()
+      count: vi.fn(),
     };
 
     passwordHasher = {
       hash: vi.fn(),
-      compare: vi.fn()
+      compare: vi.fn(),
     };
 
     tokenGenerator = {
       generate: vi.fn(),
       verify: vi.fn(),
       decode: vi.fn(),
-      isExpired: vi.fn()
+      isExpired: vi.fn(),
     };
 
     useCase = new RegisterUseCase(userRepository, passwordHasher, tokenGenerator);
@@ -49,7 +49,7 @@ describe('RegisterUseCase', () => {
       // Mock password hashing
       vi.mocked(passwordHasher.hash).mockResolvedValue({
         getHash: () => 'hashed-password',
-        verify: vi.fn()
+        verify: vi.fn(),
       } as any);
 
       // Mock token generation
@@ -65,7 +65,11 @@ describe('RegisterUseCase', () => {
     });
 
     it('should throw error if user already exists', async () => {
-      const request = new RegisterRequest('existing@example.com', 'SecurePass123!', 'Existing User');
+      const request = new RegisterRequest(
+        'existing@example.com',
+        'SecurePass123!',
+        'Existing User'
+      );
 
       // Mock that user already exists
       vi.mocked(userRepository.findByEmail).mockResolvedValue({
@@ -82,7 +86,7 @@ describe('RegisterUseCase', () => {
         addRole: () => {},
         removeRole: () => {},
         verifyPasswordHash: () => Promise.resolve(false),
-        toPlainObject: () => ({})
+        toPlainObject: () => ({}),
       } as any);
 
       await expect(useCase.execute(request)).rejects.toThrow('User already registered');
@@ -100,7 +104,7 @@ describe('RegisterUseCase', () => {
       vi.mocked(userRepository.findByEmail).mockResolvedValue(null);
       vi.mocked(passwordHasher.hash).mockResolvedValue({
         getHash: () => 'hashed-password',
-        verify: vi.fn()
+        verify: vi.fn(),
       } as any);
       vi.mocked(tokenGenerator.generate).mockResolvedValue('mock-token');
 
@@ -116,7 +120,7 @@ describe('RegisterUseCase', () => {
       vi.mocked(userRepository.findByEmail).mockResolvedValue(null);
       vi.mocked(passwordHasher.hash).mockResolvedValue({
         getHash: () => 'hashed-password',
-        verify: vi.fn()
+        verify: vi.fn(),
       } as any);
       vi.mocked(tokenGenerator.generate).mockResolvedValue('mock-token');
 
@@ -132,7 +136,7 @@ describe('RegisterUseCase', () => {
       vi.mocked(userRepository.findByEmail).mockResolvedValue(null);
       vi.mocked(passwordHasher.hash).mockResolvedValue({
         getHash: () => 'hashed-password',
-        verify: vi.fn()
+        verify: vi.fn(),
       } as any);
       vi.mocked(tokenGenerator.generate).mockResolvedValue('mock-token');
 
@@ -151,7 +155,7 @@ describe('RegisterUseCase', () => {
       vi.mocked(userRepository.findByEmail).mockResolvedValue(null);
       vi.mocked(passwordHasher.hash).mockResolvedValue({
         getHash: () => 'hashed-password',
-        verify: vi.fn()
+        verify: vi.fn(),
       } as any);
       vi.mocked(tokenGenerator.generate).mockResolvedValue('mock-token');
 

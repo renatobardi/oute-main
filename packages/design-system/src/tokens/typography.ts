@@ -15,14 +15,7 @@ export const typography = {
       'Arial',
       'sans-serif',
     ],
-    mono: [
-      '"Fira Code"',
-      '"Cascadia Code"',
-      'Monaco',
-      'Menlo',
-      '"Courier New"',
-      'monospace',
-    ],
+    mono: ['"Fira Code"', '"Cascadia Code"', 'Monaco', 'Menlo', '"Courier New"', 'monospace'],
   },
 
   fontSize: {

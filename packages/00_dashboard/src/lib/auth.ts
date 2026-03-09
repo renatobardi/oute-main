@@ -22,11 +22,11 @@ export function initializeAuth(): void {
     const token = localStorage.getItem(TOKEN_KEY);
     const userData = localStorage.getItem(USER_KEY);
 
-    if (token) {
+    if (token !== null) {
       authToken.set(token);
       isAuthenticated.set(true);
 
-      if (userData) {
+      if (userData !== null) {
         try {
           user.set(JSON.parse(userData));
         } catch {
@@ -132,7 +132,7 @@ export async function authenticatedFetch(
 ): Promise<Response> {
   const token = getToken();
 
-  if (!token || isTokenExpired(token)) {
+  if (token === null || isTokenExpired(token)) {
     // Token expired or missing
     logout();
     throw new Error('Authentication required');

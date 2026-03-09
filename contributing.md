@@ -32,6 +32,7 @@ chore/short-description       ← Maintenance
 ```
 
 Examples:
+
 - `feature/add-user-auth`
 - `fix/dashboard-loading-bug`
 - `docs/update-readme`
@@ -39,6 +40,7 @@ Examples:
 ## Commit Messages
 
 Format:
+
 ```
 type(scope): subject
 
@@ -52,6 +54,7 @@ footer (optional)
 **Scope**: Package or feature area (optional)
 
 **Examples**:
+
 ```
 feat(auth): add JWT token refresh mechanism
 
@@ -77,6 +80,7 @@ docs: update ARCHITECTURE.md with new flow diagram
    - Create an issue if feature is major
 
 2. **Develop your feature**
+
    ```bash
    git checkout -b feature/my-feature develop
    # Make changes, test locally
@@ -85,6 +89,7 @@ docs: update ARCHITECTURE.md with new flow diagram
    ```
 
 3. **Commit your changes**
+
    ```bash
    git commit -m "feat(scope): description"
    git push origin feature/my-feature
@@ -107,6 +112,7 @@ docs: update ARCHITECTURE.md with new flow diagram
 ## Code Style
 
 ### TypeScript
+
 - Use `strict: true` mode
 - Avoid `any` types
 - Export types from `shared/`
@@ -120,6 +126,7 @@ export function getUser(id: string): User | null {
 ```
 
 ### Svelte
+
 - Use `<script lang="ts">` in all components
 - Props with explicit types
 - Reactive declarations with `$:`
@@ -138,6 +145,7 @@ export function getUser(id: string): User | null {
 ```
 
 ### Formatting
+
 - ESLint + Prettier automatically enforces style
 - Run `npm run format` before committing
 - Pre-commit hooks will catch violations
@@ -233,11 +241,13 @@ git push origin --delete feature/my-feature
 ## Common Issues
 
 ### Port already in use
+
 ```bash
 lsof -i :3000 | grep LISTEN | awk '{print $2}' | xargs kill -9
 ```
 
 ### Pre-commit hook failing
+
 ```bash
 npm run lint      # Fix linting errors
 npm run format    # Auto-format code
@@ -245,6 +255,7 @@ npm run test      # Run tests
 ```
 
 ### Merge conflicts
+
 ```bash
 git fetch origin
 git merge origin/develop
@@ -264,6 +275,7 @@ git push
 ## Recognition
 
 Contributors are recognized in:
+
 - Commit history
 - Release notes
 - CONTRIBUTORS.md (if created)

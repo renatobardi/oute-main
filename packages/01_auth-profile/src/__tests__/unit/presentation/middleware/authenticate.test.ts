@@ -1,5 +1,8 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { createAuthenticateMiddleware, extractAuthHeader } from '../../../../presentation/middleware/authenticate';
+import {
+  createAuthenticateMiddleware,
+  extractAuthHeader,
+} from '../../../../presentation/middleware/authenticate';
 import type { ITokenGenerator } from '../../../../application/ports/ITokenGenerator';
 
 describe('Authentication Middleware', () => {
@@ -11,7 +14,7 @@ describe('Authentication Middleware', () => {
       generate: vi.fn(),
       verify: vi.fn(),
       decode: vi.fn(),
-      isExpired: vi.fn()
+      isExpired: vi.fn(),
     };
 
     authenticate = createAuthenticateMiddleware(tokenGenerator);
@@ -50,7 +53,7 @@ describe('Authentication Middleware', () => {
       vi.mocked(tokenGenerator.decode).mockReturnValue({
         userId,
         email: 'test@example.com',
-        roles: ['USER']
+        roles: ['USER'],
       });
 
       const result = authenticate(authHeader);
@@ -80,7 +83,7 @@ describe('Authentication Middleware', () => {
       vi.mocked(tokenGenerator.isExpired).mockReturnValue(false);
       vi.mocked(tokenGenerator.decode).mockReturnValue({
         email: 'test@example.com',
-        roles: ['USER']
+        roles: ['USER'],
       } as any);
 
       const result = authenticate(authHeader);
@@ -96,7 +99,7 @@ describe('Authentication Middleware', () => {
       vi.mocked(tokenGenerator.decode).mockReturnValue({
         userId: 'user-id',
         email: 'test@example.com',
-        roles: ['USER']
+        roles: ['USER'],
       });
 
       authenticate(authHeader);
@@ -119,7 +122,7 @@ describe('Authentication Middleware', () => {
     it('should extract Authorization header from request', () => {
       const headerValue = 'Bearer mock-token';
       const request = new Request('http://localhost', {
-        headers: { Authorization: headerValue }
+        headers: { Authorization: headerValue },
       });
 
       const result = extractAuthHeader(request);
@@ -129,7 +132,7 @@ describe('Authentication Middleware', () => {
 
     it('should return undefined when no Authorization header', () => {
       const request = new Request('http://localhost', {
-        headers: {}
+        headers: {},
       });
 
       const result = extractAuthHeader(request);

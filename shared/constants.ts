@@ -4,8 +4,8 @@
 
 // Service URLs (development)
 export const SERVICE_URLS = {
-  auth: process.env.AUTH_SERVICE_URL || 'http://localhost:3001',
-  projects: process.env.PROJECTS_SERVICE_URL || 'http://localhost:3002',
+  auth: process.env.AUTH_SERVICE_URL ?? 'http://localhost:3001',
+  projects: process.env.PROJECTS_SERVICE_URL ?? 'http://localhost:3002',
 };
 
 // JWT

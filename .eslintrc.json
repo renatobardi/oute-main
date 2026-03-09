@@ -16,10 +16,7 @@
     "extraFileExtensions": [".svelte"],
     "project": ["./tsconfig.json", "./packages/*/tsconfig.json", "./shared/tsconfig.json"]
   },
-  "plugins": [
-    "@typescript-eslint",
-    "svelte"
-  ],
+  "plugins": ["@typescript-eslint", "svelte"],
   "rules": {
     "no-console": "warn",
     "prefer-const": "warn",
@@ -34,7 +31,10 @@
     "@typescript-eslint/no-misused-promises": "warn",
     "@typescript-eslint/await-thenable": "warn",
     "@typescript-eslint/no-unnecessary-type-assertion": "warn",
-    "@typescript-eslint/strict-boolean-expressions": ["warn", { "allowString": false, "allowNumber": false, "allowNullableObject": false }],
+    "@typescript-eslint/strict-boolean-expressions": [
+      "warn",
+      { "allowString": false, "allowNumber": false, "allowNullableObject": false }
+    ],
     "svelte/no-at-html-tags": "off"
   },
   "overrides": [

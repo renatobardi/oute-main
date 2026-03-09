@@ -9,6 +9,7 @@ Este documento descreve a estratégia de testes E2E (End-to-End) implementada us
 ### 1. Auth-Profile Package (`packages/01_auth-profile/`)
 
 #### Authentication Flow
+
 - ✅ Login com credenciais válidas
 - ✅ Login com email inválido (rejected)
 - ✅ Login com senha incorreta (rejected)
@@ -21,6 +22,7 @@ Este documento descreve a estratégia de testes E2E (End-to-End) implementada us
 - ✅ **9 testes de autenticação**
 
 #### Profile Endpoint
+
 - ✅ GET /api/profile com token válido
 - ✅ GET /api/profile sem header de autenticação (rejected)
 - ✅ GET /api/profile com token inválido (rejected)
@@ -32,6 +34,7 @@ Este documento descreve a estratégia de testes E2E (End-to-End) implementada us
 - ✅ **8 testes de profile endpoint**
 
 #### Integration Flow
+
 - ✅ Fluxo completo: Register → Profile
 - ✅ Fluxo completo: Login → Profile
 - ✅ Failed login previne profile access
@@ -45,6 +48,7 @@ Este documento descreve a estratégia de testes E2E (End-to-End) implementada us
 ### 2. Dashboard Package (`packages/00_dashboard/`)
 
 #### Navigation
+
 - ✅ Carregar home page do dashboard
 - ✅ Navegar para login page
 - ✅ Navegar de login para home
@@ -53,6 +57,7 @@ Este documento descreve a estratégia de testes E2E (End-to-End) implementada us
 - ✅ **5 testes de navegação**
 
 #### Login Flow
+
 - ✅ Submit login form com credenciais válidas
 - ✅ Mostrar erro para email inválido
 - ✅ Campo email é required
@@ -62,6 +67,7 @@ Este documento descreve a estratégia de testes E2E (End-to-End) implementada us
 - ✅ **6 testes de login flow**
 
 #### Accessibility
+
 - ✅ Todos os form inputs têm labels
 - ✅ Navegação com keyboard (Tab)
 - ✅ Links são focusable
@@ -74,6 +80,7 @@ Este documento descreve a estratégia de testes E2E (End-to-End) implementada us
 ### 3. Projects Package (`packages/02_projects/`)
 
 #### CRUD Operations
+
 - ✅ Criar novo projeto (POST /api/projects)
 - ✅ Recuperar projeto por ID (GET /api/projects/:id)
 - ✅ Listar todos os projetos (GET /api/projects)
@@ -82,12 +89,14 @@ Este documento descreve a estratégia de testes E2E (End-to-End) implementada us
 - ✅ **5 testes de CRUD**
 
 #### Authorization
+
 - ✅ Rejeitar criação sem autenticação
 - ✅ Rejeitar listagem sem autenticação
 - ✅ Rejeitar acesso com token inválido
 - ✅ **3 testes de autorização**
 
 #### Validation
+
 - ✅ Rejeitar criação sem campo name
 - ✅ Rejeitar acesso a projeto inexistente
 - ✅ Validar comprimento do nome do projeto
@@ -140,6 +149,7 @@ npx playwright test -g "should login successfully"
 E2E tests rodam automáticamente em PRs (workflow: `4-e2e-tests.yml`)
 
 **Trigger conditions:**
+
 - ✅ Todos os pacotes (se houver mudanças)
 - ✅ Após unit tests passarem
 - ✅ Gera HTML report como artifact
@@ -158,7 +168,9 @@ test('should perform action', async ({ page }) => {
   // Make API request
   const response = await page.request.post('/api/endpoint', {
     headers: { Authorization: `Bearer ${authToken}` },
-    data: { /* payload */ }
+    data: {
+      /* payload */
+    },
   });
 
   // Assert response
@@ -247,6 +259,7 @@ packages/{package}/playwright-report/
 ### CI Artifacts
 
 GitHub Actions armazena reports como artifacts:
+
 - `playwright-report-auth-profile`
 - `playwright-report-dashboard`
 - `playwright-report-projects`
@@ -256,6 +269,7 @@ GitHub Actions armazena reports como artifacts:
 ## Best Practices
 
 ### ✅ DO:
+
 - Teste caminhos críticos do usuário (login, CRUD, integration)
 - Use `test.skip()` para testes que dependem de estado
 - Use `test.beforeEach()` para setup comum
@@ -263,6 +277,7 @@ GitHub Actions armazena reports como artifacts:
 - Valide status codes HTTP nas API tests
 
 ### ❌ DON'T:
+
 - Não teste detalhes de UI que mudam frequentemente
 - Não use `test.only()` em PRs
 - Não deixe testes flaky (intermitentes)

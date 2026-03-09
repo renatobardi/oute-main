@@ -47,6 +47,7 @@ O pipeline de CI/CD automatiza todo o processo de build, test e deployment para 
 ## Workflow Configuration
 
 ### File Location
+
 `.github/workflows/deploy-on-main-branch.yml`
 
 ### Key Settings
@@ -61,7 +62,7 @@ on:
 
 concurrency:
   group: production-deployment
-  cancel-in-progress: false  # Sequential, não paralelo
+  cancel-in-progress: false # Sequential, não paralelo
 ```
 
 ### Job Dependencies
@@ -75,54 +76,65 @@ jobs:
       id-token: write
 
   deploy-production:
-    needs: build-and-test  # ← Aguarda build-and-test terminar
+    needs: build-and-test # ← Aguarda build-and-test terminar
     runs-on: ubuntu-latest
     environment: production
     permissions:
-      contents: write      # Criar releases
-      id-token: write      # GCP Workload Identity
-      deployments: write   # Rastrear deployments
-      statuses: write      # Atualizar status
+      contents: write # Criar releases
+      id-token: write # GCP Workload Identity
+      deployments: write # Rastrear deployments
+      statuses: write # Atualizar status
 ```
 
 ## Build Job Detalhes
 
 ### 1. Checkout Code
+
 ```bash
 uses: actions/checkout@v4
 ```
+
 Clona o repositório completo.
 
 ### 2. Setup Node.js
+
 ```bash
 uses: actions/setup-node@v4
 with:
   node-version: '20'
 ```
+
 Instala Node.js v20 (LTS).
 
 ### 3. Install Dependencies
+
 ```bash
 npm ci --legacy-peer-deps
 ```
+
 - `npm ci` = Clean install (mais seguro que `npm install`)
 - `--legacy-peer-deps` = Permite peerDependencies antigas
 
 ### 4. Lint Check
+
 ```bash
 npm run lint
 ```
+
 Executa ESLint em todo o código.
 
 **Falha se:**
+
 - Há erros de linting
 - Há `any` types não documentados
 - Há imports não utilizados
 
 ### 5. Build Dashboard
+
 ```bash
 npm run build -w oute-dashboard
 ```
+
 - `-w oute-dashboard` = Build apenas do workspace "oute-dashboard"
 - Output: `packages/00_dashboard/dist/`
 
@@ -138,21 +150,26 @@ with:
 ```
 
 **Vantagens do WIF:**
+
 - ✅ Sem necessidade de service account keys
 - ✅ Tokens temporários
 - ✅ Totalmente auditável
 - ✅ Mais seguro
 
 ### 2. Setup Cloud SDK
+
 ```bash
 uses: google-github-actions/setup-gcloud@v2
 ```
+
 Instala Google Cloud SDK (`gcloud` CLI).
 
 ### 3. Configure Docker
+
 ```bash
 gcloud auth configure-docker ${{ env.REGISTRY }}
 ```
+
 Configura autenticação do Docker com Artifact Registry.
 
 ### 4. Build Docker Image
@@ -167,6 +184,7 @@ docker build \
 ```
 
 **Tags:**
+
 - `latest` = Versão mais recente
 - `v12` = Build number
 - `27a6099...` = Commit SHA (identificação única)
@@ -198,6 +216,7 @@ gcloud run deploy "oute-dashboard" \
 ```
 
 **Configurações:**
+
 - Memory: 512Mi (suficiente para dashboard)
 - CPU: 1 vCPU
 - Timeout: 1 hora (uploads/processamento)
@@ -218,6 +237,7 @@ done
 ```
 
 **O que verifica:**
+
 - Tenta 30 vezes com 2 segundos de intervalo
 - Aceita HTTP 200 (OK) ou 404 (página não encontrada)
 - Falha se serviço não responder
@@ -281,6 +301,7 @@ GITHUB_TOKEN            # Automático (gerado pelo Actions)
 ## Error Handling
 
 ### Se Lint Falhar
+
 ```bash
 # Localmente, rodar:
 npm run lint
@@ -292,6 +313,7 @@ npm run format
 ```
 
 ### Se Build Falhar
+
 ```bash
 # Verificar localmente:
 npm run build -w oute-dashboard
@@ -303,6 +325,7 @@ npm run build -w oute-dashboard
 ```
 
 ### Se Deploy Falhar
+
 1. Ver logs: `gh run view <id> --log`
 2. Procurar por "Error" ou "Permission denied"
 3. Causas comuns:
@@ -312,6 +335,7 @@ npm run build -w oute-dashboard
    - Health check timeout
 
 ### Se Rollback for Necessário
+
 ```bash
 # Listar revisions
 gcloud run revisions list \
@@ -327,6 +351,7 @@ gcloud run services update-traffic oute-dashboard \
 ## Monitorando o Pipeline
 
 ### No GitHub
+
 ```bash
 # Ver últimos workflows
 gh run list --repo renatobardi/oute-main --limit 5
@@ -342,6 +367,7 @@ gh run watch <run-id>
 ```
 
 ### No GCP
+
 ```bash
 # Ver service
 gcloud run services describe oute-dashboard --region=us-central1
@@ -358,30 +384,31 @@ gcloud monitoring metrics-descriptors list --filter="metric.type:run.googleapis.
 
 ## Performance Benchmarks
 
-| Step | Duração Típica |
-|------|---|
-| Checkout | 5s |
-| Setup Node.js | 10s |
-| Install deps | 60s |
-| Lint | 15s |
-| Build | 30s |
-| Upload artifacts | 5s |
-| **build-and-test total** | **~2 minutos** |
-| | |
-| GCP Auth | 3s |
-| Setup Cloud SDK | 20s |
-| Docker build | 10s |
-| Docker push | 10s |
-| Cloud Run deploy | 30s |
-| Health checks | 5s |
-| Create release | 3s |
+| Step                        | Duração Típica   |
+| --------------------------- | ---------------- |
+| Checkout                    | 5s               |
+| Setup Node.js               | 10s              |
+| Install deps                | 60s              |
+| Lint                        | 15s              |
+| Build                       | 30s              |
+| Upload artifacts            | 5s               |
+| **build-and-test total**    | **~2 minutos**   |
+|                             |                  |
+| GCP Auth                    | 3s               |
+| Setup Cloud SDK             | 20s              |
+| Docker build                | 10s              |
+| Docker push                 | 10s              |
+| Cloud Run deploy            | 30s              |
+| Health checks               | 5s               |
+| Create release              | 3s               |
 | **deploy-production total** | **~3-5 minutos** |
-| | |
-| **Total Pipeline** | **~5-7 minutos** |
+|                             |                  |
+| **Total Pipeline**          | **~5-7 minutos** |
 
 ## Best Practices
 
 1. **Sempre rodar testes localmente** antes de push
+
    ```bash
    npm run lint
    npm run build
@@ -389,6 +416,7 @@ gcloud monitoring metrics-descriptors list --filter="metric.type:run.googleapis.
    ```
 
 2. **Fazer commits atômicos** com mensagens descritivas
+
    ```bash
    git commit -m "feat: novo recurso"
    git commit -m "fix: corrigir bug"
@@ -396,11 +424,13 @@ gcloud monitoring metrics-descriptors list --filter="metric.type:run.googleapis.
    ```
 
 3. **Verificar logs do workflow** se algo falhar
+
    ```bash
    gh run view <id> --log
    ```
 
 4. **Usar feature branches** antes de fazer push para main
+
    ```bash
    git checkout -b feature/nova-coisa
    # ... fazer mudanças ...

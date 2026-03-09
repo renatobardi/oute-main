@@ -69,6 +69,7 @@ oute/
 PostgreSQL centralizado compartilhado por todos os serviços.
 
 **Schemas** (sugestão):
+
 - `auth` - Tabelas de usuários, sessions
 - `projects` - Tabelas de projetos
 - `shared` - Dados comuns
@@ -90,6 +91,7 @@ import { colors, typography } from '@oute/design-system/tokens';
 Cada package tem seu próprio `package.json` com versão independente.
 
 **Convenção**:
+
 - Monorepo (raiz): v1.0.0
 - design-system: v1.0.0, v1.1.0 (componentes novos)
 - 00_dashboard: depende de design-system@^1.0.0
@@ -98,11 +100,13 @@ Cada package tem seu próprio `package.json` com versão independente.
 ## Deployment
 
 ### Ambiente Local (Docker)
+
 ```bash
 npm run docker:up
 ```
 
 Inicia:
+
 - PostgreSQL (5432)
 - 00_dashboard (3000)
 - 01_auth-profile (3001)
@@ -110,7 +114,9 @@ Inicia:
 - design-system/storybook (6006)
 
 ### Cloud (GCP Cloud Run)
+
 Cada package → Container separado:
+
 - `oute-dashboard` (Cloud Run Service)
 - `oute-auth-profile` (Cloud Run Service)
 - `oute-projects` (Cloud Run Service)
@@ -130,14 +136,14 @@ Todos compartilham Cloud SQL (PostgreSQL).
 
 ## Code Quality
 
-| Tool | Regra |
-|------|-------|
-| ESLint | Configuração compartilhada na raiz |
-| Prettier | Auto-format em pre-commit |
-| TypeScript | strict: true (não null check) |
-| SonarQube | Quality gates (70% coverage, ratings A) |
-| Trivy | Container scanning |
-| git-secrets | Detecta secrets commitadas |
+| Tool        | Regra                                   |
+| ----------- | --------------------------------------- |
+| ESLint      | Configuração compartilhada na raiz      |
+| Prettier    | Auto-format em pre-commit               |
+| TypeScript  | strict: true (não null check)           |
+| SonarQube   | Quality gates (70% coverage, ratings A) |
+| Trivy       | Container scanning                      |
+| git-secrets | Detecta secrets commitadas              |
 
 ## Segurança
 
@@ -151,6 +157,7 @@ Todos compartilham Cloud SQL (PostgreSQL).
 ## Escalabilidade
 
 ### Adicionar novo package
+
 1. Create `packages/NN_novo-servico/`
 2. `npm create svelte@latest ...`
 3. Extend `tsconfig.json` paths
@@ -159,6 +166,7 @@ Todos compartilham Cloud SQL (PostgreSQL).
 6. Document em SUBMODULES.md
 
 ### Adicionar novo componente ao design-system
+
 1. Create `packages/design-system/src/components/NovoComponent.svelte`
 2. Create `packages/design-system/stories/NovoComponent.stories.svelte`
 3. Bump version em `packages/design-system/package.json`
@@ -168,12 +176,14 @@ Todos compartilham Cloud SQL (PostgreSQL).
 ## Troubleshooting
 
 ### Porta já em uso
+
 ```bash
 # Kill process na porta (ex: 3000)
 lsof -i :3000 | grep LISTEN | awk '{print $2}' | xargs kill -9
 ```
 
 ### Docker volume issue
+
 ```bash
 docker volume prune
 npm run docker:down
@@ -181,6 +191,7 @@ npm run docker:up
 ```
 
 ### Clean install
+
 ```bash
 rm -rf node_modules packages/*/node_modules
 npm install

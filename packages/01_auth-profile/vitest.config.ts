@@ -13,7 +13,7 @@ export default defineConfig({
       '.git',
       '.cache',
       'src/**/*.spec.ts', // Playwright specs (*.spec.ts)
-      'src/**/*.e2e.ts',  // E2E test files
+      'src/**/*.e2e.ts', // E2E test files
     ],
     include: ['src/**/*.test.ts'], // Only include unit tests (*.test.ts)
   },

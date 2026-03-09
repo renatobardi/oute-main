@@ -90,6 +90,7 @@ gcloud secrets create API_KEY --data-file=-
 ## Phase 6: Create Service Accounts
 
 **For Cloud Run:**
+
 ```bash
 gcloud iam service-accounts create cloud-run-sa \
   --display-name="Cloud Run Service Account"
@@ -109,6 +110,7 @@ gcloud projects add-iam-policy-binding $PROJECT_ID \
 ```
 
 **For GitHub Actions:**
+
 ```bash
 gcloud iam service-accounts create github-actions-sa \
   --display-name="GitHub Actions Service Account"
@@ -164,6 +166,7 @@ gcloud run services describe oute-dashboard --region=$REGION --format='value(sta
 ## Phase 8: Setup GitHub Actions
 
 Add secrets to GitHub repository:
+
 - `GCP_PROJECT_ID=oute-app`
 - `GCP_REGION=us-central1`
 - `GCP_SA_KEY=<content of ~/oute-github-key.json>`
@@ -172,12 +175,12 @@ Add secrets to GitHub repository:
 
 CI/CD workflows (in `.github/workflows/`) handle automatic deployment:
 
-| Branch | Action |
-|--------|--------|
-| PR | Lint, tests, SonarQube checks |
-| develop | Deploy to preview |
-| staging | Deploy to homolog |
-| main | Deploy to production |
+| Branch  | Action                        |
+| ------- | ----------------------------- |
+| PR      | Lint, tests, SonarQube checks |
+| develop | Deploy to preview             |
+| staging | Deploy to homolog             |
+| main    | Deploy to production          |
 
 ## Phase 10: Monitor & Logs
 
@@ -239,6 +242,7 @@ gcloud run domain-mappings describe \
 ## Troubleshooting
 
 ### Service won't start
+
 ```bash
 # Check logs for errors
 gcloud logging read "resource.type=cloud_run_revision" --limit 50
@@ -250,11 +254,13 @@ gcloud logging read "resource.type=cloud_run_revision" --limit 50
 ```
 
 ### Cold start times too high
+
 - Increase memory allocation (512Mi → 1Gi)
 - Use Cloud Run's CPU allocation
 - Pre-warm services with periodic requests
 
 ### Database connection timeout
+
 - Ensure Cloud SQL instance is running
 - Verify network connectivity
 - Check credentials in Secret Manager
@@ -267,24 +273,24 @@ O pipeline automático foi completamente configurado e testado. Toda vez que voc
 
 ```yaml
 1. build-and-test (1-2 minutos)
-   ├─ Checkout code
-   ├─ Setup Node.js 20
-   ├─ Install dependencies
-   ├─ Run linter
-   └─ Build dashboard package
+├─ Checkout code
+├─ Setup Node.js 20
+├─ Install dependencies
+├─ Run linter
+└─ Build dashboard package
 
 2. deploy-production (3-5 minutos) [após build-and-test]
-   ├─ Authenticate with GCP (Workload Identity)
-   ├─ Setup Cloud SDK
-   ├─ Configure Docker for Artifact Registry
-   ├─ Build multi-stage Docker image
-   ├─ Push to Artifact Registry (3 tags)
-   ├─ Deploy to Cloud Run
-   ├─ Run health checks
-   ├─ Create GitHub deployment record
-   ├─ Update deployment status
-   ├─ Create GitHub release
-   └─ Generate deployment summary
+├─ Authenticate with GCP (Workload Identity)
+├─ Setup Cloud SDK
+├─ Configure Docker for Artifact Registry
+├─ Build multi-stage Docker image
+├─ Push to Artifact Registry (3 tags)
+├─ Deploy to Cloud Run
+├─ Run health checks
+├─ Create GitHub deployment record
+├─ Update deployment status
+├─ Create GitHub release
+└─ Generate deployment summary
 ```
 
 ### Permissions Necessárias
@@ -292,15 +298,16 @@ O pipeline automático foi completamente configurado e testado. Toda vez que voc
 ```yaml
 deploy-production:
   permissions:
-    contents: write        # Create releases
-    id-token: write       # GCP Workload Identity Federation
-    deployments: write    # Track deployments
-    statuses: write       # Update commit status
+    contents: write # Create releases
+    id-token: write # GCP Workload Identity Federation
+    deployments: write # Track deployments
+    statuses: write # Update commit status
 ```
 
 ### Workload Identity Federation (WIF)
 
 O pipeline usa **WIF** em vez de service account keys (mais seguro):
+
 - GitHub gera um token JWT assinado
 - GCP valida o token sem chaves armazenadas
 - Acesso temporário e auditável
@@ -308,6 +315,7 @@ O pipeline usa **WIF** em vez de service account keys (mais seguro):
 ### Rastreamento de Deployments
 
 Cada deployment é registrado no GitHub:
+
 ```bash
 # Ver deployments
 gh deployment list --repo renatobardi/oute-main
@@ -365,6 +373,7 @@ https://oute-dashboard-kx25r3idia-uc.a.run.app
 ### Problemas Comuns
 
 **Pipeline falhando?**
+
 1. Verificar logs: `gh run view <id> --log`
 2. Procurar por "Error" nas anotações
 3. Causas comuns:
@@ -373,11 +382,13 @@ https://oute-dashboard-kx25r3idia-uc.a.run.app
    - Permission issues (verificar GCP IAM)
 
 **Health check falhando?**
+
 1. Verificar se service está rodando: `gcloud run services describe oute-dashboard`
 2. Ver logs: `gcloud run logs read oute-dashboard --follow`
 3. Testar endpoint: `curl https://oute-dashboard-kx25r3idia-uc.a.run.app`
 
 **Docker image muito grande?**
+
 - Verifique o Dockerfile multi-stage
 - Confirme que apenas `dist/` é copiado
 - Remova arquivos desnecessários

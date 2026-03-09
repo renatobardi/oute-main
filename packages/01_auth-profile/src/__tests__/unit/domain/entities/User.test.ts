@@ -19,7 +19,7 @@ describe('User Entity', () => {
       const user = User.create({
         email: validEmail,
         passwordHash: validPassword,
-        name: validName
+        name: validName,
       });
 
       expect(user.name).toBe(validName);
@@ -35,7 +35,7 @@ describe('User Entity', () => {
         User.create({
           email: validEmail,
           passwordHash: validPassword,
-          name: ''
+          name: '',
         })
       ).toThrow(InvalidUserError);
     });
@@ -45,7 +45,7 @@ describe('User Entity', () => {
         User.create({
           email: validEmail,
           passwordHash: validPassword,
-          name: '   '
+          name: '   ',
         })
       ).toThrow(InvalidUserError);
     });
@@ -56,7 +56,7 @@ describe('User Entity', () => {
         User.create({
           email: validEmail,
           passwordHash: validPassword,
-          name: longName
+          name: longName,
         })
       ).toThrow(InvalidUserError);
     });
@@ -65,7 +65,7 @@ describe('User Entity', () => {
       const user = User.create({
         email: validEmail,
         passwordHash: validPassword,
-        name: validName
+        name: validName,
       });
 
       expect(user.hasRole(Role.USER)).toBe(true);
@@ -76,13 +76,13 @@ describe('User Entity', () => {
       const user1 = User.create({
         email: validEmail,
         passwordHash: validPassword,
-        name: validName
+        name: validName,
       });
 
       const user2 = User.create({
         email: Email.fromString('other@example.com'),
         passwordHash: validPassword,
-        name: 'Jane Doe'
+        name: 'Jane Doe',
       });
 
       expect(user1.id.equals(user2.id)).toBe(false);
@@ -99,7 +99,7 @@ describe('User Entity', () => {
         name: validName,
         roles: ['USER', 'ADMIN'],
         createdAt: new Date('2024-01-01'),
-        lastLogin: new Date('2024-01-15')
+        lastLogin: new Date('2024-01-15'),
       });
 
       expect(user.id.equals(userId)).toBe(true);
@@ -115,7 +115,7 @@ describe('User Entity', () => {
       const user = User.create({
         email: validEmail,
         passwordHash: validPassword,
-        name: validName
+        name: validName,
       });
 
       expect(user.verifyPasswordHash(passwordHash)).toBe(true);
@@ -125,7 +125,7 @@ describe('User Entity', () => {
       const user = User.create({
         email: validEmail,
         passwordHash: validPassword,
-        name: validName
+        name: validName,
       });
 
       expect(user.verifyPasswordHash('wronghash')).toBe(false);
@@ -137,7 +137,7 @@ describe('User Entity', () => {
       const user = User.create({
         email: validEmail,
         passwordHash: validPassword,
-        name: validName
+        name: validName,
       });
 
       expect(user.lastLogin).toBeNull();
@@ -152,7 +152,7 @@ describe('User Entity', () => {
       const user = User.create({
         email: validEmail,
         passwordHash: validPassword,
-        name: validName
+        name: validName,
       });
 
       user.recordLogin();
@@ -173,7 +173,7 @@ describe('User Entity', () => {
       user = User.create({
         email: validEmail,
         passwordHash: validPassword,
-        name: validName
+        name: validName,
       });
     });
 
@@ -211,7 +211,7 @@ describe('User Entity', () => {
       const user = User.create({
         email: validEmail,
         passwordHash: validPassword,
-        name: validName
+        name: validName,
       });
 
       const plain = user.toPlainObject();
@@ -230,7 +230,7 @@ describe('User Entity', () => {
       const user = User.create({
         email: validEmail,
         passwordHash: validPassword,
-        name: validName
+        name: validName,
       });
 
       expect(user.getPasswordHash()).toBe(passwordHash);
