@@ -29,10 +29,10 @@ COPY shared ./shared
 RUN npm ci --legacy-peer-deps --production && npm cache clean --force
 
 # Copy built app
-COPY --from=builder /app/packages/02_projects/build ./packages/02_projects/build
+COPY --from=builder /app/packages/02_projects/dist ./packages/02_projects/dist
 
 EXPOSE 3002
 
 ENV NODE_ENV=production
 
-CMD ["node", "packages/02_projects/build/index.js"]
+CMD ["node", "packages/02_projects/dist/index.js"]

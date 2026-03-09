@@ -29,10 +29,10 @@ COPY shared ./shared
 RUN npm ci --legacy-peer-deps --production && npm cache clean --force
 
 # Copy built app
-COPY --from=builder /app/packages/01_auth-profile/build ./packages/01_auth-profile/build
+COPY --from=builder /app/packages/01_auth-profile/dist ./packages/01_auth-profile/dist
 
 EXPOSE 3001
 
 ENV NODE_ENV=production
 
-CMD ["node", "packages/01_auth-profile/build/index.js"]
+CMD ["node", "packages/01_auth-profile/dist/index.js"]
