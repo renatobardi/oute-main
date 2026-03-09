@@ -8,7 +8,7 @@ describe('PostgresUserRepository (Integration)', () => {
   let testEmail: Email;
   const passwordHash = '$2b$10$examplehash';
 
-  beforeEach(async () => {
+  beforeEach(() => {
     repository = new PostgresUserRepository();
     testEmail = Email.fromString('test@example.com');
     const passwordObj = Password.fromHash(passwordHash);

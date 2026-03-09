@@ -16,7 +16,7 @@ describe('RegisterHandler', () => {
     // Mock use case
     registerUseCase = {
       execute: vi.fn(),
-    } as any;
+    } as unknown as RegisterUseCase;
 
     handler = new RegisterHandler(registerUseCase);
 
@@ -50,8 +50,8 @@ describe('RegisterHandler', () => {
       const result = await handler.handle(body);
 
       expect(result.status).toBe(201);
-      expect((result.body as any).token).toBe('mock-jwt-token');
-      expect((result.body as any).user.email).toBe('newuser@example.com');
+      expect((result.body as Record<string, unknown>).token).toBe('mock-jwt-token');
+      expect((result.body as Record<string, unknown>).user.email).toBe('newuser@example.com');
     });
 
     it('should return 400 when email is missing', async () => {
@@ -60,7 +60,7 @@ describe('RegisterHandler', () => {
       const result = await handler.handle(body);
 
       expect(result.status).toBe(400);
-      expect((result.body as any).error).toContain('required');
+      expect((result.body as Record<string, unknown>).error).toContain('required');
     });
 
     it('should return 400 when password is missing', async () => {
@@ -69,7 +69,7 @@ describe('RegisterHandler', () => {
       const result = await handler.handle(body);
 
       expect(result.status).toBe(400);
-      expect((result.body as any).error).toContain('required');
+      expect((result.body as Record<string, unknown>).error).toContain('required');
     });
 
     it('should return 400 when name is missing', async () => {
@@ -78,7 +78,7 @@ describe('RegisterHandler', () => {
       const result = await handler.handle(body);
 
       expect(result.status).toBe(400);
-      expect((result.body as any).error).toContain('required');
+      expect((result.body as Record<string, unknown>).error).toContain('required');
     });
 
     it('should handle error when user already exists', async () => {
@@ -95,7 +95,7 @@ describe('RegisterHandler', () => {
 
       // Errors are properly handled and returned
       expect(result.body).toBeDefined();
-      expect((result.body as any).error).toBeDefined();
+      expect((result.body as Record<string, unknown>).error).toBeDefined();
     });
 
     it('should return 400 on invalid email format', async () => {
@@ -108,7 +108,7 @@ describe('RegisterHandler', () => {
       const result = await handler.handle(body);
 
       expect(result.status).toBe(400);
-      expect((result.body as any).error).toContain('Invalid email');
+      expect((result.body as Record<string, unknown>).error).toContain('Invalid email');
     });
 
     it('should return 400 on invalid password', async () => {
@@ -125,7 +125,7 @@ describe('RegisterHandler', () => {
       const result = await handler.handle(body);
 
       expect(result.status).toBe(400);
-      expect((result.body as any).error).toContain('Password');
+      expect((result.body as Record<string, unknown>).error).toContain('Password');
     });
 
     it('should call use case with correct request', async () => {

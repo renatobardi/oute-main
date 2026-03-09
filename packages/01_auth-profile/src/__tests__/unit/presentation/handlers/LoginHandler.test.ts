@@ -16,7 +16,7 @@ describe('LoginHandler', () => {
     // Mock use case
     loginUseCase = {
       execute: vi.fn(),
-    } as any;
+    } as unknown as LoginUseCase;
 
     handler = new LoginHandler(loginUseCase);
 
@@ -46,8 +46,8 @@ describe('LoginHandler', () => {
       const result = await handler.handle(body);
 
       expect(result.status).toBe(200);
-      expect((result.body as any).token).toBe('mock-jwt-token');
-      expect((result.body as any).user.email).toBe('test@example.com');
+      expect((result.body as Record<string, unknown>).token).toBe('mock-jwt-token');
+      expect((result.body as Record<string, unknown>).user.email).toBe('test@example.com');
     });
 
     it('should return 400 when email is missing', async () => {
@@ -56,7 +56,7 @@ describe('LoginHandler', () => {
       const result = await handler.handle(body);
 
       expect(result.status).toBe(400);
-      expect((result.body as any).error).toContain('Email and password');
+      expect((result.body as Record<string, unknown>).error).toContain('Email and password');
     });
 
     it('should return 400 when password is missing', async () => {
@@ -65,7 +65,7 @@ describe('LoginHandler', () => {
       const result = await handler.handle(body);
 
       expect(result.status).toBe(400);
-      expect((result.body as any).error).toContain('Email and password');
+      expect((result.body as Record<string, unknown>).error).toContain('Email and password');
     });
 
     it('should return 401 on invalid credentials', async () => {
@@ -78,7 +78,7 @@ describe('LoginHandler', () => {
       const result = await handler.handle(body);
 
       expect(result.status).toBe(401);
-      expect((result.body as any).error).toContain('Invalid email or password');
+      expect((result.body as Record<string, unknown>).error).toContain('Invalid email or password');
     });
 
     it('should return 400 on invalid email format', async () => {
@@ -91,7 +91,7 @@ describe('LoginHandler', () => {
       const result = await handler.handle(body);
 
       expect(result.status).toBe(400);
-      expect((result.body as any).error).toContain('Invalid email');
+      expect((result.body as Record<string, unknown>).error).toContain('Invalid email');
     });
 
     it('should call use case with correct request', async () => {

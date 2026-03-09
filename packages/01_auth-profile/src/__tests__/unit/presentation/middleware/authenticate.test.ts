@@ -84,7 +84,7 @@ describe('Authentication Middleware', () => {
       vi.mocked(tokenGenerator.decode).mockReturnValue({
         email: 'test@example.com',
         roles: ['USER'],
-      } as any);
+      } as unknown as ReturnType<typeof tokenGenerator.decode>);
 
       const result = authenticate(authHeader);
 

@@ -42,7 +42,7 @@ export function initializeAuth(): void {
  * Login user
  */
 export async function login(email: string, password: string): Promise<void> {
-  const authUrl = import.meta.env.VITE_AUTH_SERVICE_URL || 'http://localhost:3001';
+  const authUrl = import.meta.env.VITE_AUTH_SERVICE_URL ?? 'http://localhost:3001';
 
   const response = await fetch(`${authUrl}/auth/login`, {
     method: 'POST',
@@ -52,7 +52,7 @@ export async function login(email: string, password: string): Promise<void> {
 
   if (!response.ok) {
     const error = await response.json();
-    throw new Error(error.message || 'Login failed');
+    throw new Error(typeof error.message === 'string' ? error.message : 'Login failed');
   }
 
   const data = await response.json();
@@ -95,7 +95,7 @@ export function getToken(): string | null {
 export function getCurrentUser(): User | null {
   if (typeof window !== 'undefined') {
     const userData = localStorage.getItem(USER_KEY);
-    if (userData) {
+    if (userData !== null) {
       try {
         return JSON.parse(userData);
       } catch {

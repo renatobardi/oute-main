@@ -118,13 +118,13 @@ export const apiHelpers = {
   /**
    * Make authenticated request with Bearer token
    */
-  async authenticatedRequest(
+  authenticatedRequest(
     page: Page,
     method: 'GET' | 'POST' | 'PUT' | 'DELETE',
     endpoint: string,
     token: string,
     data?: unknown
-  ): Promise<any> {
+  ): Promise<unknown> {
     const options: Parameters<typeof page.request.post>[1] = {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -132,7 +132,7 @@ export const apiHelpers = {
       },
     };
 
-    if (data) {
+    if (data !== undefined) {
       options.data = data;
     }
 
@@ -198,7 +198,7 @@ export const apiHelpers = {
   /**
    * Get profile with token
    */
-  async getProfile(page: Page, token: string): Promise<any> {
+  async getProfile(page: Page, token: string): Promise<unknown> {
     const response = await page.request.get('/api/profile', {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -233,29 +233,27 @@ export const assertions = {
    * Assert valid login response
    */
   assertValidLoginResponse(data: unknown): void {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const loginData = data as any;
+    const loginData = data as Record<string, unknown>;
 
-    if (!loginData.token) throw new Error('Missing token in login response');
+    if (typeof loginData.token !== 'string') throw new Error('Missing token in login response');
     if (!this.isValidJWT(loginData.token)) throw new Error('Invalid JWT format');
-    if (!loginData.user) throw new Error('Missing user in login response');
-    if (!loginData.user.id) throw new Error('Missing user.id');
-    if (!loginData.user.email) throw new Error('Missing user.email');
-    if (!Array.isArray(loginData.user.roles)) throw new Error('Invalid user.roles');
+    if (typeof loginData.user !== 'object' || loginData.user === null) throw new Error('Missing user in login response');
+    const user = loginData.user as Record<string, unknown>;
+    if (typeof user.id !== 'string' && typeof user.id !== 'number') throw new Error('Missing user.id');
+    if (typeof user.email !== 'string') throw new Error('Missing user.email');
+    if (!Array.isArray(user.roles)) throw new Error('Invalid user.roles');
   },
 
   /**
    * Assert valid profile response
    */
   assertValidProfileResponse(data: unknown): void {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const profile = data as any;
+    const profile = data as Record<string, unknown>;
 
-    if (!profile.id) throw new Error('Missing id in profile');
-    if (!profile.email) throw new Error('Missing email in profile');
-    if (!profile.name) throw new Error('Missing name in profile');
+    if (typeof profile.id !== 'string' && typeof profile.id !== 'number') throw new Error('Missing id in profile');
+    if (typeof profile.email !== 'string') throw new Error('Missing email in profile');
+    if (typeof profile.name !== 'string') throw new Error('Missing name in profile');
     if (!Array.isArray(profile.roles)) throw new Error('Invalid roles in profile');
-    if (!profile.createdAt) throw new Error('Missing createdAt in profile');
-    if (typeof profile.createdAt !== 'string') throw new Error('Invalid createdAt format');
+    if (typeof profile.createdAt !== 'string') throw new Error('Missing createdAt in profile');
   },
 };

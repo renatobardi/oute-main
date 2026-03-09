@@ -10,7 +10,7 @@
     initializeAuth();
 
     // Redirect to login if not authenticated and not already on login page
-    if (!$authToken && $page.url.pathname !== '/login') {
+    if ($authToken === null && $page.url.pathname !== '/login') {
       await goto('/login');
     }
   });

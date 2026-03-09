@@ -13,7 +13,7 @@ describe('RegisterUseCase', () => {
   let passwordHasher: IPasswordHasher;
   let tokenGenerator: ITokenGenerator;
 
-  beforeEach(async () => {
+  beforeEach(() => {
     // Mock repositories and adapters
     userRepository = {
       save: vi.fn(),
@@ -50,7 +50,7 @@ describe('RegisterUseCase', () => {
       vi.mocked(passwordHasher.hash).mockResolvedValue({
         getHash: () => 'hashed-password',
         verify: vi.fn(),
-      } as any);
+      } as unknown as ReturnType<typeof passwordHasher.hash>);
 
       // Mock token generation
       const mockToken = 'mock-jwt-token';
@@ -87,7 +87,7 @@ describe('RegisterUseCase', () => {
         removeRole: () => {},
         verifyPasswordHash: () => Promise.resolve(false),
         toPlainObject: () => ({}),
-      } as any);
+      } as unknown as ReturnType<typeof userRepository.findByEmail>);
 
       await expect(useCase.execute(request)).rejects.toThrow('User already registered');
     });
@@ -105,7 +105,7 @@ describe('RegisterUseCase', () => {
       vi.mocked(passwordHasher.hash).mockResolvedValue({
         getHash: () => 'hashed-password',
         verify: vi.fn(),
-      } as any);
+      } as unknown as ReturnType<typeof passwordHasher.hash>);
       vi.mocked(tokenGenerator.generate).mockResolvedValue('mock-token');
 
       await useCase.execute(request);
@@ -121,7 +121,7 @@ describe('RegisterUseCase', () => {
       vi.mocked(passwordHasher.hash).mockResolvedValue({
         getHash: () => 'hashed-password',
         verify: vi.fn(),
-      } as any);
+      } as unknown as ReturnType<typeof passwordHasher.hash>);
       vi.mocked(tokenGenerator.generate).mockResolvedValue('mock-token');
 
       await useCase.execute(request);
@@ -137,7 +137,7 @@ describe('RegisterUseCase', () => {
       vi.mocked(passwordHasher.hash).mockResolvedValue({
         getHash: () => 'hashed-password',
         verify: vi.fn(),
-      } as any);
+      } as unknown as ReturnType<typeof passwordHasher.hash>);
       vi.mocked(tokenGenerator.generate).mockResolvedValue('mock-token');
 
       await useCase.execute(request);
@@ -156,7 +156,7 @@ describe('RegisterUseCase', () => {
       vi.mocked(passwordHasher.hash).mockResolvedValue({
         getHash: () => 'hashed-password',
         verify: vi.fn(),
-      } as any);
+      } as unknown as ReturnType<typeof passwordHasher.hash>);
       vi.mocked(tokenGenerator.generate).mockResolvedValue('mock-token');
 
       const response = await useCase.execute(request);

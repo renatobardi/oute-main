@@ -16,7 +16,7 @@ describe('ProfileHandler', () => {
     // Mock use case
     getProfileUseCase = {
       execute: vi.fn(),
-    } as any;
+    } as unknown as GetProfileUseCase;
 
     handler = new ProfileHandler(getProfileUseCase);
 
@@ -47,15 +47,15 @@ describe('ProfileHandler', () => {
       const result = await handler.handle(userId);
 
       expect(result.status).toBe(200);
-      expect((result.body as any).id).toBe(userId);
-      expect((result.body as any).email).toBe('test@example.com');
+      expect((result.body as Record<string, unknown>).id).toBe(userId);
+      expect((result.body as Record<string, unknown>).email).toBe('test@example.com');
     });
 
     it('should return 400 when userId is empty', async () => {
       const result = await handler.handle('');
 
       expect(result.status).toBe(400);
-      expect((result.body as any).error).toContain('required');
+      expect((result.body as Record<string, unknown>).error).toContain('required');
     });
 
     it('should return 404 when user not found', async () => {
@@ -68,7 +68,7 @@ describe('ProfileHandler', () => {
       const result = await handler.handle(userId);
 
       expect(result.status).toBe(404);
-      expect((result.body as any).error).toContain('not found');
+      expect((result.body as Record<string, unknown>).error).toContain('not found');
     });
 
     it('should return 400 on invalid userId format', async () => {
@@ -121,10 +121,10 @@ describe('ProfileHandler', () => {
       const result = await handler.handle(userId);
 
       expect(result.status).toBe(200);
-      expect((result.body as any).name).toBe('Test User');
-      expect((result.body as any).roles).toContain('ADMIN');
-      expect((result.body as any).createdAt).toBe(createdAt);
-      expect((result.body as any).lastLogin).toBe(lastLogin);
+      expect((result.body as Record<string, unknown>).name).toBe('Test User');
+      expect((result.body as Record<string, unknown>).roles).toContain('ADMIN');
+      expect((result.body as Record<string, unknown>).createdAt).toBe(createdAt);
+      expect((result.body as Record<string, unknown>).lastLogin).toBe(lastLogin);
     });
   });
 });

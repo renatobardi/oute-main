@@ -221,7 +221,7 @@ test.describe('Dashboard Accessibility', () => {
       const input = inputs.nth(i);
       const id = await input.getAttribute('id');
 
-      if (id) {
+      if (id !== null) {
         const label = page.locator(`label[for="${id}"]`);
         expect(await label.count()).toBeGreaterThan(0);
       }

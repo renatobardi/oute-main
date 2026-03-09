@@ -8,7 +8,7 @@
   let loading = false;
 
   async function handleLogin() {
-    if (!email || !password) {
+    if (email.length === 0 || password.length === 0) {
       error = 'Please fill in all fields';
       return;
     }
