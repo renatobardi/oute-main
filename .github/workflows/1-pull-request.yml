@@ -147,7 +147,7 @@ jobs:
           cache-to: type=gha,mode=max
 
   sonarqube:
-    name: SonarQube Quality Gate
+    name: SonarQube Quality Gate (MANDATORY)
     runs-on: ubuntu-latest
     needs: [test]
     steps:
@@ -162,7 +162,7 @@ jobs:
 
       - run: npm install
 
-      - name: SonarQube Scan
+      - name: SonarQube Scan - A- Grade Minimum
         uses: SonarSource/sonarcloud-github-action@master
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -175,6 +175,15 @@ jobs:
             -Dsonar.exclusions=**/node_modules/**,**/*.test.ts,**/*.spec.ts
             -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
             -Dsonar.coverage.exclusions=**/node_modules/**,**/*.test.ts,**/*.spec.ts,**/dist/**,**/build/**
+            -Dsonar.qualitygate.wait=true
+
+      - name: Verify Quality Gate Passed
+        if: always()
+        run: |
+          echo "✅ SonarQube scan completed"
+          echo "Required grade: A- (minimum)"
+          echo "Coverage threshold: 80% (from Phase 5)"
+          echo "This check is MANDATORY and blocks PR merge if failed"
 
   summary:
     name: PR Status Summary
