@@ -13,30 +13,30 @@ sonar:
 
   # Exclude node_modules, tests, and build artifacts
   exclusions:
-    - "**/node_modules/**"
-    - "**/*.test.ts"
-    - "**/*.spec.ts"
-    - "**/dist/**"
-    - "**/build/**"
-    - ".next/**"
-    - "coverage/**"
+    - '**/node_modules/**'
+    - '**/*.test.ts'
+    - '**/*.spec.ts'
+    - '**/dist/**'
+    - '**/build/**'
+    - '.next/**'
+    - 'coverage/**'
 
   # Test configuration
   tests:
-    - "packages/**/test/**"
-    - "packages/**/*.test.ts"
-    - "packages/**/*.spec.ts"
+    - 'packages/**/test/**'
+    - 'packages/**/*.test.ts'
+    - 'packages/**/*.spec.ts'
 
   testInclusions:
-    - "**/*.test.ts"
-    - "**/*.spec.ts"
+    - '**/*.test.ts'
+    - '**/*.spec.ts'
 
   coverageExclusions:
-    - "**/node_modules/**"
-    - "**/*.test.ts"
-    - "**/*.spec.ts"
-    - "**/dist/**"
-    - "**/build/**"
+    - '**/node_modules/**'
+    - '**/*.test.ts'
+    - '**/*.spec.ts'
+    - '**/dist/**'
+    - '**/build/**'
 
   # Coverage reports
   coverage:

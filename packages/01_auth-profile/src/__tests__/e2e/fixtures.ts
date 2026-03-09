@@ -237,9 +237,11 @@ export const assertions = {
 
     if (typeof loginData.token !== 'string') throw new Error('Missing token in login response');
     if (!this.isValidJWT(loginData.token)) throw new Error('Invalid JWT format');
-    if (typeof loginData.user !== 'object' || loginData.user === null) throw new Error('Missing user in login response');
+    if (typeof loginData.user !== 'object' || loginData.user === null)
+      throw new Error('Missing user in login response');
     const user = loginData.user as Record<string, unknown>;
-    if (typeof user.id !== 'string' && typeof user.id !== 'number') throw new Error('Missing user.id');
+    if (typeof user.id !== 'string' && typeof user.id !== 'number')
+      throw new Error('Missing user.id');
     if (typeof user.email !== 'string') throw new Error('Missing user.email');
     if (!Array.isArray(user.roles)) throw new Error('Invalid user.roles');
   },
@@ -250,7 +252,8 @@ export const assertions = {
   assertValidProfileResponse(data: unknown): void {
     const profile = data as Record<string, unknown>;
 
-    if (typeof profile.id !== 'string' && typeof profile.id !== 'number') throw new Error('Missing id in profile');
+    if (typeof profile.id !== 'string' && typeof profile.id !== 'number')
+      throw new Error('Missing id in profile');
     if (typeof profile.email !== 'string') throw new Error('Missing email in profile');
     if (typeof profile.name !== 'string') throw new Error('Missing name in profile');
     if (!Array.isArray(profile.roles)) throw new Error('Invalid roles in profile');

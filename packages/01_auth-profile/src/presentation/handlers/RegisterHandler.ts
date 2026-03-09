@@ -18,7 +18,11 @@ export class RegisterHandler {
   }> {
     try {
       // Step 1: Validate request structure
-      if (typeof body.email !== 'string' || typeof body.password !== 'string' || typeof body.name !== 'string') {
+      if (
+        typeof body.email !== 'string' ||
+        typeof body.password !== 'string' ||
+        typeof body.name !== 'string'
+      ) {
         return {
           status: 400,
           body: { error: 'Email, password, and name are required' },
