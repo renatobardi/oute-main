@@ -135,7 +135,7 @@ describe('JwtTokenAdapter (Integration)', () => {
 
       expect(decoded?.exp).toBeDefined();
       expect(typeof decoded?.exp).toBe('number');
-      expect(decoded!.exp).toBeGreaterThan((decoded?.iat) ?? 0);
+      expect(decoded!.exp).toBeGreaterThan(decoded?.iat ?? 0);
     });
   });
 });

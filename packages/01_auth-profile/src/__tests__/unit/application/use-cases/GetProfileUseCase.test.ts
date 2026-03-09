@@ -13,7 +13,7 @@ describe('GetProfileUseCase', () => {
   let userRepository: IUserRepository;
   let testUser: User;
 
-  beforeEach(() => {
+  beforeEach(async () => {
     // Mock repository
     userRepository = {
       save: vi.fn(),
