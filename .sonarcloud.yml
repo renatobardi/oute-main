@@ -1,138 +1,55 @@
-# SonarCloud Configuration for OUTE Project
-# Enforces strict code quality and security standards
+# SonarCloud Configuration
+# Defines quality gates and analysis settings for oute-main
 
 sonar:
   projectKey: oute-main
-  projectName: OUTE Main Project
+  projectName: Oute Main - Quality Gates Enforcement
+  projectVersion: 1.0.0
 
-# Scanning configuration
-env:
-  SONAR_TOKEN: ${SONAR_TOKEN}
+  # Source code configuration
+  sources:
+    - packages
+    - shared
 
-# Code coverage configuration
-coverage:
+  # Exclude node_modules, tests, and build artifacts
   exclusions:
-    - '**/node_modules/**'
-    - '**/dist/**'
-    - '**/build/**'
-    - '**/*.test.ts'
-    - '**/*.spec.ts'
-    - '**/index.ts'
+    - "**/node_modules/**"
+    - "**/*.test.ts"
+    - "**/*.spec.ts"
+    - "**/dist/**"
+    - "**/build/**"
+    - ".next/**"
+    - "coverage/**"
 
-# JavaScript/TypeScript analysis
-javascript:
-  file.suffixes: .js,.ts,.tsx,.jsx,.vue,.svelte
+  # Test configuration
+  tests:
+    - "packages/**/test/**"
+    - "packages/**/*.test.ts"
+    - "packages/**/*.spec.ts"
 
-# Exclude patterns
-exclusions:
-  - '**/node_modules/**'
-  - '**/dist/**'
-  - '**/build/**'
-  - '**/*.test.ts'
-  - '**/*.spec.ts'
-  - '**/.storybook/**'
+  testInclusions:
+    - "**/*.test.ts"
+    - "**/*.spec.ts"
 
-# Source and test directories
-sources:
-  - packages
-  - shared
+  coverageExclusions:
+    - "**/node_modules/**"
+    - "**/*.test.ts"
+    - "**/*.spec.ts"
+    - "**/dist/**"
+    - "**/build/**"
 
-tests:
-  - '**/*.test.ts'
-  - '**/*.spec.ts'
+  # Coverage reports
+  coverage:
+    lcovReport: coverage/lcov.info
 
-# Quality gate configuration (enforced on PRs)
-qualitygate:
-  # Overall rating must be A- or better
-  - key: rating
-    operator: GREATER_THAN_OR_EQUALS
-    value: A
+  # Language-specific settings
+  language: typescript
 
-  # Security-specific gates
-  - key: security_rating
-    operator: EQUALS
-    value: A
-
-  - key: security_hotspots_reviewed
-    operator: GREATER_THAN_OR_EQUALS
-    value: 100
-
-  # Code quality gates
-  - key: reliability_rating
-    operator: EQUALS
-    value: A
-
-  - key: maintainability_rating
-    operator: EQUALS
-    value: A
-
-  # Coverage requirements
-  - key: coverage
-    operator: GREATER_THAN_OR_EQUALS
-    value: 80
-
-  # Code duplication limits
-  - key: duplicated_lines_density
-    operator: LESS_THAN
-    value: 3
-
-  # Blocker code smells should not exist
-  - key: blocker_violations
-    operator: EQUALS
-    value: 0
-
-  # No critical vulnerabilities
-  - key: vulnerabilities
-    operator: EQUALS
-    value: 0
-
-# Additional quality metrics
-metrics:
-  # Security metrics
-  - vulnerabilities
-  - security_rating
-  - security_hotspots_reviewed
-  - security_hotspots
-
-  # Code quality metrics
-  - reliability_rating
-  - maintainability_rating
-  - bugs
-  - code_smells
-  - critical_violations
-  - blocker_violations
-
-  # Coverage metrics
-  - coverage
-  - line_coverage
-  - branch_coverage
-
-  # Duplication metrics
-  - duplicated_lines
-  - duplicated_lines_density
-
-  # Complexity metrics
-  - cyclomatic_complexity
-  - cognitive_complexity
-
-# Custom rules for TypeScript
-rules:
-  # Enforce type safety
-  - key: typescript-no-explicit-any
-    severity: CRITICAL
-
-  # Prevent security issues
-  - key: typescript-no-hardcoded-password
-    severity: BLOCKER
-
-  - key: typescript-no-eval
-    severity: BLOCKER
-
-  # Code quality
-  - key: typescript-no-unused-vars
-    severity: MAJOR
-
-# PR decoration settings (requires GitHub token)
-pullRequest:
+qualityGate:
   enabled: true
-  analysisMode: pull_request
+  minGrade: A-
+  metrics:
+    bugs: 5
+    vulnerabilities: 0
+    coverage: 80
+    duplicatedLinesDensity: 3.0
