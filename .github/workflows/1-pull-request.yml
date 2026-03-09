@@ -39,11 +39,11 @@ jobs:
 
       - run: npm install
 
-      - name: tsc --noEmit
+      - name: Type check all packages
         run: |
           for pkg in packages/00_dashboard packages/01_auth-profile packages/02_projects packages/design-system; do
             echo "--- Type-checking $pkg ---"
-            npx tsc --noEmit --project "$pkg/tsconfig.json"
+            (cd "$pkg" && npx svelte-check --tsconfig ./tsconfig.json)
           done
         continue-on-error: false
 
