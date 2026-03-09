@@ -40,7 +40,11 @@ jobs:
       - run: npm install
 
       - name: tsc --noEmit
-        run: npx tsc --noEmit
+        run: |
+          for pkg in packages/00_dashboard packages/01_auth-profile packages/02_projects packages/design-system; do
+            echo "--- Type-checking $pkg ---"
+            npx tsc --noEmit --project "$pkg/tsconfig.json"
+          done
         continue-on-error: false
 
   test:
@@ -66,6 +70,7 @@ jobs:
     name: Docker Build Check
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         package:
           - design-system
