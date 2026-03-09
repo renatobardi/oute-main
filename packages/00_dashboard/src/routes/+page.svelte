@@ -4,8 +4,8 @@
 
 <div class="max-w-7xl mx-auto px-4 py-8">
   <div class="bg-white rounded-lg shadow-lg p-8 text-center">
-    <h2 class="text-4xl font-bold text-primary-600 mb-4">Hello World! 🚀</h2>
-    <p class="text-lg text-neutral-700 mb-6">Welcome to OUTE Dashboard</p>
+    <h2 class="text-4xl font-bold text-primary-600 mb-4">Hello World!</h2>
+    <p class="text-lg text-neutral-700 mb-6">OUTE Dashboard - CI/CD Pipeline Validated</p>
 
     {#if $user}
       <p class="text-md text-neutral-600">
