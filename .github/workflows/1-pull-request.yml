@@ -39,6 +39,12 @@ jobs:
 
       - run: npm install
 
+      - name: Sync SvelteKit types
+        run: |
+          for pkg in packages/00_dashboard packages/01_auth-profile packages/02_projects packages/design-system; do
+            (cd "$pkg" && npx svelte-kit sync 2>/dev/null || true)
+          done
+
       - name: Type check all packages
         run: |
           for pkg in packages/00_dashboard packages/01_auth-profile packages/02_projects packages/design-system; do

@@ -19,10 +19,12 @@ export default defineConfig({
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html', 'lcov'],
-      lines: 80,
-      branches: 75,
-      functions: 80,
-      statements: 80,
+      thresholds: {
+        lines: 80,
+        branches: 75,
+        functions: 80,
+        statements: 80,
+      },
       exclude: ['node_modules/', 'dist/', 'build/', '**/*.test.ts', '**/*.spec.ts', '**/index.ts'],
     },
   },
