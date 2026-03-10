@@ -7,9 +7,11 @@ OUTE é uma aplicação modular construída com **Svelte 5 + SvelteKit**, organi
 ```
 packages/
 ├── design-system/     ← Tailwind 4 + Componentes reutilizáveis
-├── 00_dashboard/      ← Interface principal
+├── 00_dashboard/      ← Interface principal (estimações, projetos)
 ├── 01_auth-profile/   ← ✅ REFATORADO: Hexagonal Architecture + DDD + TDD
-└── 02_projects/       ← Gerenciamento de projetos
+├── 02_projects/       ← Gerenciamento de projetos
+├── 03_interview/      ← ✅ NEW: Chat interface para entrevistas com IA (3-panel layout)
+└── 99_home/           ← ✅ NEW: Marketing landing page (hero + CTA + stats)
 
 shared/               ← Tipos e utilitários compartilhados
 ```
@@ -57,9 +59,10 @@ npm run dev
 
 Serviços rodando:
 
+- **Home (Landing Page)**: http://localhost:3003
 - **Dashboard**: http://localhost:3000
+- **Interview (Chat)**: http://localhost:3002
 - **Auth-Profile**: http://localhost:3001
-- **Projects**: http://localhost:3002
 - **Design System (Storybook)**: http://localhost:6006
 - **PostgreSQL**: localhost:5432
 
@@ -84,6 +87,32 @@ Serviço de autenticação que emite JWTs. Todos os outros serviços validam tok
 ### 4. **02_projects** (packages/02_projects)
 
 API de gerenciamento de projetos com CRUD completo.
+
+### 5. **03_interview** (packages/03_interview)
+
+Interface de chat para entrevistas com IA. 3-panel layout:
+- **Left Panel**: Sidebar com histórico de entrevistas
+- **Center Panel**: Chat conversation window
+- **Right Panel**: Editable notes com métricas e export
+
+Features:
+- Chat com mensagens de usuário e IA
+- Notas editáveis com save/cancel
+- Export de notas como .txt
+- Métricas de progresso (progress %, horas, orçamento)
+- Tema dark idêntico ao dashboard
+
+### 6. **99_home** (packages/99_home)
+
+Landing page de marketing pública. Primeira página que usuários veem.
+
+Features:
+- **Hero Section**: Headline grande "Olá! Sou seu Arquiteto de Software."
+- **Search Input**: Campo para descrever projetos
+- **Call-to-Action**: Botão "Entrar na Oute" + GitHub login
+- **Stats Section**: 3 métricas (57 estimações, 127 arquitetos, ∞ impacto)
+- **Navbar**: Logo, links (Docs, Pricing), signup button
+- Responsive design com tema dark idêntico ao dashboard
 
 ## 📚 Documentação
 

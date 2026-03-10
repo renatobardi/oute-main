@@ -14,8 +14,10 @@
 oute/
 ├── packages/
 │   ├── design-system/    (Tokens + Componentes + Storybook)
-│   ├── 00_dashboard/     (Frontend principal)
-│   ├── 01_auth-profile/  (Auth API)
+│   ├── 99_home/          (Landing page pública - Port 3003)
+│   ├── 00_dashboard/     (Frontend principal - Port 3000)
+│   ├── 03_interview/     (Chat interface para entrevistas - Port 3002)
+│   ├── 01_auth-profile/  (Auth API - Port 3001)
 │   └── 02_projects/      (Projects API)
 ├── shared/               (Tipos comuns)
 ├── .github/              (CI/CD workflows)
@@ -25,19 +27,28 @@ oute/
 ## Fluxo de Dados
 
 ```
-00_dashboard (Port 3000)
+99_home (Port 3003) - PUBLIC LANDING PAGE
+    └── Hero + CTA → Redireciona para 00_dashboard
+
+00_dashboard (Port 3000) - MAIN APP
     ├── Login → POST /auth/login (01_auth-profile)
     │   └── Recebe JWT
     ├── Dashboard → GET /projects (02_projects)
     │   └── Envia JWT no header
     └── Usa @oute/design-system (componentes)
 
-01_auth-profile (Port 3001)
+03_interview (Port 3002) - CHAT INTERVIEWS
+    ├── Chat interface com AI
+    ├── 3-panel layout (sidebar, chat, notes)
+    ├── Editable notes com export
+    └── Usa @oute/design-system (tema/cores)
+
+01_auth-profile (Port 3001) - AUTH API
     ├── POST /auth/login → Gera JWT
     ├── POST /auth/logout
     └── GET /profile (protegido)
 
-02_projects (Port 3002)
+02_projects (Port 3002) - PROJECTS API
     ├── Valida JWT via 01_auth-profile
     ├── GET /projects
     ├── POST /projects
@@ -108,18 +119,21 @@ npm run docker:up
 Inicia:
 
 - PostgreSQL (5432)
-- 00_dashboard (3000)
-- 01_auth-profile (3001)
-- 02_projects (3002)
+- 99_home (3003) - Landing page
+- 00_dashboard (3000) - Main interface
+- 03_interview (3002) - Chat interviews
+- 01_auth-profile (3001) - Auth API
 - design-system/storybook (6006)
 
 ### Cloud (GCP Cloud Run)
 
 Cada package → Container separado:
 
-- `oute-dashboard` (Cloud Run Service)
-- `oute-auth-profile` (Cloud Run Service)
-- `oute-projects` (Cloud Run Service)
+- `oute-home` (Cloud Run Service) - Landing page
+- `oute-dashboard` (Cloud Run Service) - Main app
+- `oute-interview` (Cloud Run Service) - Chat interface
+- `oute-auth-profile` (Cloud Run Service) - Auth API
+- `oute-projects` (Cloud Run Service) - Projects API
 
 Todos compartilham Cloud SQL (PostgreSQL).
 

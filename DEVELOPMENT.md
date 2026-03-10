@@ -33,9 +33,10 @@ npm run docker:up
 
 Services available:
 
+- Home (Landing Page): http://localhost:3003
 - Dashboard: http://localhost:3000
+- Interview (Chat): http://localhost:3002
 - Auth API: http://localhost:3001
-- Projects API: http://localhost:3002
 - PostgreSQL: localhost:5432
 - Design System: http://localhost:6006
 
@@ -45,10 +46,76 @@ Services available:
 npm run dev
 
 # In separate terminals:
-cd packages/00_dashboard && npm run dev
-cd packages/01_auth-profile && npm run dev
-cd packages/02_projects && npm run dev
+cd packages/99_home && npm run dev          # Port 3003 (landing page)
+cd packages/00_dashboard && npm run dev     # Port 3000 (main interface)
+cd packages/03_interview && npm run dev     # Port 3002 (chat interviews)
+cd packages/01_auth-profile && npm run dev  # Port 3001 (auth API)
+cd packages/02_projects && npm run dev      # Port 3000 (projects API)
 ```
+
+## 🆕 New Packages (03_interview & 99_home)
+
+### 03_interview - AI Interview Chat Interface
+
+**Port**: 3002
+**Type**: Frontend (SvelteKit)
+
+3-panel layout for conducting interviews via chat with AI:
+- **Left**: Interview history sidebar
+- **Center**: Chat conversation window
+- **Right**: Editable notes with metrics and export
+
+```bash
+cd packages/03_interview
+npm run dev          # Start dev server
+npm run build        # Build for production
+npm run test         # Run tests
+npm run test:e2e     # Run E2E tests
+```
+
+**Components**:
+- ChatMessage, ChatInput, ChatWindow (chat UI)
+- Sidebar, InterviewHeader (navigation)
+- NotesPanel, MetricBadge (notes & metrics)
+
+**Features**:
+- Real-time chat with AI responses (simulated)
+- Editable notes with save/cancel
+- Export notes as .txt file
+- Progress metrics and tags
+- Responsive 3-panel layout
+
+### 99_home - Marketing Landing Page
+
+**Port**: 3003
+**Type**: Frontend (SvelteKit)
+
+Public-facing landing page for OUTE AI architect platform:
+- Hero section with CTA
+- Project description search
+- GitHub login option
+- Stats display (57, 127, ∞)
+
+```bash
+cd packages/99_home
+npm run dev          # Start dev server
+npm run build        # Build for production
+npm run test         # Run tests
+npm run test:e2e     # Run E2E tests
+```
+
+**Components**:
+- Navbar (logo, links, signup)
+- HeroSection (headline, subtitle)
+- SearchInput (project description)
+- CTAButton, GithubLink (calls-to-action)
+- StatCard, StatsSection (metrics display)
+
+**Features**:
+- Responsive design (mobile-first)
+- Dark theme (cyan/teal colors)
+- SEO-optimized
+- Public access (no authentication required)
 
 ## Scripts
 
