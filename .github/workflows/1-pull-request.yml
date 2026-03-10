@@ -169,7 +169,7 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         with:
           args: >
-            -Dsonar.projectKey=renatobardi_oute-main
+            -Dsonar.projectKey=oute-main
             -Dsonar.organization=${{ secrets.SONAR_ORGANIZATION || 'renatobardi' }}
             -Dsonar.sources=packages,shared
             -Dsonar.exclusions=**/node_modules/**,**/*.test.ts,**/*.spec.ts
