@@ -34,5 +34,6 @@ COPY --from=builder /app/packages/01_auth-profile/build ./packages/01_auth-profi
 EXPOSE 3001
 
 ENV NODE_ENV=production
+ENV PORT=3001
 
 CMD ["node", "packages/01_auth-profile/build/index.js"]

@@ -34,5 +34,6 @@ COPY --from=builder /app/packages/02_projects/build ./packages/02_projects/build
 EXPOSE 3002
 
 ENV NODE_ENV=production
+ENV PORT=3002
 
 CMD ["node", "packages/02_projects/build/index.js"]
