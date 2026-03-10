@@ -155,8 +155,8 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         with:
           args: >
-            -Dsonar.projectKey=oute-main
-            -Dsonar.organization=${{ secrets.SONAR_ORGANIZATION || 'oute-main' }}
+            -Dsonar.projectKey=renatobardi_oute
+            -Dsonar.organization=${{ secrets.SONAR_ORGANIZATION || 'renatobardi' }}
             -Dsonar.sources=packages,shared
             -Dsonar.exclusions=**/node_modules/**,**/*.test.ts,**/*.spec.ts
             -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
