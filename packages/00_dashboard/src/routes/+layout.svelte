@@ -1,19 +1,19 @@
 <script lang="ts">
+  import '../app.css';
   import { onMount } from 'svelte';
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
   import { authToken, user, logout, initializeAuth } from '$lib/auth';
   import { Button } from '@oute/design-system';
+  import Footer from '$lib/components/Footer.svelte';
 
-  onMount(async () => {
-    // Initialize auth from localStorage
-    initializeAuth();
-
-    // Redirect to login if not authenticated and not already on login page
-    if ($authToken === null && $page.url.pathname !== '/login') {
-      await goto('/login');
-    }
-  });
+  // TODO: Re-enable auth redirect when auth service is available
+  // onMount(async () => {
+  //   initializeAuth();
+  //   if ($authToken === null && $page.url.pathname !== '/login') {
+  //     await goto('/login');
+  //   }
+  // });
 
   async function handleLogout() {
     logout();
@@ -21,35 +21,81 @@
   }
 </script>
 
-<div class="min-h-screen bg-neutral-50">
-  {#if $authToken}
-    <!-- Navigation Bar -->
-    <nav class="bg-white shadow-sm border-b border-neutral-200">
-      <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
+<div class="min-h-screen bg-[#0f1e23] flex flex-col">
+  <!-- Navigation Bar -->
+    <nav class="bg-[#162a31] border-b border-[#21404a]">
+      <div class="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between">
         <div class="flex items-center gap-8">
-          <h1 class="text-2xl font-bold text-primary-600">OUTE</h1>
+          <div class="flex items-center gap-2">
+            <div class="w-8 h-8 bg-primary-600 rounded-lg flex items-center justify-center">
+              <svg class="w-4 h-4 text-white" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 2L2 19h20L12 2zm0 4l7 11H5l7-11z" />
+              </svg>
+            </div>
+            <span class="text-lg font-bold text-white">Oute</span>
+          </div>
           <div class="hidden md:flex gap-6">
-            <a href="/" class="text-neutral-700 hover:text-primary-600 font-medium">Dashboard</a>
-            <a href="/profile" class="text-neutral-700 hover:text-primary-600 font-medium"
-              >Profile</a
+            <a
+              href="/"
+              class="text-neutral-300 hover:text-white font-medium text-sm transition-colors"
+              >Dashboard</a
+            >
+            <a
+              href="/architect-chat"
+              class="text-neutral-500 hover:text-neutral-300 font-medium text-sm transition-colors"
+              >Architect Chat</a
+            >
+            <a
+              href="/insights"
+              class="text-neutral-500 hover:text-neutral-300 font-medium text-sm transition-colors"
+              >Insights</a
             >
           </div>
         </div>
 
         <div class="flex items-center gap-4">
-          {#if $user}
-            <span class="text-sm text-neutral-600">{$user.email}</span>
-          {/if}
-          <Button variant="secondary" size="sm" on:click={handleLogout}>Sign Out</Button>
+          <div
+            class="hidden sm:flex items-center gap-2 bg-[#0f1e23] border border-[#21404a] rounded-lg px-3 py-1.5"
+          >
+            <svg
+              class="w-4 h-4 text-neutral-500"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+              />
+            </svg>
+            <input
+              type="text"
+              placeholder="Quick search..."
+              class="bg-transparent border-none outline-none text-sm text-neutral-300 placeholder-neutral-500 w-32"
+            />
+          </div>
+
+          <Button variant="primary" size="sm" on:click={() => {}}>+ Nova Estimativa</Button>
+
+          <button
+            class="w-8 h-8 rounded-full bg-amber-500 flex items-center justify-center text-xs font-bold text-white"
+            title="User"
+            on:click={handleLogout}
+          >
+            U
+          </button>
         </div>
       </div>
     </nav>
-  {/if}
 
   <!-- Main Content -->
-  <main>
+  <main class="flex-1">
     <slot />
   </main>
+
+  <Footer />
 </div>
 
 <style>
@@ -57,7 +103,7 @@
     margin: 0;
     padding: 0;
     font-family: 'Inter', system-ui, sans-serif;
-    background-color: #f9fafb;
+    background-color: #0f1e23;
   }
 
   :global(html, body) {

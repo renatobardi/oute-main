@@ -1,8 +1,20 @@
+import { sveltekit } from '@sveltejs/kit/vite';
+import tailwindcss from '@tailwindcss/vite';
 import { defineConfig } from 'vite';
+import path from 'path';
 
-// SvelteKit handles Vite configuration automatically
-// This is only needed if you need custom Vite options
+const designSystemSrc = path.resolve(__dirname, '../design-system/src/lib/index.ts');
+
 export default defineConfig({
+  plugins: [tailwindcss(), sveltekit()],
+  resolve: {
+    alias: {
+      '@oute/design-system': designSystemSrc,
+    },
+  },
+  ssr: {
+    noExternal: ['@oute/design-system'],
+  },
   server: {
     port: 3000,
     host: '0.0.0.0',
