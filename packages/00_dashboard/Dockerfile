@@ -6,6 +6,7 @@ WORKDIR /app
 # Copy root files
 COPY package.json package-lock.json tsconfig.json .eslintrc.json .prettierrc ./
 COPY packages/00_dashboard ./packages/00_dashboard
+COPY packages/design-system ./packages/design-system
 COPY shared ./shared
 
 # Install dependencies
@@ -26,17 +27,15 @@ COPY packages/00_dashboard/package.json ./packages/00_dashboard/
 COPY shared ./shared
 
 # Install production dependencies only
-RUN npm ci --legacy-peer-deps --production && npm cache clean --force
+RUN npm ci --legacy-peer-deps --omit=dev && npm cache clean --force
 
-# Copy built app
-COPY --from=builder /app/packages/00_dashboard/dist ./packages/00_dashboard/dist
-
-# Install simple HTTP server for serving static files
-RUN npm install -g serve
+# Copy built app from builder
+COPY --from=builder /app/packages/00_dashboard/build ./packages/00_dashboard/build
 
 EXPOSE 3000
 
 ENV NODE_ENV=production
+ENV PORT=3000
 
-# Serve the static dashboard
-CMD ["serve", "-s", "packages/00_dashboard/dist", "-l", "3000"]
+# Run the SvelteKit Node server
+CMD ["node", "packages/00_dashboard/build/index.js"]

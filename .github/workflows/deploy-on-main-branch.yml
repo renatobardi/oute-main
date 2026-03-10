@@ -44,7 +44,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: dashboard-build
-          path: packages/00_dashboard/dist
+          path: packages/00_dashboard/build
           retention-days: 1
 
   deploy-production:
