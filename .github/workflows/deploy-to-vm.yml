@@ -3,7 +3,7 @@ name: Deploy oute-main to oute-mind VM
 on:
   push:
     branches: [main]
-  workflow_dispatch:  # Allow manual trigger
+  workflow_dispatch:
 
 jobs:
   deploy:
@@ -25,12 +25,17 @@ jobs:
       - name: Deploy to VM
         run: |
           ssh ${{ secrets.VM_USER }}@${{ secrets.VM_HOSTNAME }} << 'EOFVM'
-            cd ~/oute-mind
-
-            # Pull latest changes
+            # Pull latest oute-main (source for SvelteKit services)
+            cd ~/oute-main
             git pull origin main
 
-            # Build and restart services (native arm64, no cross-compile)
+            # Pull latest oute-mind (docker-compose lives here)
+            cd ~/oute-mind
+
+            # Ensure .env is linked
+            ln -sf .env.production .env
+
+            # Build and restart oute-main services (ports: 3020/3021/3022)
             docker compose build 00_dashboard 01_auth-profile 02_projects
             docker compose up -d 00_dashboard 01_auth-profile 02_projects
           EOFVM
@@ -38,7 +43,7 @@ jobs:
       - name: Health checks (via SSH)
         run: |
           ssh ${{ secrets.VM_USER }}@${{ secrets.VM_HOSTNAME }} << 'EOFVM'
-            for svc in "Dashboard:3000" "Auth:3001" "Projects:3002"; do
+            for svc in "Dashboard:3020" "Auth:3021" "Projects:3022"; do
               name="${svc%%:*}"
               port="${svc##*:}"
               for i in $(seq 1 20); do
@@ -60,10 +65,10 @@ jobs:
         if: success()
         run: |
           echo "✅ Deployment to VM successful!"
-          echo "Services:"
-          echo "  Dashboard: http://${{ secrets.VM_HOSTNAME }}:3000"
-          echo "  Auth API:  http://${{ secrets.VM_HOSTNAME }}:3001"
-          echo "  Projects:  http://${{ secrets.VM_HOSTNAME }}:3002"
+          echo "Services (via Caddy reverse proxy):"
+          echo "  Dashboard: http://${{ secrets.VM_HOSTNAME }}/dashboard"
+          echo "  Auth API:  http://${{ secrets.VM_HOSTNAME }}/api/auth"
+          echo "  Projects:  http://${{ secrets.VM_HOSTNAME }}/api/projects"
 
       - name: Capture logs on failure
         if: failure()
