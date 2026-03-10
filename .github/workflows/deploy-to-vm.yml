@@ -23,24 +23,27 @@ jobs:
         run: |
           docker buildx build \
             --platform linux/arm64,linux/amd64 \
+            -f ./packages/00_dashboard/Dockerfile \
             -t oute-dashboard:${{ github.sha }} \
             -t oute-dashboard:latest \
             --push=false \
-            ./packages/00_dashboard
+            .
 
           docker buildx build \
             --platform linux/arm64,linux/amd64 \
+            -f ./packages/01_auth-profile/Dockerfile \
             -t oute-auth-profile:${{ github.sha }} \
             -t oute-auth-profile:latest \
             --push=false \
-            ./packages/01_auth-profile
+            .
 
           docker buildx build \
             --platform linux/arm64,linux/amd64 \
+            -f ./packages/02_projects/Dockerfile \
             -t oute-projects:${{ github.sha }} \
             -t oute-projects:latest \
             --push=false \
-            ./packages/02_projects
+            .
 
       - name: Configure SSH
         run: |
