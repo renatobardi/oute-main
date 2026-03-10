@@ -26,7 +26,7 @@ COPY packages/02_projects/package.json ./packages/02_projects/
 COPY shared ./shared
 
 # Install production dependencies only
-RUN npm ci --legacy-peer-deps --production && npm cache clean --force
+RUN npm ci --legacy-peer-deps --omit=dev && npm cache clean --force
 
 # Copy built app
 COPY --from=builder /app/packages/02_projects/build ./packages/02_projects/build
