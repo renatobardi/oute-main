@@ -62,7 +62,7 @@ async function getExecutedMigrations() {
 async function getPendingMigrations() {
   const files = await readdir(MIGRATIONS_DIR);
   const sqlFiles = files
-    .filter(f => f.endsWith('.sql'))
+    .filter(f => f.endsWith('.sql') && !f.endsWith('.down.sql'))
     .sort();
 
   const executed = await getExecutedMigrations();
