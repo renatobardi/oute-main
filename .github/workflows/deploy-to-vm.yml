@@ -1,0 +1,152 @@
+name: Deploy oute-main to oute-mind VM
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:  # Allow manual trigger
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build multi-arch Docker images
+        run: |
+          docker buildx build \
+            --platform linux/arm64,linux/amd64 \
+            -t oute-dashboard:${{ github.sha }} \
+            -t oute-dashboard:latest \
+            --push=false \
+            ./packages/00_dashboard
+
+          docker buildx build \
+            --platform linux/arm64,linux/amd64 \
+            -t oute-auth-profile:${{ github.sha }} \
+            -t oute-auth-profile:latest \
+            --push=false \
+            ./packages/01_auth-profile
+
+          docker buildx build \
+            --platform linux/arm64,linux/amd64 \
+            -t oute-projects:${{ github.sha }} \
+            -t oute-projects:latest \
+            --push=false \
+            ./packages/02_projects
+
+      - name: Configure SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.VM_SSH_PRIVATE_KEY }}" | base64 -d > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          echo "${{ secrets.VM_SSH_KNOWN_HOSTS }}" >> ~/.ssh/known_hosts
+
+      - name: Deploy to VM
+        env:
+          VM_USER: ${{ secrets.VM_USER }}
+          VM_HOSTNAME: ${{ secrets.VM_HOSTNAME }}
+          DEPLOY_KEY: ${{ secrets.VM_SSH_PRIVATE_KEY }}
+        run: |
+          echo "Deploying to VM: ${VM_HOSTNAME}"
+
+          # Copy docker-compose changes to VM
+          scp -r docker-compose.yml \
+            ${VM_USER}@${VM_HOSTNAME}:~/oute-mind/ || true
+
+          # SSH and restart services
+          ssh -o StrictHostKeyChecking=no ${VM_USER}@${VM_HOSTNAME} << 'EOFVM'
+            cd ~/oute-mind
+
+            # Pull latest changes
+            git pull origin main || true
+
+            # Stop oute-main services only
+            docker-compose down 00_dashboard 01_auth-profile 02_projects || true
+
+            # Rebuild and start oute-main services
+            docker-compose build --no-cache 00_dashboard 01_auth-profile 02_projects
+            docker-compose up -d 00_dashboard 01_auth-profile 02_projects
+
+            # Wait for services to stabilize
+            sleep 10
+          EOFVM
+
+      - name: Health check - Dashboard
+        run: |
+          for i in {1..30}; do
+            if curl -f http://${{ secrets.VM_HOSTNAME }}:3020/health; then
+              echo "Dashboard health check PASSED"
+              exit 0
+            fi
+            echo "Health check attempt $i failed, retrying in 2s..."
+            sleep 2
+          done
+          echo "Dashboard health check FAILED after 30 attempts"
+          exit 1
+
+      - name: Health check - Auth API
+        run: |
+          for i in {1..30}; do
+            if curl -f http://${{ secrets.VM_HOSTNAME }}:3021/health; then
+              echo "Auth API health check PASSED"
+              exit 0
+            fi
+            echo "Health check attempt $i failed, retrying in 2s..."
+            sleep 2
+          done
+          echo "Auth API health check FAILED after 30 attempts"
+          exit 1
+
+      - name: Health check - Projects API
+        run: |
+          for i in {1..30}; do
+            if curl -f http://${{ secrets.VM_HOSTNAME }}:3022/health; then
+              echo "Projects API health check PASSED"
+              exit 0
+            fi
+            echo "Health check attempt $i failed, retrying in 2s..."
+            sleep 2
+          done
+          echo "Projects API health check FAILED after 30 attempts"
+          exit 1
+
+      - name: Verify Caddy reverse proxy routing
+        run: |
+          echo "Verifying Caddy routing for oute-main services..."
+
+          # Test Dashboard via Caddy
+          curl -f http://${{ secrets.VM_HOSTNAME }}/dashboard/health || echo "Dashboard Caddy routing test failed"
+
+          # Test Auth via Caddy
+          curl -f http://${{ secrets.VM_HOSTNAME }}/api/auth/health || echo "Auth Caddy routing test failed"
+
+          # Test Projects via Caddy
+          curl -f http://${{ secrets.VM_HOSTNAME }}/api/projects/health || echo "Projects Caddy routing test failed"
+
+      - name: Deployment success notification
+        if: success()
+        run: |
+          echo "✅ Deployment to VM successful!"
+          echo "Services available at:"
+          echo "  Dashboard: http://${{ secrets.VM_HOSTNAME }}/dashboard"
+          echo "  Auth API: http://${{ secrets.VM_HOSTNAME }}/api/auth"
+          echo "  Projects API: http://${{ secrets.VM_HOSTNAME }}/api/projects"
+          echo "Direct access:"
+          echo "  Dashboard: http://${{ secrets.VM_HOSTNAME }}:3020"
+          echo "  Auth API: http://${{ secrets.VM_HOSTNAME }}:3021"
+          echo "  Projects API: http://${{ secrets.VM_HOSTNAME }}:3022"
+
+      - name: Deployment failure notification
+        if: failure()
+        run: |
+          echo "❌ Deployment to VM FAILED"
+          echo "Check logs above for details"
+          exit 1
