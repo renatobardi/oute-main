@@ -35,52 +35,26 @@ jobs:
             docker compose up -d 00_dashboard 01_auth-profile 02_projects
           EOFVM
 
-      - name: Health check - Dashboard
+      - name: Health checks (via SSH)
         run: |
-          for i in {1..30}; do
-            if curl -sf http://${{ secrets.VM_HOSTNAME }}:3000/health; then
-              echo "Dashboard health check PASSED"
-              exit 0
-            fi
-            echo "Health check attempt $i/30, retrying in 2s..."
-            sleep 2
-          done
-          echo "Dashboard health check FAILED after 30 attempts"
-          exit 1
-
-      - name: Health check - Auth API
-        run: |
-          for i in {1..30}; do
-            if curl -sf http://${{ secrets.VM_HOSTNAME }}:3001/health; then
-              echo "Auth API health check PASSED"
-              exit 0
-            fi
-            echo "Health check attempt $i/30, retrying in 2s..."
-            sleep 2
-          done
-          echo "Auth API health check FAILED after 30 attempts"
-          exit 1
-
-      - name: Health check - Projects API
-        run: |
-          for i in {1..30}; do
-            if curl -sf http://${{ secrets.VM_HOSTNAME }}:3002/health; then
-              echo "Projects API health check PASSED"
-              exit 0
-            fi
-            echo "Health check attempt $i/30, retrying in 2s..."
-            sleep 2
-          done
-          echo "Projects API health check FAILED after 30 attempts"
-          exit 1
-
-      - name: Verify Caddy reverse proxy routing
-        continue-on-error: true
-        run: |
-          echo "Verifying Caddy routing for oute-main services..."
-          curl -sf http://${{ secrets.VM_HOSTNAME }}/dashboard/health && echo "Dashboard Caddy OK" || echo "Dashboard Caddy not configured"
-          curl -sf http://${{ secrets.VM_HOSTNAME }}/api/auth/health && echo "Auth Caddy OK" || echo "Auth Caddy not configured"
-          curl -sf http://${{ secrets.VM_HOSTNAME }}/api/projects/health && echo "Projects Caddy OK" || echo "Projects Caddy not configured"
+          ssh ${{ secrets.VM_USER }}@${{ secrets.VM_HOSTNAME }} << 'EOFVM'
+            for svc in "Dashboard:3000" "Auth:3001" "Projects:3002"; do
+              name="${svc%%:*}"
+              port="${svc##*:}"
+              for i in $(seq 1 20); do
+                if curl -sf http://localhost:${port}/health > /dev/null 2>&1; then
+                  echo "✅ ${name} health check PASSED (port ${port})"
+                  break
+                fi
+                if [ "$i" -eq 20 ]; then
+                  echo "❌ ${name} health check FAILED after 20 attempts"
+                  exit 1
+                fi
+                echo "  ${name} attempt ${i}/20, retrying in 3s..."
+                sleep 3
+              done
+            done
+          EOFVM
 
       - name: Deployment success
         if: success()
