@@ -2,12 +2,14 @@
 
 ## Overview
 
-OUTE is organized into 4 main packages, each with a specific responsibility.
+OUTE is organized into 6 main packages (5 services + 1 design system), each with a specific responsibility.
 
 ```
 packages/
 ├── design-system/    ← Shared UI components & tokens
+├── 99_home/          ← Landing page pública (marketing)
 ├── 00_dashboard/     ← Web interface (frontend)
+├── 03_interview/     ← Chat interface para entrevistas com IA
 ├── 01_auth-profile/  ← Authentication service (API)
 └── 02_projects/      ← Project management (API)
 ```
@@ -66,7 +68,80 @@ npm run dev:storybook --workspace=design-system
 
 ---
 
-## 2. 00 Dashboard (packages/00_dashboard)
+## 2. 99 Home (packages/99_home)
+
+**Purpose**: Public landing page and marketing
+
+**Type**: Frontend (SvelteKit Static)
+
+**Port**: 3003
+
+**Tech Stack**:
+
+- SvelteKit
+- Svelte 5
+- @oute/design-system
+- Tailwind 4
+- TypeScript
+
+**Key Features**:
+
+```
+- Hero section: "Olá! Sou seu Arquiteto de Software."
+- Search input para descrever projetos
+- Call-to-action: "Entrar na Oute" + GitHub OAuth
+- Stats section: 57 estimações, 127 arquitetos, ∞ impacto
+- Navbar com links (Docs, Pricing), signup button
+- Responsive design com tema dark
+```
+
+**Routes**:
+
+```
+/              ← Home/landing page (public)
+/docs          ← Documentação (public)
+/pricing       ← Planos (public)
+```
+
+**Key Files**:
+
+```
+src/
+├── routes/
+│   ├── +page.svelte         ← Home landing
+│   ├── docs/+page.svelte
+│   └── pricing/+page.svelte
+├── lib/
+│   ├── components/
+│   │   ├── Hero.svelte
+│   │   ├── Stats.svelte
+│   │   └── Navbar.svelte
+│   └── config.ts
+└── app.html
+```
+
+**Environment**:
+
+```
+VITE_AUTH_SERVICE_URL=http://localhost:3001
+VITE_API_TIMEOUT=30000
+```
+
+**Example Flow**:
+
+```
+1. User lands on http://localhost:3003
+2. Sees hero section + search input
+3. Clicks "Entrar na Oute"
+   → Redirects to GitHub OAuth flow
+   → Creates user in 01_auth-profile
+   → Redirects to 00_dashboard
+4. User logged in + on dashboard
+```
+
+---
+
+## 3. 00 Dashboard (packages/00_dashboard)
 
 **Purpose**: Main web interface for users
 
@@ -138,7 +213,101 @@ Header: Authorization: Bearer <JWT>
 
 ---
 
-## 3. 01 Auth-Profile (packages/01_auth-profile)
+## 4. 03 Interview (packages/03_interview)
+
+**Purpose**: Chat interface for AI-powered interviews
+
+**Type**: Frontend (SvelteKit SSR)
+
+**Port**: 3002
+
+**Tech Stack**:
+
+- SvelteKit
+- Svelte 5
+- @oute/design-system
+- Tailwind 4
+- TypeScript
+
+**Layout**: 3-Panel Interface
+
+```
+┌─────────────────────────────────────┐
+│            NAVBAR                   │
+├──────────┬────────────┬─────────────┤
+│ Sidebar  │    Chat    │    Notes    │
+│ (Left)   │  (Center)  │   (Right)   │
+│          │            │             │
+│ • Hist 1 │ User:      │ Notes:      │
+│ • Hist 2 │ "Hello"    │ • Point 1   │
+│ • Hist 3 │            │ • Point 2   │
+│          │ AI:        │             │
+│          │ "Hi there" │ [Save]      │
+│          │            │ [Export]    │
+└──────────┴────────────┴─────────────┘
+```
+
+**Key Features**:
+
+- Chat com mensagens de usuário e IA
+- Editable notes com save/cancel
+- Export de notas como .txt
+- Métricas de progresso (%, horas, orçamento)
+- Tema dark idêntico ao dashboard
+- Interview history sidebar
+
+**Routes**:
+
+```
+/interviews         ← List interviews (protected)
+/interviews/:id     ← Interview detail (protected)
+```
+
+**Key Files**:
+
+```
+src/
+├── routes/
+│   ├── interviews/+page.svelte
+│   └── interviews/[id]/+page.svelte
+├── lib/
+│   ├── components/
+│   │   ├── ChatPanel.svelte
+│   │   ├── NotesPanel.svelte
+│   │   ├── Sidebar.svelte
+│   │   └── Metrics.svelte
+│   ├── api.ts
+│   └── types.ts
+└── app.html
+```
+
+**Environment**:
+
+```
+VITE_AUTH_SERVICE_URL=http://localhost:3001
+VITE_API_TIMEOUT=30000
+```
+
+**Example Flow**:
+
+```
+1. User lands on http://localhost:3002/interviews
+2. Sees list of past interviews (from localStorage/DB)
+3. Clicks on interview
+4. 3-panel interface opens:
+   - Left: Interview history
+   - Center: Chat window
+   - Right: Editable notes
+5. User can:
+   - Send messages
+   - Edit notes
+   - Save/export notes
+   - See metrics update
+```
+
+---
+
+## 5. 01 Auth-Profile (packages/01_auth-profile)
 
 **Purpose**: Authentication & user profile service
 
@@ -232,7 +401,7 @@ JWT_EXPIRY=24h
 
 ---
 
-## 4. 02 Projects (packages/02_projects)
+## 6. 02 Projects (packages/02_projects)
 
 **Purpose**: Project management API (CRUD)
 
@@ -389,24 +558,51 @@ To add a new package (e.g., `03_notifications`):
 
 ## Version Matrix
 
-| Package         | Current | Status        |
-| --------------- | ------- | ------------- |
-| design-system   | 1.0.0   | ✅ Production |
-| 00_dashboard    | 1.0.0   | ✅ Production |
-| 01_auth-profile | 1.0.0   | ✅ Production |
-| 02_projects     | 1.0.0   | ✅ Production |
+| Package         | Port | Current | Status        | Architecture      |
+| --------------- | ---- | ------- | ------------- | ------------------|
+| design-system   | 6006 | 1.0.0   | ✅ Production | Storybook        |
+| 99_home         | 3003 | 1.0.0   | ✅ Production | SvelteKit        |
+| 00_dashboard    | 3000 | 1.0.0   | 🔄 Refactoring| SvelteKit        |
+| 03_interview    | 3002 | 1.0.0   | ✅ Production | SvelteKit        |
+| 01_auth-profile | 3001 | 1.0.0   | ✅ Production | Hexagonal + DDD  |
+| 02_projects     | 3002 | 1.0.0   | 🔄 Refactoring| SvelteKit        |
 
 ---
 
 ## Communication Flow
 
 ```
-00_dashboard
-  ↓
-  ├→ POST /auth/login → 01_auth-profile
+99_home (Port 3003) - PUBLIC LANDING PAGE
+  └─→ CTA "Entrar na Oute"
+      └─→ Redirects to 00_dashboard (with GitHub OAuth)
+
+00_dashboard (Port 3000) - MAIN APP
+  ├─→ POST /auth/login → 01_auth-profile
   │   ← JWT token
   │
-  └→ GET /projects (with JWT) → 02_projects
-      └→ Validates JWT → 01_auth-profile/profile/verify
-      ← Projects data
+  ├─→ GET /projects (with JWT) → 02_projects
+  │   ├─→ Validates JWT → 01_auth-profile/profile/verify
+  │   ← Projects data
+  │
+  └─→ GET /interviews → 03_interview
+      └─→ Interview list + chat interface
+
+03_interview (Port 3002) - CHAT INTERVIEWS
+  ├─→ Chat with AI (via API)
+  ├─→ Save notes (to 02_projects/notes)
+  └─→ Export metrics
+
+01_auth-profile (Port 3001) - AUTH API
+  ├─→ POST /auth/login → Generates JWT
+  ├─→ POST /auth/logout
+  ├─→ GET /profile (protected)
+  └─→ GET /profile/verify (JWT validation)
+
+02_projects (Port 3002) - PROJECTS API
+  ├─→ Validates JWT via 01_auth-profile
+  ├─→ GET /projects
+  ├─→ POST /projects
+  ├─→ GET /projects/:id
+  ├─→ PATCH /projects/:id
+  └─→ DELETE /projects/:id
 ```

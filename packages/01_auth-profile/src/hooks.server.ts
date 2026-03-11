@@ -50,7 +50,40 @@ if (typeof global !== 'undefined') {
 }
 
 export const handle: Handle = async ({ event, resolve }) => {
+  // CORS configuration for production (34.132.93.171) and development
+  const allowedOrigins = [
+    'http://localhost:3000',    // Local development
+    'http://localhost:3003',    // 99_home local
+    'http://34.132.93.171',     // Production
+    'https://34.132.93.171',    // Production HTTPS
+  ];
+
+  const origin = event.request.headers.get('origin');
+  const isAllowedOrigin = allowedOrigins.includes(origin || '');
+
+  // Handle CORS preflight requests
+  if (event.request.method === 'OPTIONS') {
+    return new Response(null, {
+      headers: {
+        'Access-Control-Allow-Origin': isAllowedOrigin ? origin! : 'http://localhost:3003',
+        'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+        'Access-Control-Allow-Credentials': 'true',
+        'Access-Control-Max-Age': '86400', // 24 hours
+      },
+    });
+  }
+
   // Inject dependencies into event.locals
   event.locals.deps = deps;
-  return await resolve(event);
+
+  const response = await resolve(event);
+
+  // Add CORS headers to response
+  if (isAllowedOrigin) {
+    response.headers.set('Access-Control-Allow-Origin', origin!);
+    response.headers.set('Access-Control-Allow-Credentials', 'true');
+  }
+
+  return response;
 };

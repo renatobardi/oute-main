@@ -8,6 +8,24 @@ The OUTE authentication service (`01_auth-profile`) has been **completely refact
 
 ---
 
+## Project Structure
+
+### Monorepo Packages
+
+```
+packages/
+├── design-system/     ← Tailwind 4 + Componentes reutilizáveis
+├── 99_home/           ← Landing page pública (marketing)
+├── 00_dashboard/      ← Interface principal (estimações, projetos)
+├── 03_interview/      ← Chat interface para entrevistas com IA
+├── 01_auth-profile/   ← ✅ REFATORADO: Hexagonal Architecture + DDD + TDD
+└── 02_projects/       ← Gerenciamento de projetos
+
+shared/               ← Tipos e utilitários compartilhados
+```
+
+---
+
 ## Key Achievements
 
 ### 1. Architecture: Hexagonal (Ports & Adapters)
@@ -41,7 +59,27 @@ The OUTE authentication service (`01_auth-profile`) has been **completely refact
 - ✅ Clear separation of concerns
 - ✅ Easy to test each layer independently
 
-### 2. Domain-Driven Design (DDD)
+### 2. Database: PostgreSQL com 25 Tabelas
+
+**Stack**: PostgreSQL 15 | 25 tabelas | 7 bounded contexts
+
+**Bounded Contexts**:
+- **IAM** (4 tables): users, orgs, org_members, refresh_tokens
+- **PROJECT** (4 tables): projects, proj_members, tags, project_tags
+- **INTERVIEW** (3 tables): interviews, messages, int_notes
+- **TEMPLATE ENGINE** (5 tables): sdlc_templates, milestones, epics, issues, checklists
+- **ESTIMATION ENGINE** (5 tables): sessions, responses, results, outputs, etc
+- **INTEGRATIONS** (3 tables): connections, export_sessions, mappings
+- **AUDIT** (1 table): audit_log (append-only, imutável)
+
+**Características**:
+- UUID v7 (time-ordered)
+- Soft deletes com `deleted_at`
+- JSONB para dados variáveis
+- Row-level isolation por Organization
+- Documentação completa em `docs/database/`
+
+### 3. Domain-Driven Design (DDD)
 
 Implemented core DDD concepts:
 
@@ -60,7 +98,7 @@ const password = await Password.create('SecurePass123!'); // Validates strength
 const user = User.create({ email, password, name: 'John' }); // Aggregate
 ```
 
-### 3. Clean Code Practices
+### 4. Clean Code Practices
 
 - **SOLID Principles**: Single responsibility, open/closed, etc.
 - **Naming**: Clear, intention-revealing names throughout
@@ -77,7 +115,7 @@ Cyclomatic Complexity: ✅ < 10 (all functions)
 Code Duplication: ✅ ~2%
 ```
 
-### 4. Test-Driven Development (TDD)
+### 5. Test-Driven Development (TDD)
 
 **Total: 178 Tests, All Passing** ✅
 
@@ -103,7 +141,7 @@ Code Duplication: ✅ ~2%
 - ✅ Error scenarios
 - ✅ Complete user flows
 
-### 5. Professional Standards
+### 6. Professional Standards
 
 #### Definition of Done (DoD)
 
@@ -444,31 +482,117 @@ See: `APPLYING_PATTERN_TO_OTHER_SERVICES.md`
 
 ---
 
+## Services Available
+
+### 🏠 99_home (packages/99_home) - Landing Page
+
+**Status**: ✅ Implementado
+**Porta**: 3003
+
+Landing page de marketing pública. Primeira página que usuários veem.
+
+**Features**:
+- Hero section com headline "Olá! Sou seu Arquiteto de Software."
+- Search input para descrever projetos
+- CTA "Entrar na Oute" + GitHub login
+- Stats section (57 estimações, 127 arquitetos, ∞ impacto)
+- Navbar com links (Docs, Pricing), signup button
+- Responsive design com tema dark idêntico ao dashboard
+
+---
+
+### 📊 00_dashboard (packages/00_dashboard) - Interface Principal
+
+**Status**: Em refatoração
+**Porta**: 3000
+
+Interface web principal para gerenciamento de projetos e estimações. Acessa auth-profile e projects services.
+
+---
+
+### 🔐 01_auth-profile (packages/01_auth-profile) - Autenticação
+
+**Status**: ✅ REFATORADO & Production-Ready
+**Porta**: 3001
+
+Serviço de autenticação JWT. Todos os outros serviços validam tokens aqui.
+
+**Padrões Implementados**:
+- Hexagonal Architecture (Ports & Adapters)
+- Domain-Driven Design (Entities, Value Objects, Aggregates)
+- Test-Driven Development (178 testes, 80%+ coverage)
+- Clean Code (SOLID principles, small functions, clear naming)
+
+---
+
+### 💬 03_interview (packages/03_interview) - Chat Interviews
+
+**Status**: ✅ Implementado
+**Porta**: 3002
+
+Interface de chat para entrevistas com IA. 3-panel layout:
+- **Left Panel**: Sidebar com histórico de entrevistas
+- **Center Panel**: Chat conversation window
+- **Right Panel**: Editable notes com métricas e export
+
+**Features**:
+- Chat com mensagens de usuário e IA
+- Notas editáveis com save/cancel
+- Export de notas como .txt
+- Métricas de progresso (progress %, horas, orçamento)
+- Tema dark idêntico ao dashboard
+
+---
+
+### 📋 02_projects (packages/02_projects) - Gerenciamento de Projetos
+
+**Status**: Em refatoração
+**Porta**: 3002
+
+API de gerenciamento de projetos com CRUD completo. Validação de JWT via 01_auth-profile.
+
+---
+
+### 🎨 design-system (packages/design-system)
+
+**Status**: ✅ Implementado
+**Storybook**: http://localhost:6006
+
+Sistema de design modular com Tailwind 4, componentes reutilizáveis e Storybook.
+
+**Inclui**:
+- Tokens de cores, tipografia, spacing
+- Componentes reutilizáveis (Button, Card, etc)
+- Tema dark/light
+- Storybook para documentação visual
+
+---
+
 ## Next Steps
 
 ### Immediate (This Week)
 
-1. Review this document with the team
-2. Get feedback on architecture
-3. Identify any questions or concerns
+1. ✅ Review monorepo structure with team
+2. ✅ Understand database schema (25 tables, 7 bounded contexts)
+3. ✅ Get feedback on 99_home landing page
 
 ### Short Term (Next 2-4 Weeks)
 
-1. Apply pattern to 00_dashboard
-2. Apply pattern to 02_projects
-3. Setup CI/CD pipelines
+1. Apply Hexagonal Architecture pattern to 00_dashboard
+2. Apply Hexagonal Architecture pattern to 02_projects
+3. Setup CI/CD pipelines for all services
 
 ### Medium Term (Months 2-3)
 
-1. Complete all services with pattern
+1. Complete refactoring of all services with same pattern
 2. Add cross-service integration tests
 3. Production deployment preparation
 
 ### Long Term
 
-1. Continuous improvement
-2. Team knowledge transfer
-3. Potential shared services library
+1. Continuous improvement & optimization
+2. Team knowledge transfer sessions
+3. Shared utilities library across services
 
 ---
 
