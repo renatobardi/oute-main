@@ -31,24 +31,27 @@ jobs:
 
             # Pull latest oute-mind (docker-compose lives here)
             cd ~/oute-mind
+            git pull origin main
 
             # Ensure .env is linked
             ln -sf .env.production .env
 
-            # Build and restart oute-main services (ports: 3020/3021/3022)
-            docker compose build 00_dashboard 01_auth-profile 02_projects
-            docker compose up -d 00_dashboard 01_auth-profile 02_projects
+            # Build and restart all oute-main services + caddy
+            docker compose build 00_dashboard 01_auth-profile 02_projects 99_home 03_interview
+            docker compose up -d 00_dashboard 01_auth-profile 02_projects 99_home 03_interview
+            docker compose restart caddy
           EOFVM
 
       - name: Health checks (via SSH + docker exec)
         run: |
           ssh ${{ secrets.VM_USER }}@${{ secrets.VM_HOSTNAME }} << 'EOFVM'
-            for svc in "Dashboard:oute-dashboard:3000" "Auth:oute-auth-profile:3001" "Projects:oute-projects:3002"; do
+            for svc in "Dashboard:oute-dashboard:3000:/dashboard/health" "Auth:oute-auth-profile:3001:/health" "Projects:oute-projects:3002:/health" "Home:oute-home:3003:/health" "Interview:oute-interview:3002:/chat/health"; do
               name=$(echo "$svc" | cut -d: -f1)
               container=$(echo "$svc" | cut -d: -f2)
               port=$(echo "$svc" | cut -d: -f3)
+              path=$(echo "$svc" | cut -d: -f4)
               for i in $(seq 1 20); do
-                if docker exec "$container" wget -qO- "http://127.0.0.1:${port}/health" > /dev/null 2>&1; then
+                if docker exec "$container" wget -qO- "http://127.0.0.1:${port}${path}" > /dev/null 2>&1; then
                   echo "✅ ${name} health check PASSED (container ${container})"
                   break
                 fi
@@ -67,12 +70,12 @@ jobs:
         run: |
           echo "✅ Deployment to VM successful!"
           echo "Services deployed:"
+          echo "  Landing Page: http://${{ secrets.VM_HOSTNAME }}/"
           echo "  Dashboard:    http://${{ secrets.VM_HOSTNAME }}/dashboard"
+          echo "  Chat:         http://${{ secrets.VM_HOSTNAME }}/chat"
           echo "  Auth API:     http://${{ secrets.VM_HOSTNAME }}/api/auth"
           echo "  Projects:     http://${{ secrets.VM_HOSTNAME }}/api/projects"
-          echo ""
-          echo "ℹ️  Landing Page (99_home) and Chat (03_interview) need to be configured"
-          echo "   separately in ~/oute-mind/docker-compose.yml"
+          echo "  FastAPI:      http://${{ secrets.VM_HOSTNAME }}/health"
 
       - name: Capture logs on failure
         if: failure()
@@ -88,4 +91,8 @@ jobs:
             docker compose logs --tail=30 01_auth-profile 2>&1 || true
             echo "=== Projects Logs ==="
             docker compose logs --tail=30 02_projects 2>&1 || true
+            echo "=== Home Logs ==="
+            docker compose logs --tail=30 99_home 2>&1 || true
+            echo "=== Interview Logs ==="
+            docker compose logs --tail=30 03_interview 2>&1 || true
           EOFVM

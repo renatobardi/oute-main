@@ -7,6 +7,9 @@ const config = {
       out: 'build',
       precompress: false,
     }),
+    paths: {
+      base: '/chat',
+    },
     alias: {
       $lib: 'src/lib',
       '@oute/design-system': '../../packages/design-system/src/lib/index.ts',
