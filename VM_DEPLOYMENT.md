@@ -10,11 +10,8 @@ oute-main (Dashboard, Auth-Profile, Projects APIs) é deployado na VM oute-mind 
 - **Host**: GCP VM t2a-standard-4 (ARM64)
 - **Network**: Docker network `oute-network` (compartilhado com oute-mind services)
 - **Database**: PostgreSQL 16 (mesma instância, database `oute_main` separada)
-- **Reverse Proxy**: Caddy (port 80, roteia requisições)
-- **Port Mapping**:
-  - Dashboard: 3020 (host) → 3000 (container)
-  - Auth API: 3021 (host) → 3001 (container)
-  - Projects API: 3022 (host) → 3002 (container)
+- **Reverse Proxy**: Caddy (ports 80/443 on host, only externally exposed ports)
+- **Service Access**: All services use `expose` (internal Docker network only) and are accessed exclusively through Caddy reverse proxy. No host port mappings for application services.
 
 ## Prerequisites
 
@@ -62,7 +59,7 @@ Se precisar fazer deploy manualmente:
 
 ```bash
 # 1. SSH into VM
-ssh ubuntu@<VM_IP>
+gcloud compute ssh oute-mind --zone=us-central1-a
 
 # 2. Navigate to oute-mind directory
 cd ~/oute-mind
@@ -71,22 +68,22 @@ cd ~/oute-mind
 git pull origin main
 
 # 4. Rebuild services
-docker-compose build --no-cache \
+docker compose build --no-cache \
   00_dashboard \
   01_auth-profile \
   02_projects
 
 # 5. Restart services
-docker-compose up -d \
+docker compose up -d \
   00_dashboard \
   01_auth-profile \
   02_projects
 
 # 6. Verify health
-docker-compose ps
-curl http://localhost:3020/health
-curl http://localhost:3021/health
-curl http://localhost:3022/health
+docker compose ps
+docker exec oute-dashboard curl -sf http://localhost:3000/health
+docker exec oute-auth curl -sf http://localhost:3001/health
+docker exec oute-projects curl -sf http://localhost:3002/health
 ```
 
 ## Configuration
@@ -105,81 +102,81 @@ PROJECTS_SERVICE_URL=http://02_projects:3002
 
 ### Docker Compose Integration
 
-O `docker-compose.yml` da VM é estendido com:
+O `docker compose.yml` da VM é estendido com:
 
 ```yaml
 00_dashboard:
-  ports: ["3020:3000"]
+  expose:
+    - "3000"
   environment:
     DATABASE_URL: postgresql://app-user:${POSTGRES_PASSWORD}@postgres:5432/oute_main
     AUTH_SERVICE_URL: http://01_auth-profile:3001
     PROJECTS_SERVICE_URL: http://02_projects:3002
 
 01_auth-profile:
-  ports: ["3021:3001"]
+  expose:
+    - "3001"
   environment:
     DATABASE_URL: postgresql://app-user:${POSTGRES_PASSWORD}@postgres:5432/oute_main
     JWT_SECRET: ${JWT_SECRET}
 
 02_projects:
-  ports: ["3022:3002"]
+  expose:
+    - "3002"
   environment:
     DATABASE_URL: postgresql://app-user:${POSTGRES_PASSWORD}@postgres:5432/oute_main
     AUTH_SERVICE_URL: http://01_auth-profile:3001
     JWT_SECRET: ${JWT_SECRET}
 ```
 
+> **Security note**: Services use `expose` instead of `ports`. This makes them accessible only within the Docker network (service-to-service communication), not from the host or external networks. All external access goes through Caddy reverse proxy on port 80.
+
 ## Accessing Services
 
-### Via Caddy (Recommended)
+### Via Caddy (Only Method)
 
-Caddy reverse proxy expõe services em:
+All services are accessed exclusively through Caddy reverse proxy on port 80:
 - Dashboard: `http://<VM_IP>/dashboard`
 - Auth API: `http://<VM_IP>/api/auth`
 - Projects API: `http://<VM_IP>/api/projects`
 
-### Direct Access (Por porta)
-
-Se Caddy estiver indisponível:
-- Dashboard: `http://<VM_IP>:3020`
-- Auth API: `http://<VM_IP>:3021`
-- Projects API: `http://<VM_IP>:3022`
+> **Note**: Direct port access (3020, 3021, 3022) is no longer available. Services use `expose` (internal Docker network only). If Caddy is down, use `docker exec` to access services directly within their containers.
 
 ## Monitoring & Logs
 
 ### Check Service Status
 
 ```bash
-ssh ubuntu@<VM_IP>
+gcloud compute ssh oute-mind --zone=us-central1-a
 cd ~/oute-mind
 
 # All services
-docker-compose ps
+docker compose ps
 
 # oute-main services only
-docker-compose ps 00_dashboard 01_auth-profile 02_projects
+docker compose ps 00_dashboard 01_auth-profile 02_projects
 ```
 
 ### View Logs
 
 ```bash
 # All services
-docker-compose logs -f
+docker compose logs -f
 
 # Specific service
-docker-compose logs -f 00_dashboard
-docker-compose logs -f 01_auth-profile
-docker-compose logs -f 02_projects
+docker compose logs -f 00_dashboard
+docker compose logs -f 01_auth-profile
+docker compose logs -f 02_projects
 
 # Last N lines
-docker-compose logs -f --tail=100 00_dashboard
+docker compose logs -f --tail=100 00_dashboard
 ```
 
 ### Database Connectivity
 
 ```bash
 # From VM
-ssh ubuntu@<VM_IP>
+gcloud compute ssh oute-mind --zone=us-central1-a
 psql -U app-user -h localhost -d oute_main -c "SELECT 1;"
 
 # Check tables
@@ -191,16 +188,19 @@ psql -U app-user -h localhost -d oute_main -c "\dt"
 Cada serviço expõe endpoint `/health`:
 
 ```bash
-# Dashboard
-curl http://localhost:3020/health
+# Via Caddy reverse proxy (recommended)
+curl http://localhost/dashboard/health
+curl http://localhost/api/auth/health
+curl http://localhost/api/projects/health
+
+# Via docker exec (if Caddy is down or for debugging)
+docker exec oute-dashboard curl -sf http://localhost:3000/health
 # {"status":"ok","service":"dashboard","timestamp":"2026-03-10T..."}
 
-# Auth API
-curl http://localhost:3021/health
+docker exec oute-auth curl -sf http://localhost:3001/health
 # {"status":"ok","service":"auth-profile","timestamp":"2026-03-10T..."}
 
-# Projects API
-curl http://localhost:3022/health
+docker exec oute-projects curl -sf http://localhost:3002/health
 # {"status":"ok","service":"projects","timestamp":"2026-03-10T..."}
 ```
 
@@ -210,27 +210,25 @@ curl http://localhost:3022/health
 
 ```bash
 # Check logs
-docker-compose logs 00_dashboard
+docker compose logs 00_dashboard
 
 # Common issues:
 # 1. Database connection failed → Verifique DATABASE_URL
-# 2. Port conflict → Verifique docker-compose.yml port mappings
-# 3. Build error → Verifique Dockerfile, tente rebuild: docker-compose build --no-cache 00_dashboard
+# 2. Container conflict → Verifique docker compose.yml expose settings
+# 3. Build error → Verifique Dockerfile, tente rebuild: docker compose build --no-cache 00_dashboard
 ```
 
 ### Saúde CHECK falha
 
 ```bash
-# Verify port is open
-netstat -tulpn | grep 3020  # Dashboard
-netstat -tulpn | grep 3021  # Auth
-netstat -tulpn | grep 3022  # Projects
-
 # Verify service is running
-docker-compose ps 00_dashboard  # Should show "Up"
+docker compose ps 00_dashboard  # Should show "Up"
+
+# Check health directly inside the container
+docker exec oute-dashboard curl -sf http://localhost:3000/health
 
 # Check logs for errors
-docker-compose logs 00_dashboard
+docker compose logs 00_dashboard
 ```
 
 ### Database connection error
@@ -250,13 +248,13 @@ docker exec oute-postgres psql -U app-user -c "CREATE DATABASE oute_main;"
 
 ```bash
 # Check Caddy logs
-docker-compose logs caddy
+docker compose logs caddy
 
 # Verify Caddyfile
 cat configs/Caddyfile
 
 # Reload Caddy
-docker-compose restart caddy
+docker compose restart caddy
 ```
 
 ## Rollback
@@ -264,22 +262,22 @@ docker-compose restart caddy
 Se deployment falhar e precisa revert:
 
 ```bash
-ssh ubuntu@<VM_IP>
+gcloud compute ssh oute-mind --zone=us-central1-a
 cd ~/oute-mind
 
 # Stop services
-docker-compose down 00_dashboard 01_auth-profile 02_projects
+docker compose down 00_dashboard 01_auth-profile 02_projects
 
 # Revert code to previous version
 git log --oneline -10  # Ver commits
 git checkout <PREVIOUS_COMMIT>
 
 # Rebuild and start
-docker-compose build --no-cache 00_dashboard 01_auth-profile 02_projects
-docker-compose up -d 00_dashboard 01_auth-profile 02_projects
+docker compose build --no-cache 00_dashboard 01_auth-profile 02_projects
+docker compose up -d 00_dashboard 01_auth-profile 02_projects
 
 # Verify
-curl http://localhost:3020/health
+docker exec oute-dashboard curl -sf http://localhost:3000/health
 ```
 
 ## Database Backup
@@ -291,7 +289,7 @@ Backup `oute_main` database:
 # /var/lib/postgresql/backups/oute_main_YYYYMMDD.sql
 
 # Manual backup
-ssh ubuntu@<VM_IP>
+gcloud compute ssh oute-mind --zone=us-central1-a
 docker exec oute-postgres pg_dump -U app-user oute_main > oute_main_backup.sql
 
 # Restore from backup
@@ -303,11 +301,16 @@ docker exec -i oute-postgres psql -U app-user oute_main < oute_main_backup.sql
 Prometheus e Grafana monitoram os serviços:
 
 ```bash
+# Prometheus and Grafana are internal-only (not exposed on host ports).
+# Access via SSH tunnel:
+
 # Prometheus
-# http://<VM_IP>:9090
+gcloud compute ssh oute-mind --zone=us-central1-a -- -L 9090:prometheus:9090
+# Then open http://localhost:9090
 
 # Grafana
-# http://<VM_IP>:3080
+gcloud compute ssh oute-mind --zone=us-central1-a -- -L 3080:grafana:3000
+# Then open http://localhost:3080
 # Credentials: admin/GRAFANA_PASSWORD
 ```
 
@@ -321,8 +324,8 @@ Dashboards incluem métricas de:
 
 Para issues ou perguntas:
 
-1. Verifique logs: `docker-compose logs <service>`
-2. Verifique health: `curl http://localhost:<port>/health`
+1. Verifique logs: `docker compose logs <service>`
+2. Verifique health: `docker exec <container> curl -sf http://localhost:<internal_port>/health`
 3. Verifique connectivity: Teste database, other services
 4. Consulte este documento's troubleshooting section
 5. Contate DevOps team

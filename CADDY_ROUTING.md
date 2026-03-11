@@ -12,7 +12,7 @@ The OUTE application consists of 5 main services running on the VM at `34.132.93
 | **03_interview** | 3002 | Chat interface (`/chat`) |
 | **00_dashboard** | 3000 | Main dashboard (default fallback) |
 | **01_auth-profile** | 3001 | Authentication API (`/api/auth/*`) |
-| **02_projects** | 3022 (prod) | Projects API (`/api/projects/*`) |
+| **02_projects** | 3002 | Projects API (`/api/projects/*`) |
 
 ## Required Caddy Configuration
 
@@ -20,36 +20,38 @@ The Caddy reverse proxy (located in `~/oute-mind/Caddyfile`) should be configure
 
 ```caddyfile
 # OUTE Production Routing Configuration
+# Caddy uses Docker DNS to resolve container names within the oute-network.
+# Services use `expose` (not `ports`), so they are only reachable via the Docker network.
 
 # Root domain routing
 34.132.93.171 {
   # Landing page at root
   @root path /
   handle @root {
-    reverse_proxy localhost:3003
+    reverse_proxy http://oute-home:3003
   }
 
   # Chat interface
   @chat path /chat*
   handle @chat {
-    reverse_proxy localhost:3002
+    reverse_proxy http://oute-interview:3002
   }
 
   # Auth API endpoints
   @auth path /api/auth*
   handle @auth {
-    reverse_proxy localhost:3001
+    reverse_proxy http://01_auth-profile:3001
   }
 
   # Projects API endpoints
   @projects path /api/projects*
   handle @projects {
-    reverse_proxy localhost:3022
+    reverse_proxy http://02_projects:3002
   }
 
   # Default fallback to Dashboard
   handle {
-    reverse_proxy localhost:3000
+    reverse_proxy http://00_dashboard:3000
   }
 
   # CORS headers for cross-origin requests
@@ -66,17 +68,6 @@ The Caddy reverse proxy (located in `~/oute-mind/Caddyfile`) should be configure
     format json
   }
 }
-
-# HTTPS support (when TLS is configured)
-# https://34.132.93.171 {
-#   # Same configuration as above
-# }
-
-# Health check endpoints (for monitoring)
-# These should NOT be proxied, just return 200 OK
-34.132.93.171/health {
-  respond 200
-}
 ```
 
 ## Routing Logic
@@ -86,19 +77,19 @@ The Caddy reverse proxy (located in `~/oute-mind/Caddyfile`) should be configure
 ```
 Client Request (34.132.93.171)
     ↓
-Caddy Reverse Proxy (Port 80)
-    ↓
-    ├─→ /                  → localhost:3003 (99_home - Landing Page)
-    ├─→ /chat              → localhost:3002 (03_interview - Chat)
-    ├─→ /api/auth/*        → localhost:3001 (01_auth-profile - Auth API)
-    ├─→ /api/projects/*    → localhost:3022 (02_projects - Projects API)
-    └─→ /* (default)       → localhost:3000 (00_dashboard - Main App)
+Caddy Reverse Proxy (Port 80 on host)
+    ↓  (routes to containers via Docker internal network)
+    ├─→ /                  → http://oute-home:3003 (99_home - Landing Page)
+    ├─→ /chat              → http://oute-interview:3002 (03_interview - Chat)
+    ├─→ /api/auth/*        → http://01_auth-profile:3001 (Auth API)
+    ├─→ /api/projects/*    → http://02_projects:3002 (Projects API)
+    └─→ /* (default)       → http://00_dashboard:3000 (Main App)
 ```
 
 ## User Journey
 
 1. **User visits `34.132.93.171/`**
-   - Caddy routes to `localhost:3003` (99_home)
+   - Caddy routes to `http://oute-home:3003` (99_home)
    - Landing page loads with hero, CTA, stats
 
 2. **User clicks "Entrar na Oute" (CTA)**
@@ -107,11 +98,11 @@ Caddy Reverse Proxy (Port 80)
 
 3. **User submits login form**
    - Frontend calls `POST 34.132.93.171/api/auth?action=login`
-   - Caddy routes to `localhost:3001` (01_auth-profile)
+   - Caddy routes to `http://01_auth-profile:3001`
    - Login API processes credentials, returns JWT
 
 4. **User redirected to `/chat` after login**
-   - Caddy routes to `localhost:3002` (03_interview)
+   - Caddy routes to `http://oute-interview:3002` (03_interview)
    - Chat interface loads with authentication
 
 5. **User interacts with chat**
@@ -131,10 +122,10 @@ Caddy Reverse Proxy (Port 80)
 
 3. **Test routing**:
    ```bash
-   # Test each endpoint
-   curl http://localhost:34.132.93.171/
-   curl http://localhost:34.132.93.171/chat
-   curl http://localhost:34.132.93.171/api/auth/status
+   # Test each endpoint (via Caddy on port 80)
+   curl http://localhost/
+   curl http://localhost/chat
+   curl http://localhost/api/auth/status
    ```
 
 ## Health Checks
@@ -142,11 +133,18 @@ Caddy Reverse Proxy (Port 80)
 Each service exposes a `/health` endpoint:
 
 ```bash
-curl http://localhost:3003/health  # 99_home
-curl http://localhost:3002/health  # 03_interview
-curl http://localhost:3000/health  # 00_dashboard
-curl http://localhost:3001/health  # 01_auth-profile
-curl http://localhost:3022/health  # 02_projects
+# Via Caddy (recommended - service ports are not exposed on host)
+curl http://localhost/health
+curl http://localhost/dashboard/health
+curl http://localhost/api/auth/health
+curl http://localhost/api/projects/health
+
+# Via docker exec (for debugging when Caddy is down)
+docker exec oute-home curl -sf http://localhost:3003/health
+docker exec oute-interview curl -sf http://localhost:3002/health
+docker exec oute-dashboard curl -sf http://localhost:3000/health
+docker exec oute-auth curl -sf http://localhost:3001/health
+docker exec oute-projects curl -sf http://localhost:3002/health
 ```
 
 ## Environment Variables for Services
@@ -217,7 +215,7 @@ Monitor service health in production:
 
 ```bash
 # SSH to VM
-ssh ubuntu@34.132.93.171
+gcloud compute ssh oute-mind --zone=us-central1-a
 
 # Check all containers
 cd ~/oute-mind
@@ -228,10 +226,10 @@ docker compose logs -f 99_home
 docker compose logs -f 03_interview
 docker compose logs -f 01_auth-profile
 
-# Test endpoint availability
-curl -v http://localhost:3003/health
-curl -v http://localhost:3002/health
-curl -v http://localhost:3001/health
+# Test endpoint availability (via docker exec, ports not exposed on host)
+docker exec oute-home curl -sf http://localhost:3003/health
+docker exec oute-interview curl -sf http://localhost:3002/health
+docker exec oute-auth curl -sf http://localhost:3001/health
 ```
 
 ## Notes
