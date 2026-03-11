@@ -1,25 +1,18 @@
-import postgres from 'postgres';
+import type postgres from 'postgres';
+import { getDb } from '@oute/shared/database';
 import { User, UserId, Email, IUserRepository } from '../../../domain';
 
 /**
  * PostgresUserRepository Adapter
  * - Implements IUserRepository Port
- * - Uses postgres driver for real PostgreSQL persistence
+ * - Uses shared connection pool from @oute/shared/database
  * - Soft deletes via deleted_at column
  */
 export class PostgresUserRepository implements IUserRepository {
   private sql: postgres.Sql;
 
-  constructor(databaseUrl?: string) {
-    const url = databaseUrl ?? process.env.DATABASE_URL;
-    if (!url) {
-      throw new Error('DATABASE_URL environment variable is required');
-    }
-    this.sql = postgres(url, {
-      max: 10,
-      idle_timeout: 20,
-      connect_timeout: 10,
-    });
+  constructor(sql?: postgres.Sql) {
+    this.sql = sql ?? getDb();
   }
 
   async save(user: User): Promise<void> {
