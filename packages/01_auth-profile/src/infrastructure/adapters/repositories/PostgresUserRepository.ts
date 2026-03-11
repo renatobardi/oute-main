@@ -1,82 +1,102 @@
+import postgres from 'postgres';
 import { User, UserId, Email, IUserRepository } from '../../../domain';
 
 /**
  * PostgresUserRepository Adapter
  * - Implements IUserRepository Port
- * - Abstracts PostgreSQL persistence
- * - Note: Real implementation would use postgres driver
- * - This is a mock for demonstration (TDD: write test first)
+ * - Uses postgres driver for real PostgreSQL persistence
+ * - Soft deletes via deleted_at column
  */
 export class PostgresUserRepository implements IUserRepository {
-  // In-memory storage for now (mock)
-  private users: Map<string, User> = new Map();
+  private sql: postgres.Sql;
 
-  constructor() {
-    // TODO: Initialize database connection
-    // const client = new postgres(process.env.DATABASE_URL);
-  }
-
-  save(user: User): Promise<void> {
-    // Mock: store in memory
-    this.users.set(user.id.getValue(), user);
-
-    // Real implementation:
-    // await client.query(
-    //   'INSERT INTO users (id, email, password_hash, name, roles, created_at, last_login) VALUES ($1, $2, $3, $4, $5, $6, $7)',
-    //   [user.id.getValue(), user.email.getValue(), user.getPasswordHash(), user.name, ...]
-    // );
-    return Promise.resolve();
-  }
-
-  findById(id: UserId): Promise<User | null> {
-    // Mock: retrieve from memory
-    return Promise.resolve(this.users.get(id.getValue()) ?? null);
-
-    // Real implementation:
-    // const result = await client.query('SELECT * FROM users WHERE id = $1', [id.getValue()]);
-    // if (result.rows.length === 0) return null;
-    // return User.reconstruct(result.rows[0]);
-  }
-
-  findByEmail(email: Email): Promise<User | null> {
-    // Mock: search in memory
-    for (const user of this.users.values()) {
-      if (user.email.equals(email)) {
-        return Promise.resolve(user);
-      }
+  constructor(databaseUrl?: string) {
+    const url = databaseUrl ?? process.env.DATABASE_URL;
+    if (!url) {
+      throw new Error('DATABASE_URL environment variable is required');
     }
-    return Promise.resolve(null);
-
-    // Real implementation:
-    // const result = await client.query('SELECT * FROM users WHERE email = $1', [email.getValue()]);
-    // if (result.rows.length === 0) return null;
-    // return User.reconstruct(result.rows[0]);
+    this.sql = postgres(url, {
+      max: 10,
+      idle_timeout: 20,
+      connect_timeout: 10,
+    });
   }
 
-  delete(id: UserId): Promise<void> {
-    // Mock: delete from memory
-    this.users.delete(id.getValue());
+  async save(user: User): Promise<void> {
+    const plain = user.toPlainObject();
 
-    // Real implementation:
-    // await client.query('DELETE FROM users WHERE id = $1', [id.getValue()]);
-    return Promise.resolve();
+    await this.sql`
+      INSERT INTO users (id, email, password_hash, name, last_login_at, created_at)
+      VALUES (
+        ${plain.id},
+        ${plain.email},
+        ${user.getPasswordHash()},
+        ${plain.name},
+        ${plain.lastLogin},
+        ${plain.createdAt}
+      )
+      ON CONFLICT (id) DO UPDATE SET
+        email = EXCLUDED.email,
+        password_hash = EXCLUDED.password_hash,
+        name = EXCLUDED.name,
+        last_login_at = EXCLUDED.last_login_at
+    `;
   }
 
-  exists(id: UserId): Promise<boolean> {
-    // Mock
-    return Promise.resolve(this.users.has(id.getValue()));
+  async findById(id: UserId): Promise<User | null> {
+    const rows = await this.sql`
+      SELECT id, email, password_hash, name, last_login_at, created_at
+      FROM users
+      WHERE id = ${id.getValue()} AND deleted_at IS NULL
+    `;
 
-    // Real implementation:
-    // const result = await client.query('SELECT 1 FROM users WHERE id = $1 LIMIT 1', [id.getValue()]);
-    // return result.rows.length > 0;
+    if (rows.length === 0) return null;
+    return this.toDomain(rows[0]);
   }
 
-  count(): Promise<number> {
-    // Mock
-    return Promise.resolve(this.users.size);
+  async findByEmail(email: Email): Promise<User | null> {
+    const rows = await this.sql`
+      SELECT id, email, password_hash, name, last_login_at, created_at
+      FROM users
+      WHERE email = ${email.getValue()} AND deleted_at IS NULL
+    `;
 
-    // Real implementation:
-    // const result = await client.query('SELECT COUNT(*) FROM users');
-    // return parseInt(result.rows[0].count);
+    if (rows.length === 0) return null;
+    return this.toDomain(rows[0]);
+  }
+
+  async delete(id: UserId): Promise<void> {
+    await this.sql`
+      UPDATE users SET deleted_at = now()
+      WHERE id = ${id.getValue()} AND deleted_at IS NULL
+    `;
+  }
+
+  async exists(id: UserId): Promise<boolean> {
+    const rows = await this.sql`
+      SELECT 1 FROM users
+      WHERE id = ${id.getValue()} AND deleted_at IS NULL
+      LIMIT 1
+    `;
+    return rows.length > 0;
+  }
+
+  async count(): Promise<number> {
+    const [row] = await this.sql`
+      SELECT count(*)::int AS n FROM users WHERE deleted_at IS NULL
+    `;
+    return row.n;
+  }
+
+  private toDomain(row: postgres.Row): User {
+    return User.reconstruct({
+      id: row.id,
+      email: row.email,
+      passwordHash: row.password_hash,
+      name: row.name,
+      roles: ['USER'],
+      createdAt: new Date(row.created_at),
+      lastLogin: row.last_login_at ? new Date(row.last_login_at) : null,
+    });
   }
 }

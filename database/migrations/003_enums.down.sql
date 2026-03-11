@@ -1,0 +1,11 @@
+DROP TYPE IF EXISTS export_status;
+DROP TYPE IF EXISTS integration_provider;
+DROP TYPE IF EXISTS reviewer_verdict;
+DROP TYPE IF EXISTS estimation_session_status;
+DROP TYPE IF EXISTS milestone_tracking_status;
+DROP TYPE IF EXISTS message_type;
+DROP TYPE IF EXISTS message_sender;
+DROP TYPE IF EXISTS interview_status;
+DROP TYPE IF EXISTS project_type;
+DROP TYPE IF EXISTS project_status;
+DROP TYPE IF EXISTS user_role;
