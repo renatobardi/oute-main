@@ -32,6 +32,20 @@ services:
     networks:
       - oute-network
 
+  99_home:
+    build:
+      context: .
+      dockerfile: packages/99_home/Dockerfile
+    container_name: oute-home
+    ports:
+      - '3003:3003'
+    environment:
+      - NODE_ENV=production
+      - VITE_AUTH_SERVICE_URL=http://localhost:3001
+      - VITE_API_TIMEOUT=30000
+    networks:
+      - oute-network
+
   00_dashboard:
     build:
       context: .
@@ -73,7 +87,7 @@ services:
       dockerfile: packages/02_projects/Dockerfile
     container_name: oute-projects
     ports:
-      - '3002:3002'
+      - '3004:3002'
     environment:
       - NODE_ENV=development
       - DATABASE_URL=postgresql://app-user:dev-password@postgres:5432/oute_db
@@ -82,6 +96,20 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+    networks:
+      - oute-network
+
+  03_interview:
+    build:
+      context: .
+      dockerfile: packages/03_interview/Dockerfile
+    container_name: oute-interview
+    ports:
+      - '3002:3002'
+    environment:
+      - NODE_ENV=production
+      - VITE_AUTH_SERVICE_URL=http://localhost:3001
+      - VITE_API_TIMEOUT=30000
     networks:
       - oute-network
 
