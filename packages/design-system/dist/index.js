@@ -1,3 +1,5 @@
+// Export components
+export { default as Button } from '../components/Button.svelte';
 // Export color tokens
 export { colors, primary, secondary, neutral } from '../tokens/colors';
 // Export typography tokens

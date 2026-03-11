@@ -4,8 +4,21 @@
 
 This document provides a **template and step-by-step guide** for applying the same Hexagonal Architecture + DDD + Clean Code + TDD pattern used in `01_auth-profile` to the other services:
 
-- **00_dashboard** - Dashboard UI and widget management
-- **02_projects** - Project management and collaboration
+- **00_dashboard** - Dashboard UI and widget management (Priority 2)
+- **02_projects** - Project management and collaboration (Priority 1)
+
+## Current Status
+
+**✅ Already Refactored**:
+- `01_auth-profile` - Complete Hexagonal Architecture + DDD + TDD (178 tests, 80%+ coverage)
+
+**✅ Already Implemented** (Marketing & Interview):
+- `99_home` - Landing page with hero + CTA + stats
+- `03_interview` - 3-panel chat interface with notes
+
+**🔄 Next to Refactor** (in order):
+1. `02_projects` - Project management API (~5-6 weeks)
+2. `00_dashboard` - Main dashboard UI (~5-6 weeks)
 
 ## Architecture Template
 

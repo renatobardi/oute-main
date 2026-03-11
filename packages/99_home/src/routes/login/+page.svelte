@@ -1,18 +1,42 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
+  import { login } from '$lib/auth';
 
   let email = '';
   let password = '';
   let isLoading = false;
+  let errorMessage = '';
 
   async function handleLogin() {
+    // Validate inputs
+    if (!email || !password) {
+      errorMessage = 'Por favor, preencha email e senha';
+      return;
+    }
+
     isLoading = true;
+    errorMessage = '';
+
     try {
-      // TODO: Implement actual login
-      console.log('Login attempt:', { email, password });
-      await goto('/dashboard');
+      // Call the login function from auth.ts
+      // This will POST to /api/auth?action=login
+      await login(email, password);
+
+      // Success! Redirect to chat
+      await goto('/chat');
+    } catch (error) {
+      errorMessage =
+        error instanceof Error ? error.message : 'Erro ao fazer login. Tente novamente.';
+      // eslint-disable-next-line no-console
+      console.error('Login error:', error);
     } finally {
       isLoading = false;
+    }
+  }
+
+  function handleKeydown(event: KeyboardEvent) {
+    if (event.key === 'Enter' && !isLoading) {
+      handleLogin();
     }
   }
 </script>
@@ -21,6 +45,12 @@
   <div class="w-full max-w-md">
     <div class="bg-[#162a31] border border-[#21404a] rounded-lg p-8">
       <h1 class="text-2xl font-bold text-white mb-6 text-center">Login</h1>
+
+      {#if errorMessage}
+        <div class="mb-4 p-3 bg-red-900 border border-red-700 rounded text-red-100 text-sm">
+          {errorMessage}
+        </div>
+      {/if}
 
       <div class="space-y-4">
         <div>
@@ -31,8 +61,10 @@
             id="email"
             type="email"
             bind:value={email}
+            on:keydown={handleKeydown}
             placeholder="seu@email.com"
-            class="w-full bg-[#0f1e23] border border-[#21404a] rounded px-3 py-2 text-sm text-neutral-300 placeholder-neutral-500 focus:outline-none focus:border-primary-600"
+            disabled={isLoading}
+            class="w-full bg-[#0f1e23] border border-[#21404a] rounded px-3 py-2 text-sm text-neutral-300 placeholder-neutral-500 focus:outline-none focus:border-primary-600 disabled:opacity-50"
           />
         </div>
 
@@ -44,8 +76,10 @@
             id="password"
             type="password"
             bind:value={password}
+            on:keydown={handleKeydown}
             placeholder="••••••••"
-            class="w-full bg-[#0f1e23] border border-[#21404a] rounded px-3 py-2 text-sm text-neutral-300 placeholder-neutral-500 focus:outline-none focus:border-primary-600"
+            disabled={isLoading}
+            class="w-full bg-[#0f1e23] border border-[#21404a] rounded px-3 py-2 text-sm text-neutral-300 placeholder-neutral-500 focus:outline-none focus:border-primary-600 disabled:opacity-50"
           />
         </div>
 
@@ -57,6 +91,12 @@
           {isLoading ? 'Entrando...' : 'Entrar'}
         </button>
       </div>
+
+      <p class="text-center text-sm text-neutral-400 mt-6">
+        Teste com: <br />
+        Email: <code class="text-primary-400">user@example.com</code> <br />
+        Senha: <code class="text-primary-400">SecurePass123!</code>
+      </p>
     </div>
   </div>
 </div>

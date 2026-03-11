@@ -1,5 +1,34 @@
 # OUTE Refactoring - Next Steps Checklist
 
+## 📦 Complete Package Overview
+
+```
+packages/
+├── 99_home           ← ✅ Landing page (Public marketing page)
+├── 00_dashboard      ← 🔄 Refactoring (Main app interface)
+├── 03_interview      ← ✅ Chat interface (AI-powered interviews)
+├── 01_auth-profile   ← ✅ REFACTORED (Hexagonal Architecture + DDD + TDD)
+├── 02_projects       ← 🔄 Refactoring (Project management)
+└── design-system     ← ✅ Completed (Tokens + Components)
+```
+
+**Status Summary**:
+- ✅ 99_home: Landing page with hero, CTA, stats
+- ✅ 03_interview: 3-panel chat interface for interviews
+- ✅ 01_auth-profile: Full refactoring complete (178 tests, 80%+ coverage)
+- 🔄 00_dashboard: Needs refactoring (follow 01_auth-profile pattern)
+- 🔄 02_projects: Needs refactoring (follow 01_auth-profile pattern)
+- ✅ design-system: Shared UI components & tokens
+
+**Ports**:
+- 3003: 99_home (Landing page)
+- 3000: 00_dashboard (Main app)
+- 3002: 03_interview (Chat interface)
+- 3001: 01_auth-profile (Auth API)
+- 6006: design-system (Storybook)
+
+---
+
 ## Phase 5 Completion Verification ✅
 
 ### E2E Test Suite
