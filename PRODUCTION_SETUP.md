@@ -22,16 +22,18 @@ The actual Docker Compose configuration and deployment happens in `~/oute-mind`,
 
 ### ✅ Already Deployed (via GitHub Actions)
 ```
-00_dashboard → Port 3020
-01_auth-profile → Port 3021
-02_projects → Port 3022
+00_dashboard → Internal port 3000 (accessed via Caddy at /dashboard)
+01_auth-profile → Internal port 3001 (accessed via Caddy at /api/auth)
+02_projects → Internal port 3002 (accessed via Caddy at /api/projects)
 ```
 
 ### ⏳ Need Manual Setup in oute-mind
 ```
-99_home → Port 3003 (Landing Page)
-03_interview → Port 3002 (Chat Interface)
+99_home → Internal port 3003 (accessed via Caddy at /)
+03_interview → Internal port 3002 (accessed via Caddy at /chat)
 ```
+
+> **Note**: All services use `expose` (internal Docker network only). No host port mappings. All external access goes through Caddy on port 80.
 
 ---
 
@@ -42,7 +44,7 @@ Since these services are **not yet in `~/oute-mind/docker-compose.yml`**, you ne
 ### Step 1: SSH to the VM
 
 ```bash
-ssh ubuntu@34.132.93.171
+gcloud compute ssh oute-mind --zone=us-central1-a
 cd ~/oute-mind
 ```
 
@@ -56,8 +58,8 @@ Add the following services to `docker-compose.yml`:
       context: ../oute-main
       dockerfile: packages/99_home/Dockerfile
     container_name: oute-home
-    ports:
-      - '3003:3003'
+    expose:
+      - '3003'
     environment:
       - NODE_ENV=production
       - VITE_AUTH_SERVICE_URL=http://34.132.93.171
@@ -72,8 +74,8 @@ Add the following services to `docker-compose.yml`:
       context: ../oute-main
       dockerfile: packages/03_interview/Dockerfile
     container_name: oute-interview
-    ports:
-      - '3002:3002'
+    expose:
+      - '3002'
     environment:
       - NODE_ENV=production
       - VITE_AUTH_SERVICE_URL=http://34.132.93.171
@@ -94,30 +96,30 @@ Add routing rules for the new services to `Caddyfile`:
   # Landing page at root
   @root path /
   handle @root {
-    reverse_proxy localhost:3003
+    reverse_proxy http://oute-home:3003
   }
 
   # Chat interface
   @chat path /chat*
   handle @chat {
-    reverse_proxy localhost:3002
+    reverse_proxy http://oute-interview:3002
   }
 
   # Auth API endpoints
   @auth path /api/auth*
   handle @auth {
-    reverse_proxy localhost:3001
+    reverse_proxy http://01_auth-profile:3001
   }
 
   # Projects API endpoints
   @projects path /api/projects*
   handle @projects {
-    reverse_proxy localhost:3022
+    reverse_proxy http://02_projects:3002
   }
 
   # Default fallback to Dashboard
   handle {
-    reverse_proxy localhost:3000
+    reverse_proxy http://00_dashboard:3000
   }
 
   # CORS headers
@@ -157,14 +159,13 @@ docker compose ps
 ### Step 5: Verify Deployment
 
 ```bash
-# Test landing page
-curl http://localhost:3003/health
-
-# Test chat
-curl http://localhost:3002/health
-
-# Test via Caddy
+# Test via Caddy (recommended - services are not exposed on host ports)
 curl http://localhost/
+curl http://localhost/chat
+
+# Test via docker exec (if Caddy is down)
+docker exec oute-home curl -sf http://localhost:3003/health
+docker exec oute-interview curl -sf http://localhost:3002/health
 
 # Check Caddy logs
 docker compose logs -f caddy
@@ -255,7 +256,7 @@ docker compose logs caddy | grep -i route
 ## Full User Journey After Setup
 
 1. **User visits http://34.132.93.171/**
-   - Caddy routes to `localhost:3003` (99_home)
+   - Caddy routes to `http://oute-home:3003` (99_home)
    - Landing page loads with hero, CTA, stats
 
 2. **User clicks "Entrar na Oute"**
@@ -263,11 +264,11 @@ docker compose logs caddy | grep -i route
 
 3. **User logs in**
    - Frontend calls `POST /api/auth?action=login`
-   - Caddy routes to `localhost:3001` (01_auth-profile)
+   - Caddy routes to `http://01_auth-profile:3001`
    - JWT token returned and stored
 
 4. **User redirected to `/chat`**
-   - Caddy routes to `localhost:3002` (03_interview)
+   - Caddy routes to `http://oute-interview:3002` (03_interview)
    - Chat interface loads with authentication
 
 ---
@@ -310,15 +311,18 @@ Build time: ~3-5 minutes per service depending on network and disk speed.
 Each service has a `/health` endpoint:
 
 ```bash
-# Direct service health checks
-curl http://localhost:3000/health  # Dashboard
-curl http://localhost:3001/health  # Auth
-curl http://localhost:3002/health  # Interview (Chat)
-curl http://localhost:3003/health  # Home (Landing Page)
-curl http://localhost:3022/health  # Projects
+# Via Caddy reverse proxy (recommended - ports not exposed on host)
+curl http://34.132.93.171/health
+curl http://34.132.93.171/dashboard/health
+curl http://34.132.93.171/api/auth/health
+curl http://34.132.93.171/api/projects/health
 
-# Via Caddy reverse proxy
-curl http://34.132.93.171/health   # Should return landing page or dashboard
+# Via docker exec (if Caddy is down or for debugging)
+docker exec oute-dashboard curl -sf http://localhost:3000/health
+docker exec oute-auth curl -sf http://localhost:3001/health
+docker exec oute-interview curl -sf http://localhost:3002/health
+docker exec oute-home curl -sf http://localhost:3003/health
+docker exec oute-projects curl -sf http://localhost:3002/health
 ```
 
 ---

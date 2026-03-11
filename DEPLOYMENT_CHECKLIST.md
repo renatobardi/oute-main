@@ -21,9 +21,9 @@
 - [x] Documentação `VM_DEPLOYMENT.md` criada
 
 ### Fase 3: oute-mind Integration ✅
-- [x] docker-compose.yml atualizado:
+- [x] docker compose.yml atualizado:
   - 3 serviços oute-main adicionados (00_dashboard, 01_auth-profile, 02_projects)
-  - Port mapping: 3020-3022 (host) → 3000-3002 (container)
+  - Services use `expose` (internal Docker network only, no host port mapping)
   - Health checks configurados
 - [x] Grafana movido de porta 3001 → 3080 (libera 3001 para Auth API)
 
@@ -74,20 +74,20 @@ git push origin feat/vm-deployment  # ou seu branch
 ### 4. Validação Post-Deploy
 ```bash
 # SSH na VM
-ssh ubuntu@<VM_IP>
+gcloud compute ssh oute-mind --zone=us-central1-a
 
 # Verificar services
-docker-compose ps
+docker compose ps
 
-# Health checks
-curl http://localhost:3020/health  # Dashboard
-curl http://localhost:3021/health  # Auth API
-curl http://localhost:3022/health  # Projects API
-
-# Via Caddy (reverse proxy)
+# Health checks via Caddy (reverse proxy)
 curl http://localhost/dashboard/health
 curl http://localhost/api/auth/health
 curl http://localhost/api/projects/health
+
+# Health checks via docker exec (if Caddy is down)
+docker exec oute-dashboard curl -sf http://localhost:3000/health
+docker exec oute-auth curl -sf http://localhost:3001/health
+docker exec oute-projects curl -sf http://localhost:3002/health
 ```
 
 ---
@@ -111,19 +111,22 @@ JWT_SECRET=SECURE_RANDOM_KEY
 
 ---
 
-## 📊 Port Mapping Summary
+## 📊 Service Access Summary
 
-| Serviço | Porta Host | Porta Container | Status |
-|---------|-----------|-----------------|--------|
-| Dashboard | 3020 | 3000 | ✅ Novo |
-| Auth API | 3021 | 3001 | ✅ Novo |
-| Projects API | 3022 | 3002 | ✅ Novo |
-| Jina Reader | 3000 | 3000 | ✅ Crítico (não mexer) |
-| Grafana | 3080 | 3000 | ✅ Movido (de 3001) |
-| FastAPI | 8000 | 8000 | ✅ Existente |
-| Prometheus | 9090 | 9090 | ✅ Existente |
-| PostgreSQL | 5432 | 5432 | ✅ Existente |
-| Caddy (Reverse Proxy) | 80 | 80 | ✅ Existente |
+All services use `expose` (internal Docker network only). Only Caddy has host port mappings.
+
+| Serviço | Internal Port | Host Port | Access |
+|---------|--------------|-----------|--------|
+| Caddy (Reverse Proxy) | 80, 443 | 80, 443 | Only externally exposed service |
+| Dashboard | 3000 | — | Via Caddy (`/dashboard`) |
+| Auth API | 3001 | — | Via Caddy (`/api/auth`) |
+| Projects API | 3002 | — | Via Caddy (`/api/projects`) |
+| FastAPI | 8000 | — | Via Caddy (`/health`, `/run`, `/docs`) |
+| Grafana | 3000 | — | Internal only (SSH tunnel) |
+| Prometheus | 9090 | — | Internal only (SSH tunnel) |
+| PostgreSQL | 5432 | — | Internal only |
+| Redis | 6379 | — | Internal only |
+| Qdrant | 6333 | — | Internal only |
 
 ---
 
@@ -143,10 +146,10 @@ GitHub Actions Triggered
    - Rebuild oute-main services
    - Restart containers
     ↓
-4. Run Health Checks:
-   - Dashboard (3020)
-   - Auth API (3021)
-   - Projects API (3022)
+4. Run Health Checks (via Caddy):
+   - Dashboard (`/dashboard/health`)
+   - Auth API (`/api/auth/health`)
+   - Projects API (`/api/projects/health`)
     ↓
 5. Verify Caddy Routing:
    - /dashboard → Dashboard
@@ -163,13 +166,13 @@ GitHub Actions Triggered
 ### Health Check Fails
 ```bash
 # Check container status
-docker-compose ps 00_dashboard
+docker compose ps 00_dashboard
 
 # Check logs
-docker-compose logs 00_dashboard
+docker compose logs 00_dashboard
 
-# Verify port mapping
-netstat -tulpn | grep 3020
+# Check health inside container
+docker exec oute-dashboard curl -sf http://localhost:3000/health
 ```
 
 ### Database Connection Error
@@ -187,10 +190,10 @@ docker exec oute-postgres psql -U app-user -d oute_main -c "\dt"
 cat configs/Caddyfile
 
 # Verify Caddy is running
-docker-compose logs caddy
+docker compose logs caddy
 
 # Reload Caddy
-docker-compose restart caddy
+docker compose restart caddy
 ```
 
 ---
@@ -207,7 +210,7 @@ docker-compose restart caddy
 - ✅ `/Users/bardi/Projetos/oute-main/DEPLOYMENT_CHECKLIST.md` (this file)
 
 ### Modified:
-- ✅ `/Users/bardi/Projetos/oute-mind/docker-compose.yml` (added 3 services + Grafana port change)
+- ✅ `/Users/bardi/Projetos/oute-mind/docker compose.yml` (added 3 services + Grafana port change)
 - ✅ `/Users/bardi/Projetos/oute-mind/configs/postgres-init.sql` (added oute_main database)
 - ✅ `/Users/bardi/Projetos/oute-mind/configs/Caddyfile` (added oute-main routing)
 - ✅ `/Users/bardi/Projetos/oute-mind/configs/prometheus.yml` (added monitoring jobs)
