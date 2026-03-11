@@ -1,18 +1,18 @@
-/**
- * JwtTokenAdapter
- * - Generates and validates JWT tokens
- * - Implements token generation for authentication
- * - Note: Real implementation would use jsonwebtoken library
- */
+import jwt from 'jsonwebtoken';
+
 export interface TokenPayload {
   userId: string;
   email: string;
   roles: string[];
 }
 
+/**
+ * JwtTokenAdapter
+ * - Generates and validates JWT tokens using jsonwebtoken
+ */
 export class JwtTokenAdapter {
   private readonly secret: string;
-  private readonly expiresIn: string = '24h'; // 24 hours
+  private readonly expiresIn: string = '24h';
 
   constructor(secret: string) {
     if (secret.length === 0 || secret.trim().length === 0) {
@@ -21,126 +21,37 @@ export class JwtTokenAdapter {
     this.secret = secret;
   }
 
-  /**
-   * Generate JWT token
-   * Note: Real implementation would use jsonwebtoken.sign()
-   */
   generate(payload: TokenPayload): Promise<string> {
-    // In reality:
-    // import jwt from 'jsonwebtoken';
-    // return jwt.sign(payload, this.secret, { expiresIn: this.expiresIn });
-
-    // Mock token generation for now
-    return Promise.resolve(this.mockJwtSign(payload));
+    const token = jwt.sign(payload, this.secret, { expiresIn: this.expiresIn });
+    return Promise.resolve(token);
   }
 
-  /**
-   * Verify JWT token
-   * Note: Real implementation would use jsonwebtoken.verify()
-   */
   verify(token: string): Promise<TokenPayload | null> {
     try {
-      // In reality:
-      // import jwt from 'jsonwebtoken';
-      // return jwt.verify(token, this.secret) as TokenPayload;
-
-      // Mock verification for now
-      return Promise.resolve(this.mockJwtVerify(token));
+      const decoded = jwt.verify(token, this.secret) as TokenPayload;
+      return Promise.resolve({
+        userId: decoded.userId,
+        email: decoded.email,
+        roles: decoded.roles,
+      });
     } catch {
       return Promise.resolve(null);
     }
   }
 
-  /**
-   * Decode token without verification
-   * Useful for checking expiration time
-   */
   decode(token: string): Partial<TokenPayload & { exp: number }> | null {
     try {
-      // In reality:
-      // import jwt from 'jsonwebtoken';
-      // return jwt.decode(token) as TokenPayload & { exp: number };
-
-      // Mock decode
-      return this.mockJwtDecode(token);
+      return jwt.decode(token) as Partial<TokenPayload & { exp: number }>;
     } catch {
       return null;
     }
   }
 
-  /**
-   * Check if token is expired
-   */
   isExpired(token: string): boolean {
     const decoded = this.decode(token);
     if (decoded === null || decoded.exp === null || decoded.exp === undefined) {
       return true;
     }
-
-    // Convert exp (seconds since epoch) to milliseconds
-    const expiryTime = decoded.exp * 1000;
-    return Date.now() >= expiryTime;
-  }
-
-  /**
-   * Mock JWT sign for demonstration
-   */
-  private mockJwtSign(payload: TokenPayload): string {
-    // Create mock JWT with header.payload.signature format
-    const header = Buffer.from(JSON.stringify({ alg: 'HS256', typ: 'JWT' })).toString('base64');
-    const expiresAt = Math.floor(Date.now() / 1000) + 86400; // 24 hours from now
-    const tokenPayload = Buffer.from(
-      JSON.stringify({
-        ...payload,
-        iat: Math.floor(Date.now() / 1000),
-        exp: expiresAt,
-      })
-    ).toString('base64');
-    const signature = Buffer.from(`${header}.${tokenPayload}.${this.secret}`).toString('base64');
-
-    return `${header}.${tokenPayload}.${signature}`;
-  }
-
-  /**
-   * Mock JWT verify for demonstration
-   */
-  private mockJwtVerify(token: string): TokenPayload | null {
-    const parts = token.split('.');
-    if (parts.length !== 3) {
-      return null;
-    }
-
-    try {
-      const payload = JSON.parse(Buffer.from(parts[1], 'base64').toString());
-
-      // Check expiration
-      if (payload.exp != null && Date.now() >= payload.exp * 1000) {
-        return null;
-      }
-
-      return {
-        userId: payload.userId,
-        email: payload.email,
-        roles: payload.roles,
-      };
-    } catch {
-      return null;
-    }
-  }
-
-  /**
-   * Mock JWT decode for demonstration
-   */
-  private mockJwtDecode(token: string): Partial<TokenPayload & { exp: number }> | null {
-    const parts = token.split('.');
-    if (parts.length !== 3) {
-      return null;
-    }
-
-    try {
-      return JSON.parse(Buffer.from(parts[1], 'base64').toString());
-    } catch {
-      return null;
-    }
+    return Date.now() >= decoded.exp * 1000;
   }
 }
