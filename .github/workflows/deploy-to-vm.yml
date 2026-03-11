@@ -36,14 +36,14 @@ jobs:
             ln -sf .env.production .env
 
             # Build and restart oute-main services (ports: 3020/3021/3022)
-            docker compose build 00_dashboard 01_auth-profile 02_projects
-            docker compose up -d 00_dashboard 01_auth-profile 02_projects
+            docker compose build 99_home 00_dashboard 01_auth-profile 02_projects 03_interview
+            docker compose up -d 99_home 00_dashboard 01_auth-profile 02_projects 03_interview
           EOFVM
 
       - name: Health checks (via SSH)
         run: |
           ssh ${{ secrets.VM_USER }}@${{ secrets.VM_HOSTNAME }} << 'EOFVM'
-            for svc in "Dashboard:3020" "Auth:3021" "Projects:3022"; do
+            for svc in "Home:3003" "Dashboard:3020" "Auth:3021" "Projects:3022" "Interview:3002"; do
               name="${svc%%:*}"
               port="${svc##*:}"
               for i in $(seq 1 20); do
@@ -66,9 +66,11 @@ jobs:
         run: |
           echo "✅ Deployment to VM successful!"
           echo "Services (via Caddy reverse proxy):"
-          echo "  Dashboard: http://${{ secrets.VM_HOSTNAME }}/dashboard"
-          echo "  Auth API:  http://${{ secrets.VM_HOSTNAME }}/api/auth"
-          echo "  Projects:  http://${{ secrets.VM_HOSTNAME }}/api/projects"
+          echo "  🏠 Landing Page: http://${{ secrets.VM_HOSTNAME }}/"
+          echo "  💬 Chat:         http://${{ secrets.VM_HOSTNAME }}/chat"
+          echo "  📊 Dashboard:    http://${{ secrets.VM_HOSTNAME }}/dashboard"
+          echo "  🔐 Auth API:     http://${{ secrets.VM_HOSTNAME }}/api/auth"
+          echo "  📁 Projects:     http://${{ secrets.VM_HOSTNAME }}/api/projects"
 
       - name: Capture logs on failure
         if: failure()
@@ -78,10 +80,14 @@ jobs:
             cd ~/oute-mind
             echo "=== Container Status ==="
             docker compose ps
+            echo "=== Home Logs ==="
+            docker compose logs --tail=30 99_home 2>&1 || true
             echo "=== Dashboard Logs ==="
             docker compose logs --tail=30 00_dashboard 2>&1 || true
             echo "=== Auth Logs ==="
             docker compose logs --tail=30 01_auth-profile 2>&1 || true
             echo "=== Projects Logs ==="
             docker compose logs --tail=30 02_projects 2>&1 || true
+            echo "=== Interview Logs ==="
+            docker compose logs --tail=30 03_interview 2>&1 || true
           EOFVM
