@@ -78,6 +78,19 @@
         tags: ['Greenfield', 'Mobile', 'Backend'],
         content: 'Análise em progresso...',
       });
+    } else if (initialMessageParam) {
+      // If there's already an interview loaded but we have an initial message param from the landing page,
+      // add it as a new message from the user
+      messages.update(msgs => [
+        ...msgs,
+        {
+          id: Date.now().toString(),
+          timestamp: new Date(),
+          sender: 'user',
+          content: initialMessageParam,
+          type: 'text',
+        }
+      ]);
     }
   }
 </script>
