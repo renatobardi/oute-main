@@ -40,7 +40,7 @@
   <!-- CTA Section -->
   <div class="text-center mb-12">
     <CTAButton text={ctaText} on:click={handleCTA} />
-    <div class="mt-4">
+    <div class="mt-4 flex justify-center">
       <GithubLink />
     </div>
   </div>
