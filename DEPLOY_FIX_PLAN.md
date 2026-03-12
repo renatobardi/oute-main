@@ -15,8 +15,8 @@ Objetivo: deploy funcional, seguro e performatico.
 
 ### 1.2 Build local descartado
 **Arquivo:** `.github/workflows/deploy-to-vm.yml`
-**Problema:** O workflow builda 3 images Docker no runner (arm64 cross-compile, ~30min) com `--push=false`, depois faz SSH na VM e roda `docker-compose build --no-cache` que rebuilda tudo do zero. O build do runner eh completamente desperdicado.
-**Fix:** Remover o build local. O deploy deve apenas fazer SSH na VM, git pull e docker-compose build/up.
+**Problema:** O workflow builda 3 images Docker no runner (arm64 cross-compile, ~30min) com `--push=false`, depois faz SSH na VM e roda `docker compose build --no-cache` que rebuilda tudo do zero. O build do runner eh completamente desperdicado.
+**Fix:** Remover o build local. O deploy deve apenas fazer SSH na VM, git pull e docker compose build/up.
 
 ### 1.3 SSH StrictHostKeyChecking=no
 **Arquivo:** `.github/workflows/deploy-to-vm.yml`
@@ -25,7 +25,7 @@ Objetivo: deploy funcional, seguro e performatico.
 
 ### 1.4 Sleep fixo de 10s
 **Arquivo:** `.github/workflows/deploy-to-vm.yml`
-**Problema:** `sleep 10` apos docker-compose up. Arbitrario.
+**Problema:** `sleep 10` apos docker compose up. Arbitrario.
 **Fix:** Remover sleep, os health checks ja fazem retry com polling.
 
 ---
@@ -49,7 +49,7 @@ Objetivo: deploy funcional, seguro e performatico.
 **Fix (ja na Fase 1.2):** Buildar diretamente na VM arm64 via SSH. A VM compila nativamente em segundos.
 
 ### 3.2 Docker layer caching na VM
-**Problema:** `docker-compose build --no-cache` forca rebuild total.
+**Problema:** `docker compose build --no-cache` forca rebuild total.
 **Fix:** Remover `--no-cache`. Docker layer cache acelera builds incrementais.
 
 ### 3.3 Storybook com http-server
@@ -67,7 +67,7 @@ Objetivo: deploy funcional, seguro e performatico.
 
 ### 4.2 Capturar logs em caso de falha
 **Problema:** Health check failures nao mostram logs dos containers.
-**Fix:** Adicionar step de `docker-compose logs` quando health check falha.
+**Fix:** Adicionar step de `docker compose logs` quando health check falha.
 
 ### 4.3 Validacao pre-deploy
 **Fix:** Verificar que a VM esta acessivel (SSH test) antes de iniciar o deploy.

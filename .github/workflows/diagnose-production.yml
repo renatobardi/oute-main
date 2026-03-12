@@ -39,11 +39,11 @@ jobs:
             echo ""
 
             echo "🏠 99_home status:"
-            docker compose ps 99_home 2>&1 || echo "❌ Service not found in docker-compose.yml"
+            docker compose ps 99_home 2>&1 || echo "❌ Service not found in compose config"
             echo ""
 
             echo "💬 03_interview status:"
-            docker compose ps 03_interview 2>&1 || echo "❌ Service not found in docker-compose.yml"
+            docker compose ps 03_interview 2>&1 || echo "❌ Service not found in compose config"
             echo ""
 
             echo "🧪 Testing Direct Endpoints:"

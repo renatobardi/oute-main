@@ -37,7 +37,7 @@ cp packages/02_projects/.env.example packages/02_projects/.env
 ### 3. (Opcional) Rodar PostgreSQL com Docker
 
 ```bash
-docker-compose up -d postgres
+docker compose up -d postgres
 ```
 
 Aguarde ~5 segundos para o banco estar pronto.
@@ -49,7 +49,7 @@ Aguarde ~5 segundos para o banco estar pronto.
 ### Opção A: Rodar Tudo com Docker Compose
 
 ```bash
-docker-compose up
+docker compose up
 ```
 
 Serviços disponíveis:
@@ -208,7 +208,7 @@ docker ps | grep postgres
 Se não estiver, inicie:
 
 ```bash
-docker-compose up -d postgres
+docker compose up -d postgres
 ```
 
 ---
@@ -225,9 +225,9 @@ npm run format             # Prettier em todos
 npm run test               # Testes de todos
 
 npm run docker:build       # Build das imagens Docker
-npm run docker:up          # Subir docker-compose
-npm run docker:down        # Descer docker-compose
-npm run docker:logs        # Ver logs do docker-compose
+npm run docker:up          # Subir containers
+npm run docker:down        # Descer containers
+npm run docker:logs        # Ver logs dos containers
 ```
 
 ### Por Package
