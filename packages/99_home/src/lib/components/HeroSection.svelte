@@ -1,6 +1,6 @@
 <script lang="ts">
   export let headline = 'Olá! Sou seu Arquiteto de Software.';
-  export let subtitle = 'Venha estimar seu próximo grande projeto!';
+  export let subtitle = 'Vamos estimar seu próximo grande projeto?';
 </script>
 
 <section class="py-16 md:py-24 text-center px-6">
