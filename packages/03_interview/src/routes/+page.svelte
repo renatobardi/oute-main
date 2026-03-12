@@ -1,5 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
+  import { page } from '$app/stores';
   import Sidebar from '$lib/components/Sidebar.svelte';
   import ChatWindow from '$lib/components/ChatWindow.svelte';
   import NotesPanel from '$lib/components/NotesPanel.svelte';
@@ -8,6 +9,9 @@
   // Initialize with sample data
   onMount(() => {
     if (!$currentInterview) {
+      // Get initial message from URL parameter if provided
+      const initialMessageParam = $page.url.searchParams.get('initial');
+
       currentInterview.set({
         id: 'INT-2024-WHAT',
         title: 'Web Platform Architecture',
@@ -16,7 +20,21 @@
         updatedAt: new Date(),
       });
 
-      messages.set([
+      const initialMessages = [];
+
+      // If there's an initial message from the landing page, add it as the first message
+      if (initialMessageParam) {
+        initialMessages.push({
+          id: Date.now().toString(),
+          timestamp: new Date(),
+          sender: 'user',
+          content: initialMessageParam,
+          type: 'text',
+        });
+      }
+
+      // Add sample conversation messages
+      initialMessages.push(
         {
           id: '1',
           timestamp: new Date(Date.now() - 3600000),
@@ -47,7 +65,9 @@
             'Entendido. Com base nas informações, posso estimar entre 180k-240k horas de trabalho.',
           type: 'text',
         },
-      ]);
+      );
+
+      messages.set(initialMessages);
 
       notes.set({
         summary: 'Web platform with mobile and backend components',

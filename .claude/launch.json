@@ -30,6 +30,18 @@
       "runtimeExecutable": "npm",
       "runtimeArgs": ["run", "dev:storybook", "-w", "design-system"],
       "port": 6006
+    },
+    {
+      "name": "OUTE 99_home (Landing Page)",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev", "-w", "@oute/home"],
+      "port": 3003
+    },
+    {
+      "name": "OUTE 03_interview (Chat)",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev", "-w", "@oute/interview"],
+      "port": 3002
     }
   ]
 }
