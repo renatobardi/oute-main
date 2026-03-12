@@ -129,11 +129,11 @@ jobs:
         run: |
           echo "Deployment to VM successful!"
           echo "Services deployed:"
-          echo "  Landing Page: https://oute.app/"
-          echo "  Dashboard:    https://oute.app/dashboard"
-          echo "  Chat:         https://oute.app/chat"
-          echo "  Auth API:     https://oute.app/api/auth"
-          echo "  Projects:     https://oute.app/api/projects"
+          echo "  Landing Page: http://34.132.93.171/"
+          echo "  Dashboard:    http://34.132.93.171/dashboard"
+          echo "  Chat:         http://34.132.93.171/chat"
+          echo "  Auth API:     http://34.132.93.171/api/auth"
+          echo "  Projects:     http://34.132.93.171/api/projects"
 
       - name: Capture logs on failure
         if: failure()
