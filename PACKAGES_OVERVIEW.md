@@ -38,7 +38,7 @@
 │   ├── Tests: 178 passing (80%+ coverage)
 │   └── Features: Login, JWT, Profile, Authentication
 │
-└── 📋 02_projects (Port 3002)
+└── 📋 02_projects (Port 3004 host / 3002 container)
     ├── Status: 🔄 Refactoring
     ├── Type: Projects API
     ├── Tech: SvelteKit + Node.js
@@ -56,7 +56,7 @@
 | 00_dashboard | 3000 | Frontend | 🔄 |
 | 03_interview | 3002 | Frontend | ✅ |
 | 01_auth-profile | 3001 | Backend API | ✅ |
-| 02_projects | 3002 | Backend API | 🔄 |
+| 02_projects | 3004 (host) / 3002 (container) | Backend API | 🔄 |
 
 ---
 
@@ -85,7 +85,7 @@
 
 ### GitHub Actions & CI/CD
 - **[.github/CI_CD_PIPELINE.md](./.github/CI_CD_PIPELINE.md)** - CI/CD setup
-- **[DEPLOYMENT.md](./DEPLOYMENT.md)** - Deployment guide
+- **[VM_DEPLOYMENT.md](./VM_DEPLOYMENT.md)** - Guia de deploy em VM
 
 ---
 
@@ -240,8 +240,8 @@ Branch strategy:
 ### Local Development
 See [DEVELOPMENT.md](./DEVELOPMENT.md)
 
-### Production (GCP Cloud Run)
-See [DEPLOYMENT.md](./DEPLOYMENT.md) and [GCP-DEPLOYMENT.md](./GCP-DEPLOYMENT.md)
+### Producao (GCP VM + Docker Compose + Caddy)
+Ver [VM_DEPLOYMENT.md](./VM_DEPLOYMENT.md)
 
 ---
 
@@ -249,7 +249,7 @@ See [DEPLOYMENT.md](./DEPLOYMENT.md) and [GCP-DEPLOYMENT.md](./GCP-DEPLOYMENT.md
 
 - **[EXECUTIVE_SUMMARY.md](./EXECUTIVE_SUMMARY.md)** - 5-min overview
 - **[REFACTORING_COMPLETION.md](./REFACTORING_COMPLETION.md)** - Complete reference
-- **[PHASE_* Summaries](./packages/01_auth-profile/)** - Layer-specific docs
+- **[REFACTORING_COMPLETION.md](./REFACTORING_COMPLETION.md)** - Detalhes de todas as fases da refatoracao
 - **[E2E Testing Guide](./packages/01_auth-profile/src/__tests__/e2e/README.md)** - Testing patterns
 
 ---
@@ -267,7 +267,7 @@ See [DEPLOYMENT.md](./DEPLOYMENT.md) and [GCP-DEPLOYMENT.md](./GCP-DEPLOYMENT.md
 
 ---
 
-**Last Updated**: March 10, 2026
+**Last Updated**: March 12, 2026
 **Quality Level**: 🏆 Gold Standard
 **Status**: Production Ready (partially)
 

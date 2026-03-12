@@ -1,37 +1,37 @@
-# Development Guide
+# Guia de Desenvolvimento
 
 ## Setup Local
 
-### 1. Prerequisites
+### 1. Pre-requisitos
 
 - Node.js 20+
 - npm 10+
 - Docker & Docker Compose
 - Git
 
-### 2. Installation
+### 2. Instalacao
 
 ```bash
-# Clone repo
+# Clonar repositorio
 git clone https://github.com/seu-usuario/oute.git
 cd oute
 
-# Install all dependencies (workspaces)
+# Instalar todas as dependencias (workspaces)
 npm install
 
-# Copy env template
+# Copiar template de env
 cp .env.example .env.local
 ```
 
-### 3. Start Development
+### 3. Iniciar Desenvolvimento
 
-**Option A: With Docker (Recommended)**
+**Opcao A: Com Docker (Recomendado)**
 
 ```bash
 npm run docker:up
 ```
 
-Services available:
+Servicos disponiveis:
 
 - Home (Landing Page): http://localhost:3003
 - Dashboard: http://localhost:3000
@@ -40,167 +40,164 @@ Services available:
 - PostgreSQL: localhost:5432
 - Design System: http://localhost:6006
 
-**Option B: Local without Docker**
+**Opcao B: Local sem Docker**
 
 ```bash
 npm run dev
 
-# In separate terminals:
+# Em terminais separados:
 cd packages/99_home && npm run dev          # Port 3003 (landing page)
 cd packages/00_dashboard && npm run dev     # Port 3000 (main interface)
 cd packages/03_interview && npm run dev     # Port 3002 (chat interviews)
 cd packages/01_auth-profile && npm run dev  # Port 3001 (auth API)
-cd packages/02_projects && npm run dev      # Port 3000 (projects API)
+cd packages/02_projects && npm run dev      # Port 3004 (projects API)
 ```
 
-## 🆕 New Packages (03_interview & 99_home)
+## Novos Pacotes (03_interview & 99_home)
 
-### 03_interview - AI Interview Chat Interface
+### 03_interview - Interface de Chat para Entrevistas com IA
 
-**Port**: 3002
-**Type**: Frontend (SvelteKit)
+**Porta**: 3002
+**Tipo**: Frontend (SvelteKit)
 
-3-panel layout for conducting interviews via chat with AI:
-- **Left**: Interview history sidebar
-- **Center**: Chat conversation window
-- **Right**: Editable notes with metrics and export
+Layout de 3 paineis para conduzir entrevistas via chat com IA:
+- **Esquerda**: Barra lateral com historico de entrevistas
+- **Centro**: Janela de conversa do chat
+- **Direita**: Notas editaveis com metricas e exportacao
 
 ```bash
 cd packages/03_interview
-npm run dev          # Start dev server
-npm run build        # Build for production
-npm run test         # Run tests
-npm run test:e2e     # Run E2E tests
+npm run dev          # Iniciar servidor de dev
+npm run build        # Build para producao
+npm run test         # Executar testes
+npm run test:e2e     # Executar testes E2E
 ```
 
-**Components**:
-- ChatMessage, ChatInput, ChatWindow (chat UI)
-- Sidebar, InterviewHeader (navigation)
-- NotesPanel, MetricBadge (notes & metrics)
+**Componentes**:
+- ChatMessage, ChatInput, ChatWindow (UI do chat)
+- Sidebar, InterviewHeader (navegacao)
+- NotesPanel, MetricBadge (notas e metricas)
 
-**Features**:
-- Real-time chat with AI responses (simulated)
-- Editable notes with save/cancel
-- Export notes as .txt file
-- Progress metrics and tags
-- Responsive 3-panel layout
+**Funcionalidades**:
+- Chat em tempo real com respostas de IA (simulado)
+- Notas editaveis com salvar/cancelar
+- Exportar notas como arquivo .txt
+- Metricas de progresso e tags
+- Layout responsivo de 3 paineis
 
-### 99_home - Marketing Landing Page
+### 99_home - Landing Page de Marketing
 
-**Port**: 3003
-**Type**: Frontend (SvelteKit)
+**Porta**: 3003
+**Tipo**: Frontend (SvelteKit)
 
-Public-facing landing page for OUTE AI architect platform:
-- Hero section with CTA
-- Project description search
-- GitHub login option
-- Stats display (57, 127, ∞)
+Landing page publica para a plataforma OUTE AI architect:
+- Secao hero com CTA
+- Busca por descricao de projeto
+- Opcao de login com GitHub
+- Exibicao de estatisticas (57, 127, ∞)
 
 ```bash
 cd packages/99_home
-npm run dev          # Start dev server
-npm run build        # Build for production
-npm run test         # Run tests
-npm run test:e2e     # Run E2E tests
+npm run dev          # Iniciar servidor de dev
+npm run build        # Build para producao
+npm run test         # Executar testes
+npm run test:e2e     # Executar testes E2E
 ```
 
-**Components**:
-- Navbar (logo, links, signup)
-- HeroSection (headline, subtitle)
-- SearchInput (project description)
-- CTAButton, GithubLink (calls-to-action)
-- StatCard, StatsSection (metrics display)
+**Componentes**:
+- Navbar (logo, links, cadastro)
+- HeroSection (titulo, subtitulo)
+- SearchInput (descricao do projeto)
+- CTAButton, GithubLink (chamadas para acao)
+- StatCard, StatsSection (exibicao de metricas)
 
-**Features**:
-- Responsive design (mobile-first)
-- Dark theme (cyan/teal colors)
-- SEO-optimized
-- Public access (no authentication required)
+**Funcionalidades**:
+- Design responsivo (mobile-first)
+- Tema escuro (cores cyan/teal)
+- Otimizado para SEO
+- Acesso publico (sem autenticacao necessaria)
 
 ## Scripts
 
-### Root level
+### Nivel raiz
 
 ```bash
-npm run dev              # All packages dev mode
-npm run build            # All packages build
-npm run test             # All packages test
-npm run lint             # ESLint + TypeScript check
-npm run format           # Prettier format
+npm run dev              # Todos os pacotes em modo dev
+npm run build            # Build de todos os pacotes
+npm run test             # Testes de todos os pacotes
+npm run lint             # ESLint + verificacao TypeScript
+npm run format           # Formatacao Prettier
 
-npm run docker:up        # Start Docker services
-npm run docker:down      # Stop Docker services
-npm run docker:logs      # View logs
-npm run docker:build     # Rebuild images
+npm run docker:up        # Iniciar servicos Docker
+npm run docker:down      # Parar servicos Docker
+npm run docker:logs      # Ver logs
+npm run docker:build     # Reconstruir imagens
 
-npm run storybook:design-system  # Start Storybook for design-system
+npm run storybook:design-system  # Iniciar Storybook do design-system
 ```
 
-### Per package
+### Por pacote
 
 ```bash
 cd packages/00_dashboard
-npm run dev              # Dev server
-npm run build            # Build for prod
-npm run preview          # Preview built app
+npm run dev              # Servidor de dev
+npm run build            # Build para producao
+npm run preview          # Visualizar app construido
 
-npm run lint             # Lint this package
-npm run format           # Format this package
-npm run test             # Test this package
+npm run lint             # Lint deste pacote
+npm run format           # Formatar este pacote
+npm run test             # Testar este pacote
 ```
 
 ## Pre-commit Hooks
 
-Using Husky for git hooks:
+Pre-commit hooks nao estao configurados neste projeto. Para garantir qualidade antes de commitar, execute manualmente:
 
 ```bash
-npm install husky --save-dev
-npx husky install
-
-# Hooks installed:
-# - Pre-commit: ESLint, Prettier, git-secrets
-# - Pre-push: TypeScript check
+npm run lint          # ESLint
+npm run format        # Prettier
+npm run test          # Testes
 ```
 
-## Debugging
+## Depuracao
 
-### View logs
+### Ver logs
 
 ```bash
 npm run docker:logs
 
-# Or specific service
+# Ou servico especifico
 docker logs oute-dashboard -f
 ```
 
-### Database
+### Banco de Dados
 
 ```bash
-# Connect to PostgreSQL
+# Conectar ao PostgreSQL
 psql -h localhost -U app-user -d oute_db
 
-# List tables
+# Listar tabelas
 \dt
 
-# View data
+# Ver dados
 SELECT * FROM users;
 ```
 
-### Browser DevTools
+### DevTools do Navegador
 
-SvelteKit includes Svelte DevTools in development.
+SvelteKit inclui Svelte DevTools em desenvolvimento.
 
-## Creating Features
+## Criando Funcionalidades
 
-### 1. Create branch
+### 1. Criar branch
 
 ```bash
 git checkout -b feature/my-feature develop
 ```
 
-### 2. Make changes
+### 2. Fazer alteracoes
 
-Edit files, test locally, etc.
+Editar arquivos, testar localmente, etc.
 
 ### 3. Commit
 
@@ -208,7 +205,7 @@ Edit files, test locally, etc.
 git commit -m "feat(dashboard): add new button component"
 ```
 
-**Commit types**: feat, fix, docs, style, refactor, test, chore, ci
+**Tipos de commit**: feat, fix, docs, style, refactor, test, chore, ci
 
 ### 4. Push & PR
 
@@ -216,11 +213,11 @@ git commit -m "feat(dashboard): add new button component"
 git push origin feature/my-feature
 ```
 
-Open PR on GitHub to `develop` branch.
+Abrir PR no GitHub para a branch `develop`.
 
 ### 5. Merge
 
-After reviews and checks pass:
+Apos revisoes e verificacoes passarem:
 
 ```bash
 git checkout develop
@@ -230,12 +227,12 @@ git commit -m "feat: merge new feature"
 git push
 ```
 
-## Design System Development
+## Desenvolvimento do Design System
 
-### Adding a new component
+### Adicionar um novo componente
 
 ```bash
-# Create component file
+# Criar arquivo do componente
 touch packages/design-system/src/components/MyComponent.svelte
 ```
 
@@ -256,13 +253,13 @@ touch packages/design-system/src/components/MyComponent.svelte
 </style>
 ```
 
-### Create Storybook story
+### Criar historia no Storybook
 
 ```bash
-touch packages/design-system/stories/MyComponent.stories.svelte
+touch packages/design-system/src/components/MyComponent.stories.js
 ```
 
-**MyComponent.stories.svelte**
+**MyComponent.stories.js**
 
 ```svelte
 <script>
@@ -280,88 +277,88 @@ touch packages/design-system/stories/MyComponent.stories.svelte
 </Story>
 ```
 
-### Publish new version
+### Publicar nova versao
 
 ```bash
 cd packages/design-system
 
-# Update version in package.json
+# Atualizar versao no package.json
 # v1.0.0 → v1.0.1 (patch)
-# v1.0.0 → v1.1.0 (minor - new components)
+# v1.0.0 → v1.1.0 (minor - novos componentes)
 # v1.0.0 → v2.0.0 (major - breaking changes)
 
-# Update CHANGELOG.md
+# Atualizar CHANGELOG.md
 
 npm publish
 ```
 
-## Testing
+## Testes
 
-### Running Tests
+### Executando Testes
 
-**Run all tests:**
+**Executar todos os testes:**
 
 ```bash
 npm run test
 ```
 
-**Run tests in watch mode (local development):**
+**Executar testes em modo watch (desenvolvimento local):**
 
 ```bash
 npm run test -- --watch
 ```
 
-**Run tests with coverage report:**
+**Executar testes com relatorio de cobertura:**
 
 ```bash
 npm run test -- --run --coverage
 ```
 
-### Test File Conventions
+### Convencoes de Arquivos de Teste
 
-Tests are located in `src/**/*.test.ts` files:
+Os testes ficam em arquivos `src/**/*.test.ts`:
 
-- `src/components/Button.test.ts` - Component tests
-- `src/utils/helpers.test.ts` - Utility function tests
-- `src/services/auth.test.ts` - Service/API tests
+- `src/components/Button.test.ts` - Testes de componentes
+- `src/utils/helpers.test.ts` - Testes de funcoes utilitarias
+- `src/services/auth.test.ts` - Testes de servicos/API
 
-**Note:** E2E tests (\*.spec.ts) are separate and run with Playwright.
+**Nota:** Testes E2E (\*.spec.ts) sao separados e executados com Playwright.
 
-### Coverage Requirements
+### Requisitos de Cobertura
 
-All PRs must maintain **minimum 80% code coverage** across all packages:
+Todos os PRs devem manter **cobertura minima de 80%** em todos os pacotes:
 
-- **Lines:** 80%
+- **Linhas:** 80%
 - **Branches:** 75%
-- **Functions:** 80%
-- **Statements:** 80%
+- **Funcoes:** 80%
+- **Declaracoes:** 80%
 
-Coverage is enforced by:
+A cobertura e verificada por:
 
-1. Local check before committing: `npm run test -- --run --coverage`
-2. GitHub Actions PR checks
-3. SonarQube quality gate analysis
+1. Verificacao local antes de commitar: `npm run test -- --run --coverage`
+2. Verificacoes de PR no GitHub Actions
+3. Analise de quality gate do SonarCloud
 
-**What's excluded from coverage:**
+**O que e excluido da cobertura:**
 
 - `node_modules/`
-- `dist/`, `build/` directories
-- Test files themselves (_.test.ts, _.spec.ts)
-- Index files (index.ts)
+- Diretorios `dist/`, `build/`
+- Os proprios arquivos de teste (_.test.ts, _.spec.ts)
+- Arquivos index (index.ts)
 
-### E2E Tests with Playwright
+### Testes E2E com Playwright
 
-E2E tests verify critical user workflows across the entire application.
+Testes E2E verificam fluxos criticos do usuario em toda a aplicacao.
 
-**Run E2E tests:**
+**Executar testes E2E:**
 
 ```bash
 npm run test:e2e
 ```
 
-**E2E test file format:** `src/**/*.spec.ts`
+**Formato de arquivo de teste E2E:** `src/**/*.spec.ts`
 
-Example E2E test structure:
+Exemplo de estrutura de teste E2E:
 
 ```typescript
 // src/auth/login.spec.ts
@@ -378,284 +375,269 @@ test('User can login and access dashboard', async ({ page }) => {
 });
 ```
 
-Critical workflows to test:
+Fluxos criticos para testar:
 
-- Authentication (login, logout, password reset)
-- Dashboard data loading and rendering
-- Project CRUD operations
-- Error handling and validation
+- Autenticacao (login, logout, redefinicao de senha)
+- Carregamento e renderizacao do Dashboard
+- Operacoes CRUD de projetos
+- Tratamento de erros e validacao
 
-### Before Opening a Pull Request
+### Antes de Abrir um Pull Request
 
-**ALWAYS run these locally:**
+**SEMPRE execute estes comandos localmente:**
 
 ```bash
-# 1. Run tests with coverage
+# 1. Executar testes com cobertura
 npm run test -- --run --coverage
 
-# 2. Check your coverage percentage
-# View in coverage/index.html or terminal output
+# 2. Verificar porcentagem de cobertura
+# Visualizar em coverage/index.html ou na saida do terminal
 
-# 3. If coverage < 80%, add tests for uncovered lines
+# 3. Se cobertura < 80%, adicionar testes para linhas nao cobertas
 
-# 4. Run linter
+# 4. Executar linter
 npm run lint
 
-# 5. Run formatter
+# 5. Executar formatador
 npm run format
 
-# 6. Build project
+# 6. Build do projeto
 npm run build
 
-# 7. Only after all pass, commit and push
-git commit -m "feat: your feature description"
-git push origin feature/your-feature
+# 7. Somente apos tudo passar, commitar e enviar
+git commit -m "feat: descricao da funcionalidade"
+git push origin feature/sua-feature
 ```
 
-### Quality Standards in CI/CD
+### Padroes de Qualidade no CI/CD
 
-When you open a PR, GitHub Actions automatically runs:
+Ao abrir um PR, o GitHub Actions executa automaticamente:
 
-✅ **Code Quality Checks:**
+✅ **Verificacoes de Qualidade de Codigo:**
 
-- ESLint with strict rules
-- Prettier code formatting
-- TypeScript strict mode checks
+- ESLint com regras rigorosas
+- Formatacao de codigo com Prettier
+- Verificacoes de modo estrito do TypeScript
 
-✅ **Test Coverage Verification:**
+✅ **Verificacao de Cobertura de Testes:**
 
-- All tests must pass
-- Coverage must be ≥80% on new code
-- SonarQube analyzes coverage
+- Todos os testes devem passar
+- Cobertura deve ser ≥80% em codigo novo
+- SonarCloud analisa a cobertura
 
-✅ **Security Scans:**
+✅ **Varreduras de Seguranca:**
 
-- npm audit for vulnerabilities (blocks on HIGH/CRITICAL)
-- Secret scanning for credentials
+- npm audit para vulnerabilidades (bloqueia em HIGH/CRITICAL)
+- Varredura de segredos para credenciais
 - OWASP Dependency Check
-- SonarQube security analysis
+- Analise de seguranca do SonarCloud
 
-✅ **SonarQube Quality Gate (MANDATORY):**
+✅ **Quality Gate do SonarCloud (OBRIGATORIO):**
 
-- Overall grade: A- or better
-- Security rating: A
-- Reliability rating: A
-- Maintainability rating: A
-- Code duplication: <3%
-- No critical code smells
-- No vulnerabilities
+- Nota geral: A- ou melhor
+- Classificacao de seguranca: A
+- Classificacao de confiabilidade: A
+- Classificacao de manutenibilidade: A
+- Duplicacao de codigo: <3%
+- Sem code smells criticos
+- Sem vulnerabilidades
 
-**If any check fails, your PR cannot be merged.** See [QUALITY_STANDARDS.md](./QUALITY_STANDARDS.md) for detailed quality requirements and troubleshooting.
+**Se qualquer verificacao falhar, seu PR nao podera ser mergeado.** Veja [QUALITY_STANDARDS.md](./QUALITY_STANDARDS.md) para requisitos detalhados de qualidade e solucao de problemas.
 
-### Debugging Tests
+### Depurando Testes
 
-**Debug a specific test file:**
+**Depurar um arquivo de teste especifico:**
 
 ```bash
 npm run test -- src/utils/helpers.test.ts --watch
 ```
 
-**Debug with verbose output:**
+**Depurar com saida detalhada:**
 
 ```bash
 npm run test -- --reporter=verbose
 ```
 
-**View coverage details:**
+**Visualizar detalhes da cobertura:**
 
 ```bash
-# After running test with coverage
+# Apos executar teste com cobertura
 open coverage/index.html
 ```
 
-**Common test issues:**
+**Problemas comuns em testes:**
 
-- Test timeout: Increase timeout in vitest config or test file
-- Import errors: Check @oute/shared types are exported correctly
-- Assertion failures: Review test output for exact vs. expected values
-- E2E test flakiness: Add waitFor conditions, increase timeouts
+- Timeout de teste: Aumentar timeout na configuracao do vitest ou no arquivo de teste
+- Erros de import: Verificar se os tipos @oute/shared estao exportados corretamente
+- Falhas de assertion: Revisar saida do teste para valores exatos vs. esperados
+- Instabilidade em testes E2E: Adicionar condicoes waitFor, aumentar timeouts
 
-## Quality Standards Reference
+## Referencia de Padroes de Qualidade
 
-This project enforces strict code quality and security standards. All PRs must meet requirements detailed in [QUALITY_STANDARDS.md](./QUALITY_STANDARDS.md).
+Este projeto aplica padroes rigorosos de qualidade e seguranca de codigo. Todos os PRs devem atender aos requisitos detalhados em [QUALITY_STANDARDS.md](./QUALITY_STANDARDS.md).
 
-### Quick Checklist Before PR
+### Checklist Rapido Antes do PR
 
-- ✅ Code coverage ≥80% locally (`npm run test -- --run --coverage`)
-- ✅ All linting errors fixed (`npm run lint`)
-- ✅ Code formatted (`npm run format`)
-- ✅ Build succeeds (`npm run build`)
-- ✅ No console.log statements (ESLint blocks them)
-- ✅ No `any` types in TypeScript (ESLint blocks them)
-- ✅ All imports used (no unused variables)
-- ✅ No security vulnerabilities (`npm audit`)
+- ✅ Cobertura de codigo ≥80% localmente (`npm run test -- --run --coverage`)
+- ✅ Todos os erros de lint corrigidos (`npm run lint`)
+- ✅ Codigo formatado (`npm run format`)
+- ✅ Build bem-sucedido (`npm run build`)
+- ✅ Sem declaracoes console.log (ESLint bloqueia)
+- ✅ Sem tipos `any` no TypeScript (ESLint bloqueia)
+- ✅ Todos os imports utilizados (sem variaveis nao usadas)
+- ✅ Sem vulnerabilidades de seguranca (`npm audit`)
 
-If any of these fail locally, fix them before pushing. GitHub Actions will enforce all of these plus additional security and quality scans.
+Se qualquer um destes falhar localmente, corrija antes de enviar. O GitHub Actions aplicara todos estes alem de varreduras adicionais de seguranca e qualidade.
 
-For detailed information on:
+Para informacoes detalhadas sobre:
 
-- Quality gates and thresholds → [QUALITY_STANDARDS.md](./QUALITY_STANDARDS.md)
-- SonarQube analysis → [QUALITY_STANDARDS.md](./QUALITY_STANDARDS.md#sonarqube-analysis)
-- Security scanning → [QUALITY_STANDARDS.md](./QUALITY_STANDARDS.md#security-scanning)
-- Troubleshooting failed checks → [QUALITY_STANDARDS.md](./QUALITY_STANDARDS.md#troubleshooting-common-issues)
+- Quality gates e limites → [QUALITY_STANDARDS.md](./QUALITY_STANDARDS.md)
+- Analise do SonarCloud → [QUALITY_STANDARDS.md](./QUALITY_STANDARDS.md#sonarqube-analysis)
+- Varredura de seguranca → [QUALITY_STANDARDS.md](./QUALITY_STANDARDS.md#security-scanning)
+- Solucao de problemas em verificacoes falhas → [QUALITY_STANDARDS.md](./QUALITY_STANDARDS.md#troubleshooting-common-issues)
 
-## Type Safety
+## Seguranca de Tipos
 
-Check TypeScript across all packages:
+Verificar TypeScript em todos os pacotes:
 
 ```bash
-npm run lint  # includes tsc --noEmit
+npm run lint  # inclui tsc --noEmit
 ```
 
-Import from shared types:
+Importar tipos compartilhados:
 
 ```typescript
 import type { User, Project } from '@oute/shared';
 ```
 
-## Troubleshooting
+## Solucao de Problemas
 
-### Port already in use
+### Porta ja em uso
 
 ```bash
 lsof -i :3000 | grep LISTEN | awk '{print $2}' | xargs kill -9
 ```
 
-### Node modules corrupted
+### Node modules corrompidos
 
 ```bash
 rm -rf node_modules packages/*/node_modules
 npm install
 ```
 
-### Docker issues
+### Problemas com Docker
 
 ```bash
 docker-compose down -v
 npm run docker:up
 ```
 
-### Git pre-commit hook failing
+### Verificacao de qualidade antes de commitar
 
-If hooks are failing, check what's failing:
+Execute estes comandos antes de commitar:
 
 ```bash
 npm run lint      # ESLint
 npm run format    # Prettier
-npm run test      # Tests
+npm run test      # Testes
 ```
 
-## Performance Tips
+## Dicas de Performance
 
-1. **Use npm workspaces correctly**
-   - Dependencies installed once at root
-   - Avoid duplicate installs
+1. **Usar npm workspaces corretamente**
+   - Dependencias instaladas uma vez na raiz
+   - Evitar instalacoes duplicadas
 
-2. **Docker caching**
-   - Use multi-stage Dockerfile
-   - Layer dependencies early
+2. **Cache do Docker**
+   - Usar Dockerfile multi-stage
+   - Colocar dependencias nas primeiras camadas
 
-3. **SvelteKit optimization**
-   - Use `+server.ts` for API routes
-   - Implement proper data loading
-   - Enable Adapter auto mode
+3. **Otimizacao do SvelteKit**
+   - Usar `+server.ts` para rotas de API
+   - Implementar carregamento de dados adequado
+   - Habilitar modo auto do Adapter
 
-## CI/CD Pipeline
+## Pipeline CI/CD
 
-### Automatic Deployment (GitHub Actions)
+### Deploy Automatico (GitHub Actions)
 
-Cada push para `main` dispara um pipeline automático:
+Cada push para `main` dispara deploy automatico via SSH:
 
 ```
 git push origin main
     ↓
-✓ Build & Test (~2 min)
-    ├─ ESLint
-    ├─ TypeScript check
-    ├─ Build dashboard
-    └─ Upload artifacts
+✓ SSH para VM GCP
+    ├─ git pull (oute-main e oute-mind)
+    ├─ docker compose build
+    └─ docker compose up
     ↓
-✓ Deploy Production (~5 min)
-    ├─ Docker build & push
-    ├─ Deploy to Cloud Run
-    ├─ Health checks
-    ├─ Create GitHub release
-    └─ Post deployment summary
+✓ Caddy restart
     ↓
-✅ Live em produção!
+✓ Health checks (20 tentativas, 3s intervalo)
+    ├─ Dashboard (porta 3000)
+    ├─ Auth (porta 3001)
+    ├─ Projects (porta 3004)
+    ├─ Home (porta 3003)
+    └─ Interview (porta 3002)
+    ↓
+✅ Live em producao!
 ```
 
-### Before Pushing to main
+### Antes de Enviar para main
 
-Always ensure code meets quality standards before pushing:
+Sempre garanta que o codigo atende aos padroes de qualidade antes de enviar:
 
 ```bash
-# 1. Run tests with coverage (MUST be ≥80%)
+# 1. Executar testes com cobertura (DEVE ser ≥80%)
 npm run test -- --run --coverage
 
-# 2. Check test coverage output
-# If < 80%, add more tests before proceeding
+# 2. Verificar saida de cobertura de testes
+# Se < 80%, adicionar mais testes antes de prosseguir
 
-# 3. Run linter (ALL errors must be fixed)
+# 3. Executar linter (TODOS os erros devem ser corrigidos)
 npm run lint
 
-# 4. Run formatter
+# 4. Executar formatador
 npm run format
 
-# 5. Build all packages
+# 5. Build de todos os pacotes
 npm run build
 
-# 6. If all checks pass, create PR instead of pushing directly
+# 6. Se todas as verificacoes passarem, criar PR ao inves de enviar diretamente
 git commit -m "feat: nova funcionalidade"
-git push origin feature/your-feature
+git push origin feature/sua-feature
 
-# 7. Open PR to develop/staging branch
-# Wait for GitHub Actions to run all checks
-# Address any failing checks
-# Request review from team
+# 7. Abrir PR para branch develop/staging
+# Aguardar o GitHub Actions executar todas as verificacoes
+# Corrigir quaisquer verificacoes que falharem
+# Solicitar revisao da equipe
 ```
 
-**Never push directly to `main`** - always use feature branches and open PRs for code review.
+**Nunca envie diretamente para `main`** - sempre use branches de feature e abra PRs para revisao de codigo.
 
-### Monitorar Pipeline
+### Rollback em Producao
+
+Se algo der errado em producao:
 
 ```bash
-# Ver últimos workflows
-gh run list --repo renatobardi/oute-main --limit 3
+# SSH para a VM
+ssh user@<VM_IP>
 
-# Ver logs detalhados
-gh run view <run-id> --log
+# Ver logs dos containers
+docker compose logs --tail=50
 
-# Aguardar conclusão
-gh run watch <run-id>
-
-# Acessar em produção após sucesso
-https://oute-dashboard-kx25r3idia-uc.a.run.app
+# Reverter para versao anterior
+git log --oneline -5
+git checkout <commit-anterior>
+docker compose build && docker compose up -d
 ```
 
-### Rollback em Produção
+## Recursos
 
-Se algo der errado em produção:
-
-```bash
-# Listar revisions anteriores
-gcloud run revisions list --service=oute-dashboard --region=us-central1
-
-# Reverter para revision anterior
-gcloud run services update-traffic oute-dashboard \
-  --region=us-central1 \
-  --to-revisions=<REVISION-ID>=100
-```
-
-Para mais detalhes, ver [.github/CI_CD_PIPELINE.md](./.github/CI_CD_PIPELINE.md)
-
-## Resources
-
-- [SvelteKit Docs](https://kit.svelte.dev)
-- [Svelte 5 Docs](https://svelte.dev)
+- [Documentacao SvelteKit](https://kit.svelte.dev)
+- [Documentacao Svelte 5](https://svelte.dev)
 - [Tailwind CSS](https://tailwindcss.com)
-- [SonarQube](https://www.sonarqube.org)
-- [CI/CD Pipeline Docs](./.github/CI_CD_PIPELINE.md)
-- [Deployment Guide](./DEPLOYMENT.md)
-- [GitHub Actions Docs](https://docs.github.com/en/actions)
-- [Cloud Run Docs](https://cloud.google.com/run/docs)
+- [SonarCloud](https://sonarcloud.io)
+- [Documentacao do Pipeline CI/CD](./.github/CI_CD_PIPELINE.md)
+- [Deploy na VM](./VM_DEPLOYMENT.md)
+- [Documentacao GitHub Actions](https://docs.github.com/en/actions)

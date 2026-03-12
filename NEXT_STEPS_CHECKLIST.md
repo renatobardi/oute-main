@@ -20,11 +20,12 @@ packages/
 - 🔄 02_projects: Needs refactoring (follow 01_auth-profile pattern)
 - ✅ design-system: Shared UI components & tokens
 
-**Ports**:
+**Portas**:
 - 3003: 99_home (Landing page)
 - 3000: 00_dashboard (Main app)
 - 3002: 03_interview (Chat interface)
 - 3001: 01_auth-profile (Auth API)
+- 3004: 02_projects (Projects API - host) / 3002 (container)
 - 6006: design-system (Storybook)
 
 ---
@@ -51,11 +52,8 @@ packages/
 
 ### Documentation
 
-- [x] Phase 1 Summary (Domain Layer)
-- [x] Phase 2 Summary (Infrastructure Layer)
-- [x] Phase 3 Summary (Application Layer)
-- [x] Phase 4 Summary (Presentation Layer)
-- [x] Phase 5 Summary (E2E Tests)
+- [x] Detalhes das Fases 1-4 documentados em REFACTORING_COMPLETION.md
+- [x] Phase 5 Summary (E2E Tests) — `packages/01_auth-profile/PHASE_5_SUMMARY.md`
 - [x] Refactoring Completion Report
 - [x] Executive Summary
 - [x] Applying Pattern Guide
@@ -337,8 +335,8 @@ tests/performance/
 
 ### Infrastructure Improvements
 
-- [ ] Setup GCP Cloud Run deployment
-- [ ] Configure CI/CD pipelines
+- [x] Deploy via GCP VM com Docker Compose + Caddy (deploy-to-vm.yml)
+- [x] CI/CD pipelines configurados (6 workflows GitHub Actions)
 - [ ] Setup monitoring & logging
 - [ ] Implement database migrations
 - [ ] Setup backup & disaster recovery
@@ -676,10 +674,7 @@ Documentation/
 ├── README.md                                    (This repo)
 ├── EXECUTIVE_SUMMARY.md                        (This week's reading!)
 ├── REFACTORING_COMPLETION.md                   (Complete reference)
-├── PHASE_1_SUMMARY.md                          (Domain layer)
-├── PHASE_2_SUMMARY.md                          (Infrastructure)
-├── PHASE_3_SUMMARY.md                          (Application)
-├── PHASE_4_SUMMARY.md                          (Presentation)
+├── REFACTORING_COMPLETION.md                   (Fases 1-4 detalhadas)
 ├── PHASE_5_SUMMARY.md                          (E2E Testing)
 ├── APPLYING_PATTERN_TO_OTHER_SERVICES.md       (Template)
 └── NEXT_STEPS_CHECKLIST.md                     (You are here!)

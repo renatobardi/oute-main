@@ -18,7 +18,7 @@ oute/
 │   ├── 00_dashboard/     (Frontend principal - Port 3000)
 │   ├── 03_interview/     (Chat interface para entrevistas - Port 3002)
 │   ├── 01_auth-profile/  (Auth API - Port 3001)
-│   └── 02_projects/      (Projects API)
+│   └── 02_projects/      (Projects API - Port 3004 host / 3002 container)
 ├── shared/               (Tipos comuns)
 ├── .github/              (CI/CD workflows)
 └── [configs]
@@ -48,7 +48,7 @@ oute/
     ├── POST /auth/logout
     └── GET /profile (protegido)
 
-02_projects (Port 3002) - PROJECTS API
+02_projects (Port 3004 host / 3002 container) - PROJECTS API
     ├── Valida JWT via 01_auth-profile
     ├── GET /projects
     ├── POST /projects
@@ -79,11 +79,13 @@ oute/
 
 PostgreSQL centralizado compartilhado por todos os serviços.
 
-**Schemas** (sugestão):
+**Database**: `oute_db` com 25 tabelas em 7 bounded contexts.
 
-- `auth` - Tabelas de usuários, sessions
-- `projects` - Tabelas de projetos
-- `shared` - Dados comuns
+**12 arquivos de migração** cobrindo:
+- Extensions, UUID v7, enums, triggers
+- IAM (users, organizations, refresh_tokens)
+- Projects, interviews, templates
+- Estimation, integrations, audit
 
 ## Design System (Tokens + Componentes)
 
@@ -125,48 +127,49 @@ Inicia:
 - 01_auth-profile (3001) - Auth API
 - design-system/storybook (6006)
 
-### Cloud (GCP Cloud Run)
+### Producao (GCP VM + Docker Compose + Caddy)
 
-Cada package → Container separado:
+Todos os servicos rodam como containers Docker em uma VM GCP:
+- oute-home (porta 3003)
+- oute-dashboard (porta 3000)
+- oute-interview (porta 3002)
+- oute-auth-profile (porta 3001)
+- oute-projects (porta 3004 host / 3002 container)
+- PostgreSQL (porta 5432)
 
-- `oute-home` (Cloud Run Service) - Landing page
-- `oute-dashboard` (Cloud Run Service) - Main app
-- `oute-interview` (Cloud Run Service) - Chat interface
-- `oute-auth-profile` (Cloud Run Service) - Auth API
-- `oute-projects` (Cloud Run Service) - Projects API
-
-Todos compartilham Cloud SQL (PostgreSQL).
+Caddy atua como reverse proxy roteando requisicoes.
+Ver VM_DEPLOYMENT.md para detalhes.
 
 ## CI/CD
 
 6 workflows GitHub Actions:
 
-1. **pull-request.yml** → Lint, tests, SonarQube
-2. **merge-develop.yml** → Deploy preview
-3. **merge-staging.yml** → E2E tests, deploy homolog
-4. **merge-main.yml** → Deploy produção
-5. **security-scan.yml** → SAST, DAST, secret scan
-6. **dependency-check.yml** → Dependabot, licenses
+1. **1-pull-request.yml** → Lint, typecheck, testes, docker build, SonarCloud
+2. **4-e2e-tests.yml** → Testes E2E com Playwright
+3. **5-security-scan.yml** → TruffleHog, npm audit, Trivy
+4. **6-dependency-check.yml** → OWASP, licencas, npm audit
+5. **deploy-to-vm.yml** → Deploy via SSH para VM
+6. **diagnose-production.yml** → Diagnostico manual
 
 ## Code Quality
 
 | Tool        | Regra                                   |
 | ----------- | --------------------------------------- |
 | ESLint      | Configuração compartilhada na raiz      |
-| Prettier    | Auto-format em pre-commit               |
+| Prettier    | Formatacao de codigo                    |
 | TypeScript  | strict: true (não null check)           |
-| SonarQube   | Quality gates (70% coverage, ratings A) |
+| SonarCloud  | Quality gates (80% coverage, ratings A) |
 | Trivy       | Container scanning                      |
-| git-secrets | Detecta secrets commitadas              |
+| TruffleHog  | Detecta secrets em CI (5-security-scan.yml) |
 
 ## Segurança
 
 - JWT para autenticação stateless
-- Secrets em GCP Secret Manager (prod)
+- Secrets em variaveis de ambiente (.env.production)
 - Variáveis de ambiente (dev)
 - Trivy para container scanning
 - Dependabot para vulnerabilities
-- SAST (SonarQube) para code analysis
+- SAST (SonarCloud) para code analysis
 
 ## Escalabilidade
 
@@ -182,7 +185,7 @@ Todos compartilham Cloud SQL (PostgreSQL).
 ### Adicionar novo componente ao design-system
 
 1. Create `packages/design-system/src/components/NovoComponent.svelte`
-2. Create `packages/design-system/stories/NovoComponent.stories.svelte`
+2. Create `packages/design-system/src/components/NovoComponent.stories.js`
 3. Bump version em `packages/design-system/package.json`
 4. Update `CHANGELOG.md`
 5. `npm publish --workspace=design-system`

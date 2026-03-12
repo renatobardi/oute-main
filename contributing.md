@@ -156,7 +156,7 @@ export function getUser(id: string): User | null {
 
 - ESLint + Prettier automatically enforces style
 - Run `npm run format` before committing
-- Pre-commit hooks will catch violations
+- Execute `npm run lint` e `npm run format` manualmente antes de commitar
 
 ## Testing (TDD)
 
@@ -207,7 +207,7 @@ export function validateToken(token: string): string | null {
 When modifying `packages/design-system/`:
 
 1. Update component in `src/components/`
-2. Update Storybook story in `stories/`
+2. Update Storybook story in `src/components/`
 3. Update `CHANGELOG.md` with version bump
 4. Publish new version: `npm publish --workspace=design-system`
 

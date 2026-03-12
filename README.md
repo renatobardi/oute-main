@@ -1,6 +1,6 @@
 # OUTE - Modular Monorepo
 
-OUTE é uma aplicação modular construída com **Svelte 5 + SvelteKit**, organizada como um monorepo com múltiplos domínios independentes. A arquitetura suporta escalabilidade, deployment em **GCP Cloud Run** e implementa padrões enterprise de qualidade e segurança.
+OUTE é uma aplicação modular construída com **Svelte 5 + SvelteKit**, organizada como um monorepo com múltiplos domínios independentes. A arquitetura suporta escalabilidade, deployment em **GCP VM com Docker Compose + Caddy** e implementa padrões enterprise de qualidade e segurança.
 
 ## 🏗️ Arquitetura
 
@@ -63,6 +63,7 @@ Serviços rodando:
 - **Dashboard**: http://localhost:3000
 - **Interview (Chat)**: http://localhost:3002
 - **Auth-Profile**: http://localhost:3001
+- **Projects API**: http://localhost:3004
 - **Design System (Storybook)**: http://localhost:6006
 - **PostgreSQL**: localhost:5432
 
@@ -120,10 +121,7 @@ Features:
 
 - **[EXECUTIVE_SUMMARY.md](./EXECUTIVE_SUMMARY.md)** - 📊 **LEIA PRIMEIRO**: Resumo executivo da refatoração completa
 - **[REFACTORING_COMPLETION.md](./REFACTORING_COMPLETION.md)** - 🏆 Relatório completo: Hexagonal Architecture + DDD + Clean Code + TDD
-- **[PHASE_1_SUMMARY.md](./packages/01_auth-profile/PHASE_1_SUMMARY.md)** - 📚 Domain Layer (Entities, Value Objects, Errors)
-- **[PHASE_2_SUMMARY.md](./packages/01_auth-profile/PHASE_2_SUMMARY.md)** - 🔧 Infrastructure Layer (Adapters, Repositories)
-- **[PHASE_3_SUMMARY.md](./packages/01_auth-profile/PHASE_3_SUMMARY.md)** - ⚙️ Application Layer (Use Cases, DTOs)
-- **[PHASE_4_SUMMARY.md](./packages/01_auth-profile/PHASE_4_SUMMARY.md)** - 🌐 Presentation Layer (Handlers, Routes)
+- **[REFACTORING_COMPLETION.md](./REFACTORING_COMPLETION.md)** contém todos os detalhes das Fases 1-4 (Domain, Infrastructure, Application, Presentation)
 - **[PHASE_5_SUMMARY.md](./packages/01_auth-profile/PHASE_5_SUMMARY.md)** - 🧪 E2E Tests (Playwright, Test Suite)
 
 ### 🚀 Implementação & Padrões
@@ -135,7 +133,7 @@ Features:
 
 - **[ARCHITECTURE.md](./ARCHITECTURE.md)** - 🏗️ Decisões arquiteturais e fluxos de dados
 - **[DEVELOPMENT.md](./DEVELOPMENT.md)** - 💻 Setup local, debugging, scripts
-- **[DEPLOYMENT.md](./DEPLOYMENT.md)** - ☁️ Deploy em GCP Cloud Run
+- **[VM_DEPLOYMENT.md](./VM_DEPLOYMENT.md)** - ☁️ Deploy em GCP VM
 - **[SUBMODULES.md](./SUBMODULES.md)** - 📦 Detalhes de cada domínio
 
 ## 🔄 Workflow
@@ -188,61 +186,45 @@ npm run docker:logs   # Ver logs
 
 - ✅ **TypeScript strict mode**
 - ✅ **ESLint + Prettier**
-- ✅ **SonarQube** (Community Edition)
+- ✅ **SonarCloud** (integracao automatica GitHub)
 - ✅ **Trivy** (container scanning)
 - ✅ **Dependabot** (dependency updates)
-- ✅ **Pre-commit hooks** (git-secrets, lint, format)
 
 ## ☁️ Deployment
 
 ### Pipeline CI/CD Automático
 
-Deploy totalmente automático em GCP Cloud Run via GitHub Actions:
+Deploy totalmente automático em GCP VM via GitHub Actions:
 
 ```
-Push → Build & Test → Docker Build → Artifact Registry → Cloud Run Deploy → Health Check → Release
+Push to main → SSH to VM → git pull → docker compose build → docker compose up → Caddy restart → Health checks
 ```
 
 **Pipeline por Branch:**
 
-- **PR** → Lint checks, TypeScript validation, Tests
-- **main** → Build completo + Deploy em produção + Release automático
+- **PR** → Lint, typecheck, tests, docker build, SonarCloud
+- **main** → Deploy automático na VM via SSH
+
+**Workflows GitHub Actions:**
+
+- `1-pull-request.yml` - Checks de PR (lint, typecheck, tests, docker build, SonarCloud)
+- `4-e2e-tests.yml` - Testes end-to-end
+- `5-security-scan.yml` - Scan de segurança (Trivy)
+- `6-dependency-check.yml` - Verificação de dependências
+- `deploy-to-vm.yml` - Deploy automático na VM
+- `diagnose-production.yml` - Diagnóstico do ambiente de produção
 
 **Features do Pipeline:**
 
-- ✅ Build de imagem Docker multi-estágio
-- ✅ Push automático para Artifact Registry
-- ✅ Deploy em Cloud Run com zero downtime
+- ✅ Build via Docker Compose na VM
+- ✅ Deploy via SSH com git pull + rebuild
+- ✅ Caddy como reverse proxy com HTTPS automático
 - ✅ Health check automático pós-deploy
-- ✅ Rollback automático em caso de falha
-- ✅ Rastreamento de deployments no GitHub
-- ✅ Criação automática de releases
-- ✅ Logs disponíveis em Cloud Run
+- ✅ SonarCloud integrado nos PRs
+- ✅ Scan de segurança com Trivy
+- ✅ Diagnóstico remoto de produção
 
-**Permissões do Workflow:**
-
-```yaml
-permissions:
-  contents: write # Criar releases
-  id-token: write # Autenticar com GCP (Workload Identity)
-  deployments: write # Rastrear deployments
-  statuses: write # Atualizar status
-```
-
-**Acessar Serviço em Produção:**
-
-```bash
-# Ver logs
-gcloud run logs read oute-dashboard --region=us-central1 --follow
-
-# Ver revisions
-gcloud run revisions list --service=oute-dashboard --region=us-central1
-
-# Rollback se necessário
-gcloud run services update-traffic oute-dashboard --region=us-central1 --to-revisions=<REVISION>=100
-```
-
-Ver [DEPLOYMENT.md](./DEPLOYMENT.md) para detalhes completos.
+Ver [VM_DEPLOYMENT.md](./VM_DEPLOYMENT.md) para detalhes completos.
 
 ## 📦 Stack Técnico
 
@@ -250,9 +232,9 @@ Ver [DEPLOYMENT.md](./DEPLOYMENT.md) para detalhes completos.
 - **Backend**: SvelteKit API routes, Node.js
 - **Database**: PostgreSQL (centralizado)
 - **Auth**: JWT (JSON Web Token)
-- **Cloud**: GCP Cloud Run, Cloud SQL, Artifact Registry, Secret Manager
+- **Cloud**: GCP Compute Engine VM, Docker Compose, Caddy (reverse proxy)
 - **CI/CD**: GitHub Actions
-- **Code Quality**: SonarQube, ESLint, TypeScript
+- **Code Quality**: SonarCloud, ESLint, TypeScript
 - **Containers**: Docker, docker-compose
 
 ## 📋 Roadmap

@@ -275,18 +275,14 @@ docker compose logs caddy | grep -i route
 
 ## Deployment Automation
 
-The GitHub Actions workflow in `oute-main/.github/workflows/deploy-to-vm.yml` automatically deploys:
+O workflow GitHub Actions em `oute-main/.github/workflows/deploy-to-vm.yml` faz deploy automatico de **todos os 5 servicos**:
 - 00_dashboard
 - 01_auth-profile
 - 02_projects
+- 99_home
+- 03_interview
 
-It does **NOT** automatically deploy 99_home and 03_interview because they need to be configured in the separate `oute-mind` repository.
-
-### To Automate Future Deployments
-
-If you want to automate 99_home and 03_interview deployment in the future:
-
-1. Update `~/oute-mind` workflow to also build and deploy these services
+O deploy utiliza SSH para a VM, faz `docker compose build` e `docker compose up` de todos os servicos, seguido de restart do Caddy e health checks automaticos.
 2. OR modify `oute-main` workflow to include steps for updating `oute-mind/docker-compose.yml`
 3. OR use a unified CI/CD system that manages both repositories
 

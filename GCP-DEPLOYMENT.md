@@ -1,6 +1,10 @@
-# OUTE GCP Deployment Guide
+# OUTE GCP Deployment Guide (Alternativo)
 
-Complete guide to deploy OUTE Dashboard on Google Cloud Platform using Cloud Run, with GitHub Actions CI/CD integration.
+> **NOTA**: O deploy primario do OUTE utiliza VM com Docker Compose + Caddy. Ver **[VM_DEPLOYMENT.md](./VM_DEPLOYMENT.md)** para o guia principal de deploy.
+>
+> Este documento descreve o deploy alternativo via GCP Cloud Run, caso deseje migrar para essa arquitetura no futuro.
+
+Guia completo para deploy do OUTE no Google Cloud Platform usando Cloud Run, com integracao CI/CD via GitHub Actions.
 
 ## Table of Contents
 
@@ -118,7 +122,7 @@ gcloud secrets list
 ### Build Locally (Test)
 
 ```bash
-cd /Users/bardi/Projetos/oute-main
+cd oute-main
 
 # Build the dashboard image
 docker build \

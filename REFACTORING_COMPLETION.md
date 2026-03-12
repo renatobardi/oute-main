@@ -1,329 +1,329 @@
-# OUTE Refactoring Completion Report
+# Relatorio de Conclusao da Refatoracao OUTE
 
-## Executive Summary
+## Resumo Executivo
 
-The OUTE monorepo has been successfully refactored to implement **Hexagonal Architecture**, **Domain-Driven Design (DDD)**, **Clean Code principles**, **Test-Driven Development (TDD)**, and comprehensive **Definition of Done (DoD) & Definition of Ready (DoR)** standards.
+O monorepo OUTE foi refatorado com sucesso para implementar **Arquitetura Hexagonal**, **Domain-Driven Design (DDD)**, **principios de Clean Code**, **Test-Driven Development (TDD)** e padroes abrangentes de **Definition of Done (DoD) & Definition of Ready (DoR)**.
 
-**Status**: ✅ **COMPLETE FOR 01_auth-profile SERVICE**
+**Status**: ✅ **COMPLETO PARA O SERVICO 01_auth-profile**
 
 ---
 
-## What Was Accomplished
+## O Que Foi Realizado
 
-### Architecture Implementation
+### Implementacao da Arquitetura
 
-#### ✅ Hexagonal Architecture (Ports & Adapters)
+#### ✅ Arquitetura Hexagonal (Ports & Adapters)
 
-- **Domain Layer**: Pure business logic, zero infrastructure dependencies
-- **Application Layer**: Use cases orchestrating domain + infrastructure
-- **Infrastructure Layer**: Adapters implementing port interfaces
-- **Presentation Layer**: SvelteKit routes with dependency injection
+- **Camada de Dominio**: Logica de negocio pura, zero dependencias de infraestrutura
+- **Camada de Aplicacao**: Casos de uso orquestrando dominio + infraestrutura
+- **Camada de Infraestrutura**: Adaptadores implementando interfaces de portas
+- **Camada de Apresentacao**: Rotas SvelteKit com injecao de dependencias
 
 #### ✅ Domain-Driven Design
 
-- **Entities**: User aggregate with lifecycle management
-- **Value Objects**: Email, Password, UserId, Role (immutable, validated)
-- **Domain Services**: AuthenticationService with business rules
-- **Repositories (Ports)**: IUserRepository abstraction
-- **Ubiquitous Language**: Clear, consistent terminology across codebase
+- **Entidades**: Agregado User com gerenciamento de ciclo de vida
+- **Value Objects**: Email, Password, UserId, Role (imutaveis, validados)
+- **Servicos de Dominio**: AuthenticationService com regras de negocio
+- **Repositorios (Portas)**: Abstracao IUserRepository
+- **Linguagem Ubiqua**: Terminologia clara e consistente em toda a base de codigo
 
 #### ✅ Clean Code
 
-- **Single Responsibility**: Each class has one reason to change
-- **Naming**: Clear, intention-revealing names
-- **Small Functions**: Methods avg. 10-15 lines
-- **No Code Duplication**: DRY principle enforced
-- **Error Handling**: Specific domain errors, not catch-all strings
+- **Responsabilidade Unica**: Cada classe tem um unico motivo para mudar
+- **Nomenclatura**: Nomes claros que revelam intencao
+- **Funcoes Pequenas**: Metodos com media de 10-15 linhas
+- **Sem Duplicacao de Codigo**: Principio DRY aplicado
+- **Tratamento de Erros**: Erros de dominio especificos, sem strings genericas
 
 #### ✅ Test-Driven Development
 
-- **Red-Green-Refactor**: Tests written before implementations
-- **Unit Tests**: 56 tests for domain layer
-- **Integration Tests**: 28 tests for infrastructure adapters
-- **Application Tests**: 34 tests for use cases
-- **Presentation Tests**: 39 tests for handlers & middleware
-- **E2E Tests**: 21 tests for complete workflows
-- **Total**: 178 tests, 80%+ coverage
+- **Red-Green-Refactor**: Testes escritos antes das implementacoes
+- **Testes Unitarios**: 56 testes para camada de dominio
+- **Testes de Integracao**: 28 testes para adaptadores de infraestrutura
+- **Testes de Aplicacao**: 34 testes para casos de uso
+- **Testes de Apresentacao**: 39 testes para handlers e middleware
+- **Testes E2E**: 21 testes para fluxos completos
+- **Total**: 178 testes, 80%+ de cobertura
 
 #### ✅ Definition of Done
 
-Every feature must have:
+Toda feature deve ter:
 
-- [x] Code quality (ESLint, Prettier, strict TypeScript)
-- [x] 100% test coverage (unit + integration + E2E)
-- [x] Proper error handling (domain errors, not strings)
-- [x] Documentation (comments for complex logic)
-- [x] Security validation (input validation, token handling)
-- [x] Performance (no N+1 queries, reasonable latency)
-- [x] Peer review ready
+- [x] Qualidade de codigo (ESLint, Prettier, TypeScript strict)
+- [x] 100% de cobertura de testes (unitario + integracao + E2E)
+- [x] Tratamento de erros adequado (erros de dominio, nao strings)
+- [x] Documentacao (comentarios para logica complexa)
+- [x] Validacao de seguranca (validacao de input, tratamento de tokens)
+- [x] Performance (sem queries N+1, latencia razoavel)
+- [x] Pronto para revisao de pares
 
 #### ✅ Definition of Ready
 
-Every issue must have:
+Toda issue deve ter:
 
-- [x] Clear acceptance criteria
-- [x] Domain model sketched
-- [x] Use cases identified
-- [x] Database schema designed
-- [x] API contract defined
-- [x] Error scenarios mapped
+- [x] Criterios de aceitacao claros
+- [x] Modelo de dominio esboçado
+- [x] Casos de uso identificados
+- [x] Schema do banco de dados projetado
+- [x] Contrato de API definido
+- [x] Cenarios de erro mapeados
 
 ---
 
-## Phase-by-Phase Breakdown
+## Detalhamento Fase por Fase
 
-### Phase 1: Domain Layer ✅
+### Fase 1: Camada de Dominio ✅
 
-**Status**: Complete with 56 tests
+**Status**: Completo com 56 testes
 
-**Deliverables**:
+**Entregaveis**:
 
-- `domain/entities/User.ts` - Aggregate with business logic
+- `domain/entities/User.ts` - Agregado com logica de negocio
 - `domain/value-objects/` - Email, Password, UserId, Role
-- `domain/errors/` - DomainError hierarchy (6 error types)
-- `domain/repositories/IUserRepository.ts` - Port interface
+- `domain/errors/` - Hierarquia DomainError (6 tipos de erro)
+- `domain/repositories/IUserRepository.ts` - Interface de porta
 
-**Key Features**:
+**Funcionalidades Principais**:
 
-- Email validation (RFC 5322)
-- Password strength validation (min 8 chars, mixed case, numbers, symbols)
-- UUID-based user IDs
-- Role enumeration with ADMIN/USER
-- User lifecycle (create, reconstruct, update)
+- Validacao de email (RFC 5322)
+- Validacao de força de senha (min 8 caracteres, maiusculas/minusculas, numeros, simbolos)
+- IDs de usuario baseados em UUID
+- Enumeracao de roles com ADMIN/USER
+- Ciclo de vida do usuario (criar, reconstruir, atualizar)
 
-**Test Coverage**:
-
-```
-✅ Email validation (valid, invalid, edge cases)
-✅ Password validation (strong, weak, edge cases)
-✅ User creation (valid, invalid, role assignment)
-✅ Value object immutability
-✅ Error inheritance
-```
-
-### Phase 2: Infrastructure Layer ✅
-
-**Status**: Complete with 28 tests
-
-**Deliverables**:
-
-- `infrastructure/adapters/repositories/PostgresUserRepository.ts` - Persistence adapter
-- `infrastructure/adapters/password/BcryptPasswordAdapter.ts` - Password hashing
-- `infrastructure/adapters/token/JwtTokenAdapter.ts` - JWT generation
-- `infrastructure/config/database.ts` - Database setup
-
-**Key Features**:
-
-- Mock in-memory database (Map-based, no external DB required)
-- Bcrypt-like password hashing (mock implementation)
-- JWT token generation with claims (userId, email, roles)
-- Token expiration checking
-- Mock implementation for testing (easily swappable for production)
-
-**Test Coverage**:
+**Cobertura de Testes**:
 
 ```
-✅ User repository CRUD operations
-✅ Password hashing & verification
-✅ Token generation & validation
-✅ Token expiration handling
-✅ Database error scenarios
+✅ Validacao de email (valido, invalido, casos extremos)
+✅ Validacao de senha (forte, fraca, casos extremos)
+✅ Criacao de usuario (valido, invalido, atribuicao de role)
+✅ Imutabilidade de value objects
+✅ Heranca de erros
 ```
 
-### Phase 3: Application Layer ✅
+### Fase 2: Camada de Infraestrutura ✅
 
-**Status**: Complete with 34 tests
+**Status**: Completo com 28 testes
 
-**Deliverables**:
+**Entregaveis**:
 
-- `application/use-cases/login/LoginUseCase.ts` - Login orchestration
-- `application/use-cases/register/RegisterUseCase.ts` - Registration orchestration
-- `application/use-cases/get-profile/GetProfileUseCase.ts` - Profile retrieval
+- `infrastructure/adapters/repositories/PostgresUserRepository.ts` - Adaptador de persistencia
+- `infrastructure/adapters/password/BcryptPasswordAdapter.ts` - Hashing de senha
+- `infrastructure/adapters/token/JwtTokenAdapter.ts` - Geracao de JWT
+- `infrastructure/config/database.ts` - Configuracao do banco de dados
+
+**Funcionalidades Principais**:
+
+- Banco de dados in-memory mock (baseado em Map, sem DB externo necessario)
+- Hashing de senha tipo Bcrypt (implementacao mock)
+- Geracao de tokens JWT com claims (userId, email, roles)
+- Verificacao de expiracao de token
+- Implementacao mock para testes (facilmente substituivel para producao)
+
+**Cobertura de Testes**:
+
+```
+✅ Operacoes CRUD do repositorio de usuarios
+✅ Hashing e verificacao de senha
+✅ Geracao e validacao de tokens
+✅ Tratamento de expiracao de tokens
+✅ Cenarios de erro do banco de dados
+```
+
+### Fase 3: Camada de Aplicacao ✅
+
+**Status**: Completo com 34 testes
+
+**Entregaveis**:
+
+- `application/use-cases/login/LoginUseCase.ts` - Orquestracao de login
+- `application/use-cases/register/RegisterUseCase.ts` - Orquestracao de registro
+- `application/use-cases/get-profile/GetProfileUseCase.ts` - Recuperacao de perfil
 - `application/dto/` - LoginRequest, LoginResponse, RegisterRequest, RegisterResponse, GetProfileRequest, GetProfileResponse
-- `application/dto/mappers/UserMapper.ts` - Entity to DTO conversion
+- `application/dto/mappers/UserMapper.ts` - Conversao de entidade para DTO
 
-**Key Features**:
+**Funcionalidades Principais**:
 
-- Use case orchestration (email validation → user lookup → password verify → token generation)
-- DTO validation at boundaries
-- Entity-to-DTO mapping (password hash never exposed)
-- User enumeration prevention (generic error messages)
-- Transaction-like behavior (atomic operations)
+- Orquestracao de casos de uso (validacao de email → busca de usuario → verificacao de senha → geracao de token)
+- Validacao de DTOs nas fronteiras
+- Mapeamento entidade-para-DTO (hash de senha nunca exposto)
+- Prevencao de enumeracao de usuarios (mensagens de erro genericas)
+- Comportamento transacional (operacoes atomicas)
 
-**Test Coverage**:
-
-```
-✅ Login success & failures
-✅ Registration success & failures
-✅ Profile retrieval with authentication
-✅ DTO validation
-✅ Error propagation
-```
-
-### Phase 4: Presentation Layer ✅
-
-**Status**: Complete with 39 tests
-
-**Deliverables**:
-
-- `presentation/handlers/LoginHandler.ts` - HTTP request orchestration
-- `presentation/handlers/RegisterHandler.ts` - Registration HTTP orchestration
-- `presentation/handlers/ProfileHandler.ts` - Profile HTTP orchestration
-- `presentation/middleware/authenticate.ts` - JWT validation middleware
-- `presentation/errors/ErrorMapper.ts` - Domain error → HTTP response mapping
-- `src/routes/api/auth/+server.ts` - SvelteKit POST /api/auth route
-- `src/routes/api/profile/+server.ts` - SvelteKit GET /api/profile route
-- `src/hooks.server.ts` - Dependency injection setup
-
-**Key Features**:
-
-- Request validation (required fields, format)
-- Error mapping to HTTP status codes (400, 401, 404, 500)
-- Bearer token extraction & validation
-- Dependency injection container
-- Error response formatting with error codes
-
-**Test Coverage**:
+**Cobertura de Testes**:
 
 ```
-✅ HTTP status codes (200, 201, 400, 401, 404, 500)
-✅ Request validation
-✅ Error mapping
-✅ Authentication middleware
-✅ Handler orchestration
+✅ Login com sucesso e falhas
+✅ Registro com sucesso e falhas
+✅ Recuperacao de perfil com autenticacao
+✅ Validacao de DTOs
+✅ Propagacao de erros
 ```
 
-### Phase 5: E2E Tests ✅
+### Fase 4: Camada de Apresentacao ✅
 
-**Status**: Complete with 21 tests
+**Status**: Completo com 39 testes
 
-**Deliverables**:
+**Entregaveis**:
 
-- `playwright.config.ts` - Playwright configuration
-- `src/__tests__/e2e/auth.spec.ts` - Authentication flow tests (8 tests)
-- `src/__tests__/e2e/profile.spec.ts` - Profile endpoint tests (13 tests)
-- `src/__tests__/e2e/fixtures.ts` - Test utilities, helpers, assertions
-- `src/__tests__/e2e/README.md` - E2E testing guide
+- `presentation/handlers/LoginHandler.ts` - Orquestracao de requisicoes HTTP
+- `presentation/handlers/RegisterHandler.ts` - Orquestracao HTTP de registro
+- `presentation/handlers/ProfileHandler.ts` - Orquestracao HTTP de perfil
+- `presentation/middleware/authenticate.ts` - Middleware de validacao JWT
+- `presentation/errors/ErrorMapper.ts` - Mapeamento de erro de dominio → resposta HTTP
+- `src/routes/api/auth/+server.ts` - Rota SvelteKit POST /api/auth
+- `src/routes/api/profile/+server.ts` - Rota SvelteKit GET /api/profile
+- `src/hooks.server.ts` - Configuracao de injecao de dependencias
 
-**Key Features**:
+**Funcionalidades Principais**:
 
-- Full authentication flow validation
-- Protected route testing
-- JWT token validation
-- Concurrent request handling
-- Error scenario coverage
-- Integration flow testing
+- Validacao de requisicoes (campos obrigatorios, formato)
+- Mapeamento de erros para codigos de status HTTP (400, 401, 404, 500)
+- Extracao e validacao de Bearer token
+- Container de injecao de dependencias
+- Formatacao de respostas de erro com codigos de erro
 
-**Test Coverage**:
+**Cobertura de Testes**:
 
 ```
-✅ Login with valid/invalid credentials
-✅ Registration with valid/invalid data
-✅ Profile access with/without authentication
-✅ Token format validation
-✅ Security checks (token expiration, case-sensitivity)
+✅ Codigos de status HTTP (200, 201, 400, 401, 404, 500)
+✅ Validacao de requisicoes
+✅ Mapeamento de erros
+✅ Middleware de autenticacao
+✅ Orquestracao de handlers
+```
+
+### Fase 5: Testes E2E ✅
+
+**Status**: Completo com 21 testes
+
+**Entregaveis**:
+
+- `playwright.config.ts` - Configuracao do Playwright
+- `src/__tests__/e2e/auth.spec.ts` - Testes de fluxo de autenticacao (8 testes)
+- `src/__tests__/e2e/profile.spec.ts` - Testes de endpoint de perfil (13 testes)
+- `src/__tests__/e2e/fixtures.ts` - Utilitarios, helpers e assercoes de teste
+- `src/__tests__/e2e/README.md` - Guia de testes E2E
+
+**Funcionalidades Principais**:
+
+- Validacao completa do fluxo de autenticacao
+- Testes de rotas protegidas
+- Validacao de tokens JWT
+- Tratamento de requisicoes concorrentes
+- Cobertura de cenarios de erro
+- Testes de fluxo de integracao
+
+**Cobertura de Testes**:
+
+```
+✅ Login com credenciais validas/invalidas
+✅ Registro com dados validos/invalidos
+✅ Acesso ao perfil com/sem autenticacao
+✅ Validacao de formato de token
+✅ Verificacoes de seguranca (expiracao de token, case-sensitivity)
 ```
 
 ---
 
-## Complete Test Summary
+## Resumo Completo de Testes
 
-### Test Distribution
+### Distribuicao de Testes
 
 ```
-Layer          | Tests | Coverage
----------------|-------|----------
-Domain         | 56    | Value Objects, Entities, Errors
-Infrastructure | 28    | Adapters, Repositories
-Application    | 34    | Use Cases, DTOs, Mappers
-Presentation   | 39    | Handlers, Middleware, Routes
-E2E            | 21    | Full Integration Flows
----------------|-------|----------
-TOTAL          | 178   | 80%+
+Camada         | Testes | Cobertura
+---------------|--------|----------
+Dominio        | 56     | Value Objects, Entidades, Erros
+Infraestrutura | 28     | Adaptadores, Repositorios
+Aplicacao      | 34     | Casos de Uso, DTOs, Mappers
+Apresentacao   | 39     | Handlers, Middleware, Rotas
+E2E            | 21     | Fluxos de Integracao Completos
+---------------|--------|----------
+TOTAL          | 178    | 80%+
 ```
 
-### Coverage by Type
+### Cobertura por Tipo
 
-- **Unit Tests**: 157 tests (domain, application, infrastructure)
-- **Integration Tests**: 28 tests (infrastructure adapters)
-- **E2E Tests**: 21 tests (complete workflows)
-- **Presentation Tests**: 39 tests (handlers, middleware)
+- **Testes Unitarios**: 157 testes (dominio, aplicacao, infraestrutura)
+- **Testes de Integracao**: 28 testes (adaptadores de infraestrutura)
+- **Testes E2E**: 21 testes (fluxos completos)
+- **Testes de Apresentacao**: 39 testes (handlers, middleware)
 
-### All Tests Passing ✅
+### Todos os Testes Passando ✅
 
 ```bash
 npm run test --workspaces
-# Result: 178 tests passed
+# Resultado: 178 testes passaram
 ```
 
 ---
 
-## Code Quality Metrics
+## Metricas de Qualidade de Codigo
 
 ### TypeScript
 
-- **Strict Mode**: ✅ Enabled
-- **Type Coverage**: 100% (no `any` without justification)
-- **Unused Variables**: ✅ None
-- **Implicit Any**: ✅ Prevented
+- **Modo Strict**: ✅ Habilitado
+- **Cobertura de Tipos**: 100% (nenhum `any` sem justificativa)
+- **Variaveis Nao Utilizadas**: ✅ Nenhuma
+- **Any Implicito**: ✅ Prevenido
 
 ### ESLint & Prettier
 
-- **Formatting**: ✅ All files formatted
-- **Linting**: ✅ No warnings or errors
-- **Code Style**: ✅ Consistent across codebase
+- **Formatacao**: ✅ Todos os arquivos formatados
+- **Linting**: ✅ Sem avisos ou erros
+- **Estilo de Codigo**: ✅ Consistente em toda a base de codigo
 
-### Architecture
+### Arquitetura
 
-- **Cyclomatic Complexity**: < 10 (all functions)
-- **Function Size**: 10-15 lines average
-- **Code Duplication**: < 5%
-- **SOLID Principles**: ✅ Adhered to
+- **Complexidade Ciclomatica**: < 10 (todas as funcoes)
+- **Tamanho de Funcoes**: 10-15 linhas em media
+- **Duplicacao de Codigo**: < 5%
+- **Principios SOLID**: ✅ Seguidos
 
-### Error Handling
+### Tratamento de Erros
 
-- **Domain Errors**: ✅ Proper hierarchy
-- **No Catch-All**: ✅ Specific error handling
-- **Error Messages**: ✅ User-facing and technical
+- **Erros de Dominio**: ✅ Hierarquia adequada
+- **Sem Catch-All**: ✅ Tratamento de erros especifico
+- **Mensagens de Erro**: ✅ Para usuario final e tecnicas
 
 ---
 
-## Security Implementation
+## Implementacao de Seguranca
 
-### ✅ Authentication
+### ✅ Autenticacao
 
-- [x] JWT token generation with proper claims
-- [x] Token expiration validation
-- [x] Bearer token extraction and validation
-- [x] Case-sensitive Authorization header checking
+- [x] Geracao de token JWT com claims adequados
+- [x] Validacao de expiracao de token
+- [x] Extracao e validacao de Bearer token
+- [x] Verificacao case-sensitive do header Authorization
 
-### ✅ Password Security
+### ✅ Seguranca de Senha
 
-- [x] Bcrypt hashing (mock implementation)
-- [x] Password strength validation
-- [x] Never exposed in responses or logs
-- [x] No plaintext storage
+- [x] Hashing Bcrypt (implementacao mock)
+- [x] Validacao de forca de senha
+- [x] Nunca exposta em respostas ou logs
+- [x] Sem armazenamento em texto plano
 
-### ✅ Input Validation
+### ✅ Validacao de Input
 
-- [x] Email format validation (RFC 5322)
-- [x] Required field validation
-- [x] Type validation in DTOs
-- [x] Value object construction validation
+- [x] Validacao de formato de email (RFC 5322)
+- [x] Validacao de campos obrigatorios
+- [x] Validacao de tipos nos DTOs
+- [x] Validacao na construcao de value objects
 
-### ✅ User Enumeration Prevention
+### ✅ Prevencao de Enumeracao de Usuarios
 
-- [x] Generic error messages for login failures
-- [x] No user existence disclosure
-- [x] Same error for invalid email/password
+- [x] Mensagens de erro genericas para falhas de login
+- [x] Sem revelacao da existencia do usuario
+- [x] Mesmo erro para email/senha invalidos
 
-### ⚠️ Not Yet Implemented (Future Work)
+### ⚠️ Ainda Nao Implementado (Trabalho Futuro)
 
-- [ ] CORS configuration
+- [ ] Configuracao de CORS
 - [ ] Rate limiting
-- [ ] CSRF protection
-- [ ] SQL injection prevention (using ORM/parameterized queries)
-- [ ] XSS prevention
+- [ ] Protecao CSRF
+- [ ] Prevencao de SQL injection (usando ORM/queries parametrizadas)
+- [ ] Prevencao de XSS
 
 ---
 
@@ -366,8 +366,8 @@ npm run test --workspaces
 
 - **Setup Guide**: `/packages/01_auth-profile/README.md`
 - **E2E Tests**: `src/__tests__/e2e/README.md`
-- **Phase Summaries**: `PHASE_*.md` files
-- **Architecture**: `ARCHITECTURE.md` (planned)
+- **Resumos das Fases**: Os detalhes das fases 1-4 estao contidos neste documento; fase 5 em [`PHASE_5_SUMMARY.md`](packages/01_auth-profile/PHASE_5_SUMMARY.md)
+- **Arquitetura**: `ARCHITECTURE.md` (planejado)
 
 ---
 
@@ -589,7 +589,7 @@ Create a script to scaffold new services with this structure:
 
 ### Documentation ✅
 
-- [x] Phase summaries (PHASE_1-5_SUMMARY.md)
+- [x] Resumos das fases (detalhes das fases 1-4 neste documento; fase 5 em PHASE_5_SUMMARY.md)
 - [x] E2E testing guide (README.md)
 - [x] Code comments on complex logic
 - [x] TypeScript types as documentation
@@ -710,16 +710,13 @@ npm run test -- --debug auth.spec.ts
 npm run test:e2e -- --ui
 ```
 
-### Documentation Files
+### Arquivos de Documentacao
 
-- `README.md` - Service overview
-- `PHASE_1_SUMMARY.md` - Domain layer details
-- `PHASE_2_SUMMARY.md` - Infrastructure layer details
-- `PHASE_3_SUMMARY.md` - Application layer details
-- `PHASE_4_SUMMARY.md` - Presentation layer details
-- `PHASE_5_SUMMARY.md` - E2E tests details
-- `REFACTORING_COMPLETION.md` - This document
-- `src/__tests__/e2e/README.md` - E2E testing guide
+- `README.md` - Visao geral do servico
+- Os detalhes das fases 1-4 (Domain, Infrastructure, Application, Presentation) estao contidos neste documento (`REFACTORING_COMPLETION.md`)
+- [`PHASE_5_SUMMARY.md`](packages/01_auth-profile/PHASE_5_SUMMARY.md) - Detalhes dos testes E2E
+- `REFACTORING_COMPLETION.md` - Este documento
+- `src/__tests__/e2e/README.md` - Guia de testes E2E
 
 ---
 
