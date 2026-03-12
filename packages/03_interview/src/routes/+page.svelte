@@ -3,11 +3,16 @@
   import Sidebar from '$lib/components/Sidebar.svelte';
   import ChatWindow from '$lib/components/ChatWindow.svelte';
   import NotesPanel from '$lib/components/NotesPanel.svelte';
-  import { currentInterview, messages, notes } from '$lib/stores/conversation';
+  import { currentInterview, messages, notes, initialInputValue } from '$lib/stores/conversation';
 
   // React to URL parameter changes
   $: if ($page && $page.url) {
     const initialMessageParam = $page.url.searchParams.get('initial');
+
+    // Store the initial input value if provided from landing page
+    if (initialMessageParam) {
+      initialInputValue.set(initialMessageParam);
+    }
 
     // Initialize if not yet loaded
     if (!$currentInterview) {
@@ -19,21 +24,8 @@
         updatedAt: new Date(),
       });
 
-      const initialMessages = [];
-
-      // If there's an initial message from the landing page, add it as the first message
-      if (initialMessageParam) {
-        initialMessages.push({
-          id: Date.now().toString(),
-          timestamp: new Date(),
-          sender: 'user',
-          content: initialMessageParam,
-          type: 'text',
-        });
-      }
-
-      // Add sample conversation messages
-      initialMessages.push(
+      // Add sample conversation messages (no initial message added here)
+      const initialMessages = [
         {
           id: '1',
           timestamp: new Date(Date.now() - 3600000),
@@ -64,7 +56,7 @@
             'Entendido. Com base nas informações, posso estimar entre 180k-240k horas de trabalho.',
           type: 'text',
         },
-      );
+      ];
 
       messages.set(initialMessages);
 
@@ -78,19 +70,6 @@
         tags: ['Greenfield', 'Mobile', 'Backend'],
         content: 'Análise em progresso...',
       });
-    } else if (initialMessageParam) {
-      // If there's already an interview loaded but we have an initial message param from the landing page,
-      // add it as a new message from the user
-      messages.update(msgs => [
-        ...msgs,
-        {
-          id: Date.now().toString(),
-          timestamp: new Date(),
-          sender: 'user',
-          content: initialMessageParam,
-          type: 'text',
-        }
-      ]);
     }
   }
 </script>

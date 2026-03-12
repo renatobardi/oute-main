@@ -1,8 +1,19 @@
 <script lang="ts">
   import { Button } from '@oute/design-system';
-  import { messages } from '$lib/stores/conversation';
+  import { messages, initialInputValue } from '$lib/stores/conversation';
+  import { onMount } from 'svelte';
 
   let inputValue = '';
+
+  // Load initial value from store when component mounts
+  onMount(() => {
+    initialInputValue.subscribe(value => {
+      if (value) {
+        inputValue = value;
+        initialInputValue.set(''); // Clear after using
+      }
+    })();
+  });
 
   function handleSend() {
     if (inputValue.trim()) {
