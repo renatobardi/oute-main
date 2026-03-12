@@ -283,7 +283,7 @@ export class AddWidgetUseCase {
 }
 ```
 
-#### Test Strategy (TDD)
+#### Estrategia de Testes (TDD)
 
 ```typescript
 // __tests__/unit/domain/entities/Dashboard.test.ts
