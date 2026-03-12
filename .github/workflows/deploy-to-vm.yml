@@ -68,7 +68,10 @@ jobs:
                 find \$OUTE_HOME/oute-main/packages -type d -name \".svelte-kit\" -exec rm -rf {} + 2>/dev/null || true
                 find \$OUTE_HOME/oute-main -type d -name \".npm\" -exec rm -rf {} + 2>/dev/null || true
 
-                # Prune Docker cache
+                # Remove old Docker images to force complete rebuild
+                echo \"=== Removing old Docker images ===\"
+                docker compose -f \$OUTE_HOME/oute-mind/docker-compose.yml down -v 00_dashboard 01_auth-profile 02_projects 99_home 03_interview 2>/dev/null || true
+                docker rmi oute-dashboard oute-auth-profile oute-projects oute-home oute-interview 2>/dev/null || true
                 docker system prune -f --all
 
                 # Build with explicit no-cache and fresh layers
