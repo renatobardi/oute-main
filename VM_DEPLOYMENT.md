@@ -1,29 +1,29 @@
-# VM Deployment Guide - oute-main on oute-mind Infrastructure
+# Guia de Deploy na VM - oute-main na Infraestrutura oute-mind
 
 Este documento descreve como fazer deploy dos serviços oute-main na VM oute-mind.
 
-## Overview
+## Visão Geral
 
-oute-main (Dashboard, Auth-Profile, Projects APIs) é deployado na VM oute-mind como containers Docker, compartilhando a mesma infraestrutura com o FastAPI CrewAI estimator.
+oute-main (Home, Dashboard, Auth-Profile, Projects, Interview) é deployado na VM oute-mind como containers Docker, compartilhando a mesma infraestrutura com o FastAPI CrewAI estimator.
 
 **Arquitetura:**
 - **Host**: GCP VM t2a-standard-4 (ARM64)
-- **Network**: Docker network `oute-network` (compartilhado com oute-mind services)
+- **Network**: Docker network `oute-network` (compartilhado com serviços oute-mind)
 - **Database**: PostgreSQL 16 (mesma instância, database `oute_main` separada)
-- **Reverse Proxy**: Caddy (ports 80/443 on host, only externally exposed ports)
-- **Service Access**: All services use `expose` (internal Docker network only) and are accessed exclusively through Caddy reverse proxy. No host port mappings for application services.
+- **Reverse Proxy**: Caddy (portas 80/443 no host, únicas portas expostas externamente)
+- **Acesso aos Serviços**: Todos os serviços usam `expose` (rede Docker interna apenas) e são acessados exclusivamente pelo Caddy reverse proxy. Sem mapeamento de portas no host para serviços da aplicação.
 
-## Prerequisites
+## Pré-requisitos
 
 ### Na VM (oute-mind)
 
-✅ Já deve estar configurado:
+Já deve estar configurado:
 - Docker & Docker Compose
 - PostgreSQL 16 com database `oute_main` criado
 - Caddy configurado com rotas para oute-main
 - `oute-network` Docker network
 
-### No GitHub Repository (oute-main)
+### No Repositório GitHub (oute-main)
 
 Adicionar secrets para CI/CD:
 - `VM_SSH_PRIVATE_KEY`: Base64-encoded SSH private key (Ed25519)
@@ -31,64 +31,70 @@ Adicionar secrets para CI/CD:
 - `VM_HOSTNAME`: IP estático ou hostname da VM
 - `VM_USER`: 'ubuntu' (default)
 
-## Automatic Deployment (Recommended)
+## Deploy Automático (Recomendado)
 
-### Trigger: Push to `main` branch
+### Gatilho: Push para branch `main`
 
 ```bash
-# 1. Make changes to oute-main
+# 1. Fazer mudanças no oute-main
 git add .
-git commit -m "Feature: add new feature"
+git commit -m "feat: adicionar nova funcionalidade"
 
-# 2. Push to main
+# 2. Push para main
 git push origin main
 
-# 3. GitHub Actions automatically:
-#    - Builds multi-arch Docker images
-#    - Connects to VM via SSH
-#    - Restarts oute-main services
-#    - Runs health checks
-#    - Notifies on success/failure
+# 3. GitHub Actions automaticamente:
+#    - Faz build de imagens Docker multi-arch
+#    - Conecta na VM via SSH
+#    - Reinicia serviços oute-main
+#    - Executa health checks
+#    - Notifica sucesso/falha
 ```
 
-**Duration**: ~15-20 minutes (includes Docker build time)
+**Duração**: ~15-20 minutos (inclui tempo de build Docker)
 
-## Manual Deployment
+## Deploy Manual
 
 Se precisar fazer deploy manualmente:
 
 ```bash
-# 1. SSH into VM
+# 1. SSH na VM
 gcloud compute ssh oute-mind --zone=us-central1-a
 
-# 2. Navigate to oute-mind directory
+# 2. Navegar para o diretório oute-mind
 cd ~/oute-mind
 
-# 3. Pull latest changes
+# 3. Pull das últimas mudanças
 git pull origin main
 
-# 4. Rebuild services
+# 4. Rebuild dos serviços
 docker compose build --no-cache \
+  99_home \
   00_dashboard \
   01_auth-profile \
-  02_projects
+  02_projects \
+  03_interview
 
-# 5. Restart services
+# 5. Reiniciar serviços
 docker compose up -d \
+  99_home \
   00_dashboard \
   01_auth-profile \
-  02_projects
+  02_projects \
+  03_interview
 
-# 6. Verify health
+# 6. Verificar saúde
 docker compose ps
+docker exec oute-home curl -sf http://localhost:3003/health
 docker exec oute-dashboard curl -sf http://localhost:3000/health
 docker exec oute-auth curl -sf http://localhost:3001/health
 docker exec oute-projects curl -sf http://localhost:3002/health
+docker exec oute-interview curl -sf http://localhost:3002/health
 ```
 
-## Configuration
+## Configuração
 
-### Environment Variables
+### Variáveis de Ambiente
 
 Arquivo `.env.vm.production` (não commitar, usar GitHub Secrets):
 
@@ -100,11 +106,18 @@ AUTH_SERVICE_URL=http://01_auth-profile:3001
 PROJECTS_SERVICE_URL=http://02_projects:3002
 ```
 
-### Docker Compose Integration
+### Integração com Docker Compose
 
-O `docker compose.yml` da VM é estendido com:
+O `docker-compose.yml` da VM é estendido com:
 
 ```yaml
+99_home:
+  expose:
+    - "3003"
+  environment:
+    NODE_ENV: production
+    VITE_AUTH_SERVICE_URL: http://01_auth-profile:3001
+
 00_dashboard:
   expose:
     - "3000"
@@ -127,59 +140,70 @@ O `docker compose.yml` da VM é estendido com:
     DATABASE_URL: postgresql://app-user:${POSTGRES_PASSWORD}@postgres:5432/oute_main
     AUTH_SERVICE_URL: http://01_auth-profile:3001
     JWT_SECRET: ${JWT_SECRET}
+
+03_interview:
+  expose:
+    - "3002"
+  environment:
+    NODE_ENV: production
+    VITE_AUTH_SERVICE_URL: http://01_auth-profile:3001
 ```
 
-> **Security note**: Services use `expose` instead of `ports`. This makes them accessible only within the Docker network (service-to-service communication), not from the host or external networks. All external access goes through Caddy reverse proxy on port 80.
+> **Nota de segurança**: Os serviços usam `expose` ao invés de `ports`. Isso os torna acessíveis apenas dentro da rede Docker (comunicação entre serviços), não do host ou redes externas. Todo acesso externo passa pelo Caddy reverse proxy na porta 80.
 
-## Accessing Services
+## Acesso aos Serviços
 
-### Via Caddy (Only Method)
+### Via Caddy (Único Método)
 
-All services are accessed exclusively through Caddy reverse proxy on port 80:
+Todos os serviços são acessados exclusivamente pelo Caddy reverse proxy na porta 80:
+- Home: `http://<VM_IP>/`
+- Chat: `http://<VM_IP>/chat`
 - Dashboard: `http://<VM_IP>/dashboard`
 - Auth API: `http://<VM_IP>/api/auth`
 - Projects API: `http://<VM_IP>/api/projects`
 
-> **Note**: Direct port access (3020, 3021, 3022) is no longer available. Services use `expose` (internal Docker network only). If Caddy is down, use `docker exec` to access services directly within their containers.
+> **Nota**: Acesso direto por portas não está disponível. Os serviços usam `expose` (rede Docker interna apenas). Se o Caddy estiver fora, use `docker exec` para acessar os serviços diretamente dentro dos containers.
 
-## Monitoring & Logs
+## Monitoramento e Logs
 
-### Check Service Status
+### Verificar Status dos Serviços
 
 ```bash
 gcloud compute ssh oute-mind --zone=us-central1-a
 cd ~/oute-mind
 
-# All services
+# Todos os serviços
 docker compose ps
 
-# oute-main services only
-docker compose ps 00_dashboard 01_auth-profile 02_projects
+# Apenas serviços oute-main
+docker compose ps 99_home 00_dashboard 01_auth-profile 02_projects 03_interview
 ```
 
-### View Logs
+### Ver Logs
 
 ```bash
-# All services
+# Todos os serviços
 docker compose logs -f
 
-# Specific service
+# Serviço específico
+docker compose logs -f 99_home
 docker compose logs -f 00_dashboard
 docker compose logs -f 01_auth-profile
 docker compose logs -f 02_projects
+docker compose logs -f 03_interview
 
-# Last N lines
+# Últimas N linhas
 docker compose logs -f --tail=100 00_dashboard
 ```
 
-### Database Connectivity
+### Conectividade com o Banco
 
 ```bash
-# From VM
+# Na VM
 gcloud compute ssh oute-mind --zone=us-central1-a
 psql -U app-user -h localhost -d oute_main -c "SELECT 1;"
 
-# Check tables
+# Verificar tabelas
 psql -U app-user -h localhost -d oute_main -c "\dt"
 ```
 
@@ -188,12 +212,15 @@ psql -U app-user -h localhost -d oute_main -c "\dt"
 Cada serviço expõe endpoint `/health`:
 
 ```bash
-# Via Caddy reverse proxy (recommended)
+# Via Caddy reverse proxy (recomendado)
+curl http://localhost/health
 curl http://localhost/dashboard/health
 curl http://localhost/api/auth/health
 curl http://localhost/api/projects/health
 
-# Via docker exec (if Caddy is down or for debugging)
+# Via docker exec (se Caddy estiver fora ou para depuração)
+docker exec oute-home curl -sf http://localhost:3003/health
+docker exec oute-interview curl -sf http://localhost:3002/health
 docker exec oute-dashboard curl -sf http://localhost:3000/health
 # {"status":"ok","service":"dashboard","timestamp":"2026-03-10T..."}
 
@@ -209,128 +236,129 @@ docker exec oute-projects curl -sf http://localhost:3002/health
 ### Serviço está RESTARTING
 
 ```bash
-# Check logs
+# Verificar logs
 docker compose logs 00_dashboard
 
-# Common issues:
-# 1. Database connection failed → Verifique DATABASE_URL
-# 2. Container conflict → Verifique docker compose.yml expose settings
-# 3. Build error → Verifique Dockerfile, tente rebuild: docker compose build --no-cache 00_dashboard
+# Problemas comuns:
+# 1. Conexão com banco falhou -> Verifique DATABASE_URL
+# 2. Conflito de container -> Verifique docker-compose.yml expose settings
+# 3. Erro de build -> Verifique Dockerfile, tente rebuild: docker compose build --no-cache 00_dashboard
 ```
 
-### Saúde CHECK falha
+### Health Check Falha
 
 ```bash
-# Verify service is running
-docker compose ps 00_dashboard  # Should show "Up"
+# Verificar se o serviço está rodando
+docker compose ps 00_dashboard  # Deve mostrar "Up"
 
-# Check health directly inside the container
+# Verificar saúde diretamente dentro do container
 docker exec oute-dashboard curl -sf http://localhost:3000/health
 
-# Check logs for errors
+# Verificar logs de erros
 docker compose logs 00_dashboard
 ```
 
-### Database connection error
+### Erro de Conexão com Banco de Dados
 
 ```bash
-# Test connection
-docker exec oute-postgres psql -U app-user -c "\l"  # List databases
+# Testar conexão
+docker exec oute-postgres psql -U app-user -c "\l"  # Listar databases
 
-# Check database exists
+# Verificar se database existe
 docker exec oute-postgres psql -U app-user -c "SELECT datname FROM pg_database WHERE datname = 'oute_main';"
 
-# Create if missing
+# Criar se não existir
 docker exec oute-postgres psql -U app-user -c "CREATE DATABASE oute_main;"
 ```
 
-### Caddy routing not working
+### Roteamento do Caddy Não Funciona
 
 ```bash
-# Check Caddy logs
+# Verificar logs do Caddy
 docker compose logs caddy
 
-# Verify Caddyfile
+# Verificar Caddyfile
 cat configs/Caddyfile
 
-# Reload Caddy
+# Recarregar Caddy
 docker compose restart caddy
 ```
 
 ## Rollback
 
-Se deployment falhar e precisa revert:
+Se o deploy falhar e precisar reverter:
 
 ```bash
 gcloud compute ssh oute-mind --zone=us-central1-a
 cd ~/oute-mind
 
-# Stop services
-docker compose down 00_dashboard 01_auth-profile 02_projects
+# Parar serviços
+docker compose down 99_home 00_dashboard 01_auth-profile 02_projects 03_interview
 
-# Revert code to previous version
+# Reverter código para versão anterior
 git log --oneline -10  # Ver commits
-git checkout <PREVIOUS_COMMIT>
+git checkout <COMMIT_ANTERIOR>
 
-# Rebuild and start
-docker compose build --no-cache 00_dashboard 01_auth-profile 02_projects
-docker compose up -d 00_dashboard 01_auth-profile 02_projects
+# Rebuild e iniciar
+docker compose build --no-cache 99_home 00_dashboard 01_auth-profile 02_projects 03_interview
+docker compose up -d 99_home 00_dashboard 01_auth-profile 02_projects 03_interview
 
-# Verify
+# Verificar
+docker exec oute-home curl -sf http://localhost:3003/health
 docker exec oute-dashboard curl -sf http://localhost:3000/health
 ```
 
-## Database Backup
+## Backup do Banco de Dados
 
-Backup `oute_main` database:
+Backup do database `oute_main`:
 
 ```bash
-# Automated (daily via cron)
+# Automatizado (diário via cron)
 # /var/lib/postgresql/backups/oute_main_YYYYMMDD.sql
 
-# Manual backup
+# Backup manual
 gcloud compute ssh oute-mind --zone=us-central1-a
 docker exec oute-postgres pg_dump -U app-user oute_main > oute_main_backup.sql
 
-# Restore from backup
+# Restaurar do backup
 docker exec -i oute-postgres psql -U app-user oute_main < oute_main_backup.sql
 ```
 
-## Performance Monitoring
+## Monitoramento de Performance
 
 Prometheus e Grafana monitoram os serviços:
 
 ```bash
-# Prometheus and Grafana are internal-only (not exposed on host ports).
-# Access via SSH tunnel:
+# Prometheus e Grafana são apenas internos (não expostos em portas do host).
+# Acesso via túnel SSH:
 
 # Prometheus
 gcloud compute ssh oute-mind --zone=us-central1-a -- -L 9090:prometheus:9090
-# Then open http://localhost:9090
+# Depois abrir http://localhost:9090
 
 # Grafana
 gcloud compute ssh oute-mind --zone=us-central1-a -- -L 3080:grafana:3000
-# Then open http://localhost:3080
-# Credentials: admin/GRAFANA_PASSWORD
+# Depois abrir http://localhost:3080
+# Credenciais: admin/GRAFANA_PASSWORD
 ```
 
 Dashboards incluem métricas de:
-- Request rate, latency, error rate
-- CPU/Memory usage per service
-- Database connections
-- Network I/O
+- Taxa de requisições, latência, taxa de erros
+- Uso de CPU/Memória por serviço
+- Conexões com o banco
+- I/O de rede
 
-## Support
+## Suporte
 
-Para issues ou perguntas:
+Para problemas ou dúvidas:
 
-1. Verifique logs: `docker compose logs <service>`
-2. Verifique health: `docker exec <container> curl -sf http://localhost:<internal_port>/health`
-3. Verifique connectivity: Teste database, other services
-4. Consulte este documento's troubleshooting section
-5. Contate DevOps team
+1. Verifique logs: `docker compose logs <servico>`
+2. Verifique health: `docker exec <container> curl -sf http://localhost:<porta_interna>/health`
+3. Verifique conectividade: teste banco de dados e outros serviços
+4. Consulte a seção de troubleshooting deste documento
+5. Contate o time de DevOps
 
 ---
 
-**Last Updated**: 2026-03-10
-**Version**: 1.0
+**Última Atualização**: 2026-03-10
+**Versão**: 1.0

@@ -1,14 +1,14 @@
-# E2E Testing with Playwright
+# Testes E2E com Playwright
 
-## Overview
+## Visao Geral
 
-Este documento descreve a estratégia de testes E2E (End-to-End) implementada usando Playwright para garantir que os caminhos críticos do OUTE funcionem corretamente em um ambiente integrado.
+Este documento descreve a estrategia de testes E2E (End-to-End) implementada usando Playwright para garantir que os caminhos criticos do OUTE funcionem corretamente em um ambiente integrado.
 
-## E2E Test Coverage
+## Cobertura de Testes E2E
 
 ### 1. Auth-Profile Package (`packages/01_auth-profile/`)
 
-#### Authentication Flow
+#### Fluxo de Autenticacao
 
 - ✅ Login com credenciais válidas
 - ✅ Login com email inválido (rejected)
@@ -18,28 +18,28 @@ Este documento descreve a estratégia de testes E2E (End-to-End) implementada us
 - ✅ Registro com senha fraca (rejected)
 - ✅ Registro com email inválido (rejected)
 - ✅ Registro com campos faltando (rejected)
-- ✅ Validação de formato JWT token
-- ✅ **9 testes de autenticação**
+- ✅ Validacao de formato JWT token
+- ✅ **9 testes de autenticacao**
 
-#### Profile Endpoint
+#### Endpoint de Profile
 
 - ✅ GET /api/profile com token válido
 - ✅ GET /api/profile sem header de autenticação (rejected)
 - ✅ GET /api/profile com token inválido (rejected)
 - ✅ GET /api/profile com Authorization header malformado (rejected)
 - ✅ Profile retorna todos os detalhes do usuário
-- ✅ Múltiplos requests sequenciais com mesmo token
+- ✅ Multiplos requests sequenciais com mesmo token
 - ✅ GET /api/profile com token expirado (rejected)
 - ✅ GET /api/profile requer "Bearer" case-sensitive
 - ✅ **8 testes de profile endpoint**
 
-#### Integration Flow
+#### Fluxo de Integracao
 
 - ✅ Fluxo completo: Register → Profile
 - ✅ Fluxo completo: Login → Profile
 - ✅ Failed login previne profile access
 - ✅ Concurrent authentication requests
-- ✅ **4 testes de integração**
+- ✅ **4 testes de integracao**
 
 **Total: 21 testes E2E para auth-profile**
 
@@ -47,16 +47,16 @@ Este documento descreve a estratégia de testes E2E (End-to-End) implementada us
 
 ### 2. Dashboard Package (`packages/00_dashboard/`)
 
-#### Navigation
+#### Navegacao
 
 - ✅ Carregar home page do dashboard
 - ✅ Navegar para login page
 - ✅ Navegar de login para home
 - ✅ Layout responsivo (desktop + mobile)
-- ✅ HTML semântico correto
-- ✅ **5 testes de navegação**
+- ✅ HTML semantico correto
+- ✅ **5 testes de navegacao**
 
-#### Login Flow
+#### Fluxo de Login
 
 - ✅ Submit login form com credenciais válidas
 - ✅ Mostrar erro para email inválido
@@ -66,7 +66,7 @@ Este documento descreve a estratégia de testes E2E (End-to-End) implementada us
 - ✅ Submit button está visível e enabled
 - ✅ **6 testes de login flow**
 
-#### Accessibility
+#### Acessibilidade
 
 - ✅ Todos os form inputs têm labels
 - ✅ Navegação com keyboard (Tab)
@@ -79,7 +79,7 @@ Este documento descreve a estratégia de testes E2E (End-to-End) implementada us
 
 ### 3. Projects Package (`packages/02_projects/`)
 
-#### CRUD Operations
+#### Operacoes CRUD
 
 - ✅ Criar novo projeto (POST /api/projects)
 - ✅ Recuperar projeto por ID (GET /api/projects/:id)
@@ -88,14 +88,14 @@ Este documento descreve a estratégia de testes E2E (End-to-End) implementada us
 - ✅ Deletar projeto (DELETE /api/projects/:id)
 - ✅ **5 testes de CRUD**
 
-#### Authorization
+#### Autorizacao
 
 - ✅ Rejeitar criação sem autenticação
 - ✅ Rejeitar listagem sem autenticação
 - ✅ Rejeitar acesso com token inválido
 - ✅ **3 testes de autorização**
 
-#### Validation
+#### Validacao
 
 - ✅ Rejeitar criação sem campo name
 - ✅ Rejeitar acesso a projeto inexistente
@@ -106,9 +106,9 @@ Este documento descreve a estratégia de testes E2E (End-to-End) implementada us
 
 ---
 
-## Playwright Configuration
+## Configuracao do Playwright
 
-Cada pacote tem seu próprio `playwright.config.ts`:
+Cada pacote tem seu proprio `playwright.config.ts`:
 
 ```typescript
 // Key settings:
@@ -122,43 +122,44 @@ Cada pacote tem seu próprio `playwright.config.ts`:
 - trace: 'on-first-retry'
 ```
 
-## Running E2E Tests
+## Executando Testes E2E
 
-### Local Development
+### Desenvolvimento Local
 
 ```bash
-# Run E2E tests for auth-profile
+# Executar testes E2E para auth-profile
 cd packages/01_auth-profile
 npm run test:e2e
 
-# Run E2E tests with UI
+# Executar testes E2E com UI
 npx playwright test --ui
 
-# Run tests in debug mode
+# Executar testes em modo debug
 npx playwright test --debug
 
-# Run specific test file
+# Executar arquivo de teste especifico
 npx playwright test auth.spec.ts
 
-# Run specific test
+# Executar teste especifico
 npx playwright test -g "should login successfully"
 ```
 
-### CI/CD Pipeline
+### Pipeline CI/CD
 
-E2E tests rodam automáticamente em PRs (workflow: `4-e2e-tests.yml`)
+Testes E2E rodam automaticamente em PRs para main (workflow: `4-e2e-tests.yml`)
 
-**Trigger conditions:**
+**Condicoes de disparo:**
 
-- ✅ Todos os pacotes (se houver mudanças)
-- ✅ Após unit tests passarem
+- ✅ PRs para branch `main` com mudancas em `packages/**`
+- ✅ Matrix com 3 pacotes em paralelo (01_auth-profile, 00_dashboard, 02_projects)
 - ✅ Gera HTML report como artifact
+- ✅ Comenta no PR com sumario dos resultados
 
 ---
 
-## Test Structure
+## Estrutura dos Testes
 
-### API Testing Pattern
+### Padrao para Testes de API
 
 ```typescript
 test('should perform action', async ({ page }) => {
@@ -180,7 +181,7 @@ test('should perform action', async ({ page }) => {
 });
 ```
 
-### UI Testing Pattern
+### Padrao para Testes de UI
 
 ```typescript
 test('should interact with UI', async ({ page }) => {
@@ -199,15 +200,15 @@ test('should interact with UI', async ({ page }) => {
 
 ---
 
-## Common Issues & Fixes
+## Problemas Comuns e Solucoes
 
-### E2E tests failing with "baseURL not responding"
+### Testes E2E falhando com "baseURL not responding"
 
 ```bash
-# Ensure dev server is running
+# Verifique se o servidor dev esta rodando
 npm run dev
 
-# Or configure webServer in playwright.config.ts
+# Ou configure webServer no playwright.config.ts
 webServer: {
   command: 'npm run dev',
   url: 'http://localhost:5173',
@@ -215,50 +216,50 @@ webServer: {
 }
 ```
 
-### Tests failing due to async timing
+### Testes falhando por problemas de timing assincrono
 
 ```typescript
-// Use waitFor instead of fixed delays
+// Use waitFor ao inves de delays fixos
 await page.waitForNavigation({ waitUntil: 'networkidle' });
 await page.waitForSelector('button.success');
 
-// Or retry logic
+// Ou logica de retry
 await expect(page.locator('.success')).toBeVisible({ timeout: 5000 });
 ```
 
-### Database state issues in E2E
+### Problemas de estado do banco de dados em E2E
 
 ```typescript
 test.beforeEach(async ({ page }) => {
-  // Setup test data
+  // Preparar dados de teste
   await setupTestUser();
 });
 
 test.afterEach(async ({ page }) => {
-  // Cleanup
+  // Limpeza
   await cleanupTestData();
 });
 ```
 
 ---
 
-## Reports & Artifacts
+## Relatorios e Artefatos
 
-### HTML Report
+### Relatorio HTML
 
-Cada run de E2E tests gera um `html` report:
+Cada execucao de testes E2E gera um relatorio `html`:
 
 ```bash
-# Open locally
+# Abrir localmente
 npx playwright show-report
 
-# Reports are stored in
+# Relatorios ficam em
 packages/{package}/playwright-report/
 ```
 
-### CI Artifacts
+### Artefatos do CI
 
-GitHub Actions armazena reports como artifacts:
+GitHub Actions armazena relatorios como artefatos (retencao de 7 dias):
 
 - `playwright-report-auth-profile`
 - `playwright-report-dashboard`
@@ -266,39 +267,39 @@ GitHub Actions armazena reports como artifacts:
 
 ---
 
-## Best Practices
+## Boas Praticas
 
-### ✅ DO:
+### ✅ FACA:
 
-- Teste caminhos críticos do usuário (login, CRUD, integration)
+- Teste caminhos criticos do usuario (login, CRUD, integracao)
 - Use `test.skip()` para testes que dependem de estado
 - Use `test.beforeEach()` para setup comum
 - Teste tanto sucesso quanto falha
-- Valide status codes HTTP nas API tests
+- Valide status codes HTTP nos testes de API
 
-### ❌ DON'T:
+### ❌ NAO FACA:
 
-- Não teste detalhes de UI que mudam frequentemente
-- Não use `test.only()` em PRs
-- Não deixe testes flaky (intermitentes)
-- Não hardcode timeouts (use smart waits)
-- Não testes que dependem de estado global do BD
+- Nao teste detalhes de UI que mudam frequentemente
+- Nao use `test.only()` em PRs
+- Nao deixe testes flaky (intermitentes)
+- Nao hardcode timeouts (use smart waits)
+- Nao crie testes que dependem de estado global do BD
 
 ---
 
-## Adding New E2E Tests
+## Adicionando Novos Testes E2E
 
 1. **Criar arquivo** `src/__tests__/e2e/feature.spec.ts`
 2. **Estruturar com describe blocks** por feature
-3. **Usar padrões existentes** como template
+3. **Usar padroes existentes** como template
 4. **Rodar localmente** antes de commitar
-5. **Adicionar a documentação** quando novo padrão emerge
+5. **Adicionar a documentacao** quando novo padrao surgir
 
 ---
 
-## References
+## Referencias
 
-- [Playwright Documentation](https://playwright.dev/)
-- [Playwright Test API](https://playwright.dev/docs/api/class-test)
-- [Best Practices for E2E Testing](https://playwright.dev/docs/best-practices)
-- [Debugging Tests](https://playwright.dev/docs/debug)
+- [Documentacao Playwright](https://playwright.dev/)
+- [API de Testes Playwright](https://playwright.dev/docs/api/class-test)
+- [Boas Praticas para Testes E2E](https://playwright.dev/docs/best-practices)
+- [Depuracao de Testes](https://playwright.dev/docs/debug)

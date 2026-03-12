@@ -58,7 +58,7 @@ npm run test -- --ui      # Run with UI visualization
 **Coverage Report Locations**:
 
 - HTML Report: `coverage/index.html`
-- LCOV Report: `coverage/lcov.info` (used by SonarQube)
+- LCOV Report: `coverage/lcov.info` (used by SonarCloud)
 
 **Packages Status**:
 
@@ -86,11 +86,11 @@ OUTE adopts **TDD Red-Green-Refactor** as the standard development methodology. 
 
 ---
 
-### 3. SonarQube Quality Gate 🔍
+### 3. SonarCloud Quality Gate 🔍
 
 **Status**: ✅ **REQUIRED** (not optional)
 
-**Requirements** (SonarQube must pass):
+**Requirements** (SonarCloud must pass):
 
 - ✅ **Security Rating: A** (zero critical/high vulnerabilities)
 - ✅ **Reliability Rating: A** (zero bugs)
@@ -115,7 +115,7 @@ OUTE adopts **TDD Red-Green-Refactor** as the standard development methodology. 
 - ❌ Any vulnerability (CRITICAL/HIGH)
 - ❌ Coverage below 80%
 - ❌ Critical code smells
-- ❌ SonarQube analysis skipped (token required)
+- ❌ SonarCloud analysis skipped (token required)
 
 ---
 
@@ -149,11 +149,11 @@ npm audit fix --force     # Force fix (may break compatibility)
 3. If not fixable, you may need to:
    - Update the dependency version manually
    - Wait for dependency maintainer to release a patch
-   - Suppress with SonarQube if it's a false positive
+   - Suppress with SonarCloud if it's a false positive
 
 #### 4.2 Secret Scanning
 
-**Tool**: TruffleHog + git-secrets
+**Tool**: TruffleHog
 
 **Checks**:
 
@@ -218,7 +218,7 @@ docker build -f packages/design-system/Dockerfile .
 7. Unit tests + coverage (parallel)
 8. Docker build         (parallel)
    ↓
-9. SonarQube scan       (must pass 80%+ coverage, A- grade)
+9. SonarCloud scan       (must pass 80%+ coverage, A- grade)
    ↓
 10. npm audit security  (fail on HIGH/CRITICAL)
     ↓
@@ -237,7 +237,7 @@ Before requesting review:
 - [ ] `npm run typecheck` passes
 - [ ] `npm run test -- --coverage` shows 80%+ coverage
 - [ ] `npm audit` shows no HIGH/CRITICAL vulnerabilities
-- [ ] SonarQube quality gate would pass (estimated)
+- [ ] SonarCloud quality gate would pass (estimated)
 - [ ] Docker builds succeed for your package
 
 ---
@@ -253,7 +253,7 @@ npm run test -- --coverage    # See which lines are uncovered
 npm run test -- --ui          # Visualize coverage
 ```
 
-### ❌ "SonarQube skipped - SONAR_TOKEN required"
+### ❌ "SonarCloud skipped - SONAR_TOKEN required"
 
 **Fix**: Set `SONAR_TOKEN` secret in GitHub repository settings
 
@@ -387,7 +387,7 @@ After implementing these standards:
 | Metric                   | Target            | Current |
 | ------------------------ | ----------------- | ------- |
 | Code Coverage            | 80%+              | TBD     |
-| SonarQube Grade          | A- or better      | TBD     |
+| SonarCloud Grade          | A- or better      | TBD     |
 | Security Vulnerabilities | 0 (HIGH+CRITICAL) | TBD     |
 | Code Duplication         | < 3%              | TBD     |
 | Blocker Issues           | 0                 | TBD     |
@@ -401,7 +401,7 @@ After implementing these standards:
 
 - **No grace period**: All gates enforced immediately
 - **No bypasses**: All checks must pass
-- **Required token**: SonarQube token is mandatory
+- **Required token**: SonarCloud token is mandatory
 - **Blocking**: PRs fail if any gate doesn't pass
 
 ---
@@ -416,5 +416,5 @@ For questions about quality standards:
 
 ---
 
-**Last Update**: 2026-03-08
+**Last Update**: 2026-03-12
 **Version**: 1.0 - Initial Rollout

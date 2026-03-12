@@ -1,33 +1,33 @@
-# 🚀 Production Setup - Quick Start
+# Configuracao de Producao - Inicio Rapido
 
-Complete instructions to deploy 99_home and 03_interview to production at `34.132.93.171`.
+Instrucoes completas para fazer deploy do 99_home e 03_interview em producao no `34.132.93.171`.
 
-## Prerequisites
+## Pre-requisitos
 
-- SSH access to VM at `ubuntu@34.132.93.171`
-- Both `oute-main` and `oute-mind` repositories cloned in home directory:
+- Acesso SSH a VM em `ubuntu@34.132.93.171`
+- Ambos os repositorios `oute-main` e `oute-mind` clonados no diretorio home:
   ```
-  ~/oute-main/      (this repo)
-  ~/oute-mind/      (production orchestration)
+  ~/oute-main/      (este repositorio)
+  ~/oute-mind/      (orquestracao de producao)
   ```
 
 ---
 
-## Quick Setup (3 Scripts)
+## Configuracao Rapida (3 Scripts)
 
-### Step 1: SSH to VM
+### Passo 1: SSH na VM
 
 ```bash
 ssh ubuntu@34.132.93.171
 ```
 
-### Step 2: Navigate to oute-mind
+### Passo 2: Navegar para oute-mind
 
 ```bash
 cd ~/oute-mind
 ```
 
-### Step 3: Copy scripts from oute-main
+### Passo 3: Copiar scripts do oute-main
 
 ```bash
 cp ../oute-main/setup-production.sh .
@@ -36,91 +36,91 @@ cp ../oute-main/test-production.sh .
 chmod +x setup-production.sh update-caddyfile.sh test-production.sh
 ```
 
-### Step 4: Run setup script
+### Passo 4: Executar script de configuracao
 
-This adds 99_home and 03_interview to docker-compose.yml and builds the services:
+Adiciona 99_home e 03_interview ao docker-compose.yml e faz build dos servicos:
 
 ```bash
 ./setup-production.sh
 ```
 
-**What it does:**
-- ✅ Backs up docker-compose.yml
-- ✅ Adds 99_home service (port 3003)
-- ✅ Adds 03_interview service (port 3002)
-- ✅ Builds Docker images
-- ✅ Starts services
-- ✅ Reloads Caddy
+**O que ele faz:**
+- Backup do docker-compose.yml
+- Adiciona servico 99_home (porta 3003)
+- Adiciona servico 03_interview (porta 3002)
+- Faz build das imagens Docker
+- Inicia os servicos
+- Recarrega o Caddy
 
-**Time:** ~5 minutes
+**Tempo:** ~5 minutos
 
-### Step 5: Update Caddyfile
+### Passo 5: Atualizar Caddyfile
 
-This configures the reverse proxy routing rules:
+Configura as regras de roteamento do reverse proxy:
 
 ```bash
 ./update-caddyfile.sh
 ```
 
-**What it does:**
-- ✅ Backs up Caddyfile
-- ✅ Configures routing for root (/) → 99_home
-- ✅ Configures routing for /chat → 03_interview
-- ✅ Keeps existing API routing (/api/auth, /api/projects)
-- ✅ Reloads Caddy with new configuration
+**O que ele faz:**
+- Backup do Caddyfile
+- Configura roteamento para raiz (/) -> 99_home
+- Configura roteamento para /chat -> 03_interview
+- Mantem roteamento existente de APIs (/api/auth, /api/projects)
+- Recarrega o Caddy com a nova configuracao
 
-**Time:** ~30 seconds
+**Tempo:** ~30 segundos
 
-### Step 6: Test deployment
+### Passo 6: Testar deploy
 
-Verify everything is working:
+Verifica se tudo esta funcionando:
 
 ```bash
 ./test-production.sh
 ```
 
-**Expected output:**
+**Saida esperada:**
 ```
-✅ 99_home health
-✅ 03_interview health
-✅ 01_auth-profile health
-✅ 00_dashboard health
-✅ 02_projects health
-✅ Caddy health
-✅ Root path (/)
-✅ Chat path (/chat)
-✅ Auth API (/api/auth)
+99_home health OK
+03_interview health OK
+01_auth-profile health OK
+00_dashboard health OK
+02_projects health OK
+Caddy health OK
+Root path (/) OK
+Chat path (/chat) OK
+Auth API (/api/auth) OK
 
-🎉 All tests passed! Production is ready.
+Todos os testes passaram! Producao esta pronta.
 ```
 
 ---
 
-## Manual Verification
+## Verificacao Manual
 
-If scripts don't work or you need to debug:
+Se os scripts nao funcionarem ou precisar depurar:
 
-### Check container status
+### Verificar status dos containers
 ```bash
 cd ~/oute-mind
 docker compose ps
 ```
 
-### View logs
+### Ver logs
 ```bash
-# 99_home logs
+# Logs do 99_home
 docker compose logs -f 99_home
 
-# 03_interview logs
+# Logs do 03_interview
 docker compose logs -f 03_interview
 
-# Caddy logs
+# Logs do Caddy
 docker compose logs -f caddy
 ```
 
-### Test endpoints manually
+### Testar endpoints manualmente
 ```bash
-# Direct service
+# Servico direto
 curl http://localhost:3003/health
 curl http://localhost:3002/health
 
@@ -132,150 +132,150 @@ curl http://34.132.93.171/chat
 
 ---
 
-## Troubleshooting
+## Resolucao de Problemas
 
-### Services won't start
+### Servicos nao iniciam
 
-**Check logs:**
+**Verificar logs:**
 ```bash
 docker compose logs 99_home
 docker compose logs 03_interview
 ```
 
-**Common issues:**
-- ❌ Build failed: Check if Dockerfiles exist in `../oute-main/packages/99_home/Dockerfile`
-- ❌ Port already in use: Check `docker compose ps` and `sudo lsof -i :3003`
-- ❌ Out of disk space: Check `df -h`
+**Problemas comuns:**
+- Build falhou: Verificar se Dockerfiles existem em `../oute-main/packages/99_home/Dockerfile`
+- Porta ja em uso: Verificar `docker compose ps` e `sudo lsof -i :3003`
+- Sem espaco em disco: Verificar `df -h`
 
-### Routing not working
+### Roteamento nao funciona
 
-**Check Caddyfile:**
+**Verificar Caddyfile:**
 ```bash
 cat Caddyfile | grep -A 5 "@root"
 ```
 
-**Reload Caddy:**
+**Recarregar Caddy:**
 ```bash
 docker compose up -d caddy
 ```
 
-**Check Caddy logs:**
+**Verificar logs do Caddy:**
 ```bash
 docker compose logs caddy | tail -50
 ```
 
-### 99_home shows API response instead of landing page
+### 99_home mostra resposta de API ao inves da landing page
 
-**Cause:** Root routing not configured in Caddyfile
+**Causa:** Roteamento raiz nao configurado no Caddyfile
 
-**Solution:**
+**Solucao:**
 ```bash
 ./update-caddyfile.sh
 ```
 
 ### "no such service: 99_home"
 
-**Cause:** docker-compose.yml doesn't have the service defined
+**Causa:** docker-compose.yml nao tem o servico definido
 
-**Solution:**
+**Solucao:**
 ```bash
 ./setup-production.sh
 ```
 
 ---
 
-## Rollback Instructions
+## Instrucoes de Rollback
 
-If something goes wrong, rollback is easy:
+Se algo der errado, o rollback e simples:
 
 ```bash
 cd ~/oute-mind
 
-# Restore docker-compose.yml
+# Restaurar docker-compose.yml
 cp docker-compose.yml.backup.* docker-compose.yml
 
-# Restore Caddyfile
+# Restaurar Caddyfile
 cp Caddyfile.backup.* Caddyfile
 
-# Restart with old configuration
+# Reiniciar com configuracao anterior
 docker compose up -d
 ```
 
 ---
 
-## What's Running After Setup
+## O que Esta Rodando Apos a Configuracao
 
-### Services
+### Servicos
 ```
-99_home        → Port 3003 (Landing Page)
-03_interview   → Port 3002 (Chat)
-00_dashboard   → Port 3020 (Dashboard)
-01_auth-profile → Port 3021 (Auth API)
-02_projects    → Port 3022 (Projects API)
-caddy          → Port 80 (Reverse Proxy)
-postgres       → Port 5432 (Database)
+99_home         -> Porta 3003 (Landing Page)
+03_interview    -> Porta 3002 (Chat)
+00_dashboard    -> Porta 3000 (Dashboard)
+01_auth-profile -> Porta 3001 (API de Auth)
+02_projects     -> Porta 3004 (API de Projetos)
+caddy           -> Porta 80 (Reverse Proxy)
+postgres        -> Porta 5432 (Banco de Dados)
 ```
 
-### Public URLs (via Caddy at 34.132.93.171)
+### URLs Publicas (via Caddy em 34.132.93.171)
 ```
-http://34.132.93.171/              → 99_home (Landing Page)
-http://34.132.93.171/chat          → 03_interview (Chat)
-http://34.132.93.171/api/auth      → 01_auth-profile (Auth)
-http://34.132.93.171/api/projects  → 02_projects (Projects)
-http://34.132.93.171/dashboard     → 00_dashboard (Dashboard)
+http://34.132.93.171/              -> 99_home (Landing Page)
+http://34.132.93.171/chat          -> 03_interview (Chat)
+http://34.132.93.171/api/auth      -> 01_auth-profile (Auth)
+http://34.132.93.171/api/projects  -> 02_projects (Projetos)
+http://34.132.93.171/dashboard     -> 00_dashboard (Dashboard)
 ```
 
 ---
 
-## User Journey
+## Jornada do Usuario
 
-1. User visits http://34.132.93.171/ → Sees landing page (99_home)
-2. User clicks "Entrar na Oute" → Goes to /login (still 99_home)
-3. User fills login form → Calls /api/auth?action=login (01_auth-profile)
-4. User receives JWT → Stored in localStorage
-5. Redirected to /chat → Sees chat interface (03_interview)
-6. User can interact with chat and all features
+1. Usuario visita http://34.132.93.171/ -> Ve a landing page (99_home)
+2. Usuario clica "Entrar na Oute" -> Vai para /login (ainda 99_home)
+3. Usuario preenche formulario de login -> Chama /api/auth?action=login (01_auth-profile)
+4. Usuario recebe JWT -> Armazenado em localStorage
+5. Redirecionado para /chat -> Ve interface de chat (03_interview)
+6. Usuario pode interagir com o chat e todas as funcionalidades
 
 ---
 
-## Next Steps (Optional)
+## Proximos Passos (Opcional)
 
-After everything is working:
+Apos tudo estar funcionando:
 
-1. **Enable HTTPS:**
-   - Update Caddyfile to use `https://34.132.93.171`
-   - Caddy auto-handles SSL certificates
+1. **Habilitar HTTPS:**
+   - Atualizar Caddyfile para usar `https://34.132.93.171`
+   - Caddy gerencia certificados SSL automaticamente
 
-2. **Monitor health:**
+2. **Monitorar saude:**
    ```bash
    watch -n 5 'docker compose ps'
    ```
 
-3. **View metrics:**
+3. **Visualizar metricas:**
    - Prometheus: http://34.132.93.171:9090
    - Grafana: http://34.132.93.171:3080
 
-4. **Backup database:**
+4. **Backup do banco de dados:**
    ```bash
    docker compose exec postgres pg_dump -U app-user oute_db > backup.sql
    ```
 
 ---
 
-## Need Help?
+## Precisa de Ajuda?
 
-Check these files for more details:
-- `PRODUCTION_SETUP.md` - Detailed configuration guide
-- `CADDY_ROUTING.md` - Complete routing reference
-- `docker-compose.yml` - Service definitions
-- `Caddyfile` - Reverse proxy configuration
+Consulte estes arquivos para mais detalhes:
+- `PRODUCTION_SETUP.md` - Guia detalhado de configuracao
+- `CADDY_ROUTING.md` - Referencia completa de roteamento
+- `docker-compose.yml` - Definicoes dos servicos
+- `Caddyfile` - Configuracao do reverse proxy
 
 ---
 
-## Summary
+## Resumo
 
 ```bash
-# Complete setup in 4 commands:
+# Configuracao completa em 4 comandos:
 ssh ubuntu@34.132.93.171
 cd ~/oute-mind && cp ../oute-main/{setup,update-caddyfile,test}-production.sh . && chmod +x *.sh
 ./setup-production.sh
@@ -283,4 +283,4 @@ cd ~/oute-mind && cp ../oute-main/{setup,update-caddyfile,test}-production.sh . 
 ./test-production.sh
 ```
 
-That's it! 🎉
+Pronto!

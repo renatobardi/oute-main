@@ -1,26 +1,26 @@
-# GCP Deployment - Quick Reference
+# Deploy GCP - Referencia Rapida
 
-One-page cheat sheet for common GCP deployment tasks.
+Folha de consulta rapida para tarefas comuns de deploy GCP.
 
-## Setup (First Time)
+## Setup (Primeira Vez)
 
 ```bash
-# 1. Initial infrastructure
+# 1. Infraestrutura inicial
 bash .gcp/setup.sh oute-app us-central1
 
-# 2. Create secrets
+# 2. Criar secrets
 bash .gcp/create-secrets.sh
 
-# 3. Add to GitHub (save output from step 2 first!)
+# 3. Adicionar ao GitHub (salve a saida do passo 2 primeiro!)
 gh secret set GCP_PROJECT_ID -b "oute-app"
 gh secret set GCP_REGION -b "us-central1"
 gh secret set GCP_SA_KEY < .gcp/keys/gh-key.json
 ```
 
-## Build & Push Image
+## Build e Push da Imagem
 
 ```bash
-# Variables
+# Variaveis
 export REGISTRY="us-central1-docker.pkg.dev"
 export PROJECT="oute-app"
 export IMAGE="oute-dashboard"
@@ -36,113 +36,113 @@ docker tag $IMAGE:local $REGISTRY/$PROJECT/docker-repo/$IMAGE:$TAG
 docker push $REGISTRY/$PROJECT/docker-repo/$IMAGE:$TAG
 ```
 
-## Deploy to Cloud Run
+## Deploy no Cloud Run
 
 ```bash
-# Staging (using script - recommended)
+# Staging (usando script - recomendado)
 bash .gcp/deploy.sh dashboard staging staging-latest
 
-# Production
+# Producao
 bash .gcp/deploy.sh dashboard production v1.0.0
 
-# Get URL
+# Obter URL
 gcloud run services describe oute-dashboard-staging --region=us-central1 --format='value(status.url)'
 ```
 
-## View Logs
+## Visualizar Logs
 
 ```bash
-# Last 50 lines (staging)
+# Ultimas 50 linhas (staging)
 gcloud run logs read oute-dashboard-staging --region=us-central1 --limit=50
 
-# Real-time (staging)
+# Tempo real (staging)
 gcloud run logs read oute-dashboard-staging --region=us-central1 --follow
 
-# Search for errors
+# Buscar erros
 gcloud run logs read oute-dashboard-staging --region=us-central1 | grep -i error
 
-# Production
+# Producao
 gcloud run logs read oute-dashboard --region=us-central1 --follow
 ```
 
-## Revisions & Rollback
+## Revisoes e Rollback
 
 ```bash
-# View all revisions (staging)
+# Visualizar todas as revisoes (staging)
 gcloud run revisions list --service=oute-dashboard-staging --region=us-central1
 
-# Rollback to previous (staging)
+# Rollback para anterior (staging)
 gcloud run services update-traffic oute-dashboard-staging \
   --region=us-central1 \
-  --to-revisions=<REVISION_NAME>=100
+  --to-revisions=<NOME_DA_REVISAO>=100
 
-# Canary: 10% new, 90% old
+# Canary: 10% novo, 90% antigo
 gcloud run services update-traffic oute-dashboard-staging \
   --region=us-central1 \
-  --to-revisions=<NEW_REVISION>=10,<OLD_REVISION>=90
+  --to-revisions=<NOVA_REVISAO>=10,<REVISAO_ANTIGA>=90
 ```
 
-## Secrets Management
+## Gerenciamento de Secrets
 
 ```bash
-# View secret value
+# Visualizar valor do secret
 gcloud secrets versions access latest --secret=DATABASE_URL
 
-# Update secret
-echo "new-value" | gcloud secrets versions add DATABASE_URL --data-file=-
+# Atualizar secret
+echo "novo-valor" | gcloud secrets versions add DATABASE_URL --data-file=-
 
-# List all secrets
+# Listar todos os secrets
 gcloud secrets list
 
-# List secret versions
+# Listar versoes do secret
 gcloud secrets versions list DATABASE_URL
 ```
 
 ## GitHub Actions
 
 ```bash
-# List workflows
+# Listar workflows
 gh workflow list
 
-# Trigger manual deploy
+# Acionar deploy manual
 gh workflow run deploy-staging-manual.yml -f service=dashboard -f image_tag=staging-latest
 
-# View workflow runs
+# Visualizar execucoes de workflow
 gh run list --workflow=deploy-on-staging-branch.yml
 
-# View logs for specific run
+# Visualizar logs de execucao especifica
 gh run view <RUN_ID> --log
 ```
 
-## Databases
+## Banco de Dados
 
 ```bash
-# Check PostgreSQL status
+# Verificar status do PostgreSQL
 gcloud sql instances describe oute-postgres
 
-# List databases
+# Listar bancos
 gcloud sql databases list --instance=oute-postgres
 
-# List users
+# Listar usuarios
 gcloud sql users list --instance=oute-postgres
 
-# Connect from Cloud Shell
+# Conectar via Cloud Shell
 gcloud sql connect oute-postgres --user=app_user
 ```
 
 ## Service Accounts
 
 ```bash
-# List service accounts
+# Listar service accounts
 gcloud iam service-accounts list
 
-# Show Cloud Run SA roles
+# Mostrar roles da SA do Cloud Run
 gcloud projects get-iam-policy oute-app \
   --flatten="bindings[].members" \
   --format="table(bindings.role)" \
   --filter="bindings.members:cloud-run-sa@"
 
-# Create new service account key (if needed)
+# Criar nova chave de service account (se necessario)
 gcloud iam service-accounts keys create .gcp/keys/gh-key-new.json \
   --iam-account=github-actions-sa@oute-app.iam.gserviceaccount.com
 ```
@@ -150,128 +150,128 @@ gcloud iam service-accounts keys create .gcp/keys/gh-key-new.json \
 ## Artifact Registry
 
 ```bash
-# List images
+# Listar imagens
 gcloud artifacts docker images list us-central1-docker.pkg.dev/oute-app/docker-repo
 
-# Show image details
+# Mostrar detalhes da imagem
 gcloud artifacts docker images describe \
   us-central1-docker.pkg.dev/oute-app/docker-repo/oute-dashboard:staging-latest
 
-# List image tags
+# Listar tags da imagem
 gcloud artifacts docker images list \
   us-central1-docker.pkg.dev/oute-app/docker-repo/oute-dashboard
 ```
 
-## Monitoring
+## Monitoramento
 
 ```bash
-# Cloud Run service details
+# Detalhes do servico Cloud Run
 gcloud run services describe oute-dashboard-staging --region=us-central1
 
-# View current traffic split
+# Visualizar divisao de trafego atual
 gcloud run services describe oute-dashboard-staging \
   --region=us-central1 \
   --format='value(status.traffic[].{revision:revision,percent:percent})'
 
-# View resource usage
+# Visualizar uso de recursos
 gcloud run services describe oute-dashboard-staging \
   --region=us-central1 \
   --format='value(spec.template.spec.containers[0].resources)'
 ```
 
-## Project Configuration
+## Configuracao do Projeto
 
 ```bash
-# Set default project
+# Definir projeto padrao
 gcloud config set project oute-app
 
-# Set default region
+# Definir regiao padrao
 gcloud config set compute/region us-central1
 
-# View current configuration
+# Visualizar configuracao atual
 gcloud config list
 
-# Verify APIs enabled
+# Verificar APIs habilitadas
 gcloud services list --enabled | grep -E "run|artifact|sql|secret"
 ```
 
-## Common One-Liners
+## Comandos Uteis
 
 ```bash
-# Deploy staging + show URL
+# Deploy staging + mostrar URL
 bash .gcp/deploy.sh dashboard staging staging-latest && \
 gcloud run services describe oute-dashboard-staging --region=us-central1 --format='value(status.url)'
 
-# Tail logs while deploying
+# Acompanhar logs durante deploy
 bash .gcp/deploy.sh dashboard staging staging-latest & \
 gcloud run logs read oute-dashboard-staging --region=us-central1 --follow
 
-# Build image in one go
+# Build da imagem em um so comando
 docker build --file packages/00_dashboard/Dockerfile --tag oute-dashboard:local . && \
 docker tag oute-dashboard:local us-central1-docker.pkg.dev/oute-app/docker-repo/oute-dashboard:staging-latest && \
 docker push us-central1-docker.pkg.dev/oute-app/docker-repo/oute-dashboard:staging-latest
 
-# List all services
+# Listar todos os servicos
 gcloud run services list --region=us-central1 --format='value(name,status.url)'
 
-# Check which revision is active
+# Verificar qual revisao esta ativa
 gcloud run services describe oute-dashboard-staging --region=us-central1 --format='value(status.traffic[0].revision)'
 ```
 
-## Environment Variables
+## Variaveis de Ambiente
 
-**Set during deployment:**
+**Definidas durante o deploy:**
 
 ```bash
 gcloud run deploy oute-dashboard-staging \
   --set-env-vars="NODE_ENV=staging,DEBUG=false,LOG_LEVEL=info"
 ```
 
-**View current:**
+**Visualizar atuais:**
 
 ```bash
 gcloud run services describe oute-dashboard-staging --region=us-central1 \
   --format='value(spec.template.spec.containers[0].env[].{name:name,value:value})'
 ```
 
-## Troubleshooting One-Liners
+## Solucao de Problemas - Comandos Rapidos
 
 ```bash
-# Check if image exists
+# Verificar se imagem existe
 gcloud artifacts docker images describe us-central1-docker.pkg.dev/oute-app/docker-repo/oute-dashboard:staging-latest
 
-# Verify service account permissions
+# Verificar permissoes da service account
 gcloud projects get-iam-policy oute-app --flatten="bindings[].members" --filter="bindings.members:cloud-run-sa@"
 
-# Check Cloud SQL instance status
+# Verificar status da instancia Cloud SQL
 gcloud sql instances describe oute-postgres
 
-# View service events
+# Visualizar eventos do servico
 gcloud run services describe oute-dashboard-staging --region=us-central1 --format=json | jq '.status'
 
-# Redeploy latest image
+# Re-deploy da imagem mais recente
 gcloud run deploy oute-dashboard-staging --image=us-central1-docker.pkg.dev/oute-app/docker-repo/oute-dashboard:staging-latest --platform=managed --region=us-central1
 ```
 
 ## GitHub Secrets
 
 ```bash
-# Add/update secrets
+# Adicionar/atualizar secrets
 gh secret set GCP_PROJECT_ID -b "oute-app"
 gh secret set GCP_REGION -b "us-central1"
 gh secret set GCP_SA_KEY < .gcp/keys/gh-key.json
 
-# List secrets
+# Listar secrets
 gh secret list
 
-# View actions/workflow files
+# Visualizar arquivos de workflows
 gh api repos/renatobardi/oute-main/contents/.github/workflows --paginate
 ```
 
 ---
 
-**For full details, see:**
+**Para detalhes completos, consulte:**
 
-- `.gcp/README.md` - Script documentation
-- `GCP-DEPLOYMENT.md` - Complete deployment guide
-- `gcloud --help` - GCP CLI reference
+- `.gcp/README.md` - Documentacao dos scripts
+- `GCP-DEPLOYMENT.md` - Guia completo de deploy
+- `gcloud --help` - Referencia do CLI GCP

@@ -1,8 +1,8 @@
-# 🧪 Guia de Validação - Integração em Produção
+# Guia de Validação - Integração em Produção
 
-## ✅ Validação das Mudanças
+## Validação das Mudanças
 
-### 1️⃣ VERIFICAR ARQUIVOS MODIFICADOS
+### 1. VERIFICAR ARQUIVOS MODIFICADOS
 
 ```bash
 # Ver mudanças no git
@@ -14,7 +14,7 @@ git show feat/production-integration:packages/01_auth-profile/src/hooks.server.t
 git show feat/production-integration:packages/99_home/src/routes/login/+page.svelte
 ```
 
-### 2️⃣ VALIDAR CÓDIGO TYPESCRIPT
+### 2. VALIDAR CODIGO TYPESCRIPT
 
 ```bash
 # Verificar tipos em todos os packages
@@ -26,7 +26,7 @@ cd packages/01_auth-profile && npm run check
 cd packages/03_interview && npm run check
 ```
 
-### 3️⃣ VALIDAR LINTING
+### 3. VALIDAR LINTING
 
 ```bash
 # Lint em todos os packages
@@ -36,7 +36,7 @@ npm run lint --workspaces
 npm run format --workspaces
 ```
 
-### 4️⃣ TESTE LOCAL - SETUP
+### 4. TESTE LOCAL - SETUP
 
 ```bash
 # Terminal 1: Instalar dependências
@@ -55,7 +55,7 @@ cd packages/03_interview
 npm run dev
 ```
 
-### 5️⃣ TESTE LOCAL - VALIDAR ENDPOINTS
+### 5. TESTE LOCAL - VALIDAR ENDPOINTS
 
 ```bash
 # 1. Verificar se 01_auth-profile responde
@@ -91,7 +91,7 @@ curl -i -X OPTIONS http://localhost:3001/api/auth \
 # Access-Control-Allow-Headers: Content-Type, Authorization
 ```
 
-### 6️⃣ TESTE LOCAL - FLUXO DE LOGIN
+### 6. TESTE LOCAL - FLUXO DE LOGIN
 
 **Via navegador (MELHOR FORMA):**
 
@@ -136,7 +136,7 @@ curl -i -X OPTIONS http://localhost:3001/api/auth \
    Clicando deve ir para /chat (não /login)
    ```
 
-### 7️⃣ TESTE LOCAL - NETWORK TAB
+### 7. TESTE LOCAL - NETWORK TAB
 
 1. **Abrir DevTools → Network tab**
 2. **Fazer login**
@@ -156,7 +156,7 @@ curl -i -X OPTIONS http://localhost:3001/api/auth \
    Access-Control-Allow-Credentials: true
    ```
 
-### 8️⃣ TESTE LOCAL - CONSOLE ERRORS
+### 8. TESTE LOCAL - ERROS NO CONSOLE
 
 **Verificar que NÃO há erros de CORS**
 
@@ -174,7 +174,7 @@ curl -i -X OPTIONS http://localhost:3001/api/auth \
 - Nenhum erro de CORS
 ```
 
-### 9️⃣ TESTE - ARQUIVO .env.production
+### 9. TESTE - ARQUIVO .env.production
 
 ```bash
 # Verificar se arquivos existem
@@ -193,7 +193,7 @@ cat packages/01_auth-profile/.env.production
 # - JWT_SECRET=... (placeholder - será preenchido em deploy)
 ```
 
-### 🔟 TESTE - AUTH.TS FUNCTIONS
+### 10. TESTE - FUNCOES AUTH.TS
 
 ```typescript
 // No console do navegador (http://localhost:3003/login):
@@ -221,27 +221,27 @@ console.log(getCurrentUser()); // null
 
 ---
 
-## 📋 CHECKLIST DE VALIDAÇÃO
+## CHECKLIST DE VALIDAÇÃO
 
-### ✅ Código & Estrutura
+### Código e Estrutura
 - [ ] `packages/99_home/src/lib/auth.ts` existe
 - [ ] `packages/99_home/src/routes/login/+page.svelte` contém `import { login }`
 - [ ] `packages/99_home/src/routes/+page.svelte` contém `handleCTA()` function
 - [ ] `packages/01_auth-profile/src/hooks.server.ts` contém CORS middleware
 - [ ] `.env.production` files existem em todos os 3 packages
 
-### ✅ TypeScript & Lint
+### TypeScript e Lint
 - [ ] Sem erros de TypeScript (`npm run check`)
 - [ ] Sem erros de ESLint (`npm run lint`)
 - [ ] Sem warnings de build
 
-### ✅ Endpoints
+### Endpoints
 - [ ] `GET http://localhost:3001/health` retorna 200
 - [ ] `POST http://localhost:3001/api/auth?action=login` retorna JWT
 - [ ] `GET http://localhost:3001/api/profile` retorna user (com JWT)
 - [ ] CORS headers presentes nas responses
 
-### ✅ Login Flow
+### Fluxo de Login
 - [ ] Página home carrega em `http://localhost:3003/`
 - [ ] CTA "Entrar na Oute" redireciona para `/login` (não autenticado)
 - [ ] Formulário de login aparece
@@ -251,21 +251,21 @@ console.log(getCurrentUser()); // null
 - [ ] Redireciona para `/chat` após sucesso
 - [ ] Mensagem de erro aparece em caso de falha
 
-### ✅ Autenticação
+### Autenticação
 - [ ] `oute:auth:token` em localStorage após login
 - [ ] `oute:user` em localStorage após login
 - [ ] CTA na home muda para "Entrar no Chat" quando autenticado
 - [ ] `/chat` pode ser acessado com JWT válido
 - [ ] Logout limpa localStorage
 
-### ✅ Ambiente
+### Ambiente
 - [ ] `VITE_AUTH_SERVICE_URL` está definido em `.env.production`
 - [ ] Database URL está no placeholder `.env.production`
 - [ ] JWT_SECRET está no placeholder `.env.production`
 
 ---
 
-## 🔄 TESTE - CICLO COMPLETO
+## TESTE - CICLO COMPLETO
 
 ```
 1. npm install
@@ -295,7 +295,7 @@ console.log(getCurrentUser()); // null
 
 ---
 
-## 🐛 TROUBLESHOOTING
+## TROUBLESHOOTING
 
 ### Erro: "Access to XMLHttpRequest blocked by CORS"
 
@@ -304,7 +304,7 @@ console.log(getCurrentUser()); // null
 grep -n "Access-Control-Allow-Origin" packages/01_auth-profile/src/hooks.server.ts
 
 # Deve ter CORS headers configurados
-# Se não tiver, re-aplicar a mudança de FASE 1
+# Se não tiver, re-aplicar a configuração de CORS
 ```
 
 ### Erro: "Invalid email or password"
@@ -344,10 +344,10 @@ grep -n "import.*goto" packages/99_home/src/routes/login/+page.svelte
 
 ---
 
-## 📊 RESULTADO ESPERADO
+## RESULTADO ESPERADO
 
 ```
-✅ VALIDAÇÃO LOCAL COMPLETA
+VALIDAÇÃO LOCAL COMPLETA
 ├── Código: sem erros
 ├── Tipos: 100% válido
 ├── Lint: sem warnings
@@ -356,10 +356,10 @@ grep -n "import.*goto" packages/99_home/src/routes/login/+page.svelte
 ├── Login: funcionando
 ├── JWT: armazenado
 ├── Navegação: inteligente
-└── Ready for Production!
+└── Pronto para Produção!
 ```
 
 ---
 
 **Data**: 10 de Março de 2026
-**Status**: 🚀 Ready to Deploy
+**Status**: Pronto para Deploy

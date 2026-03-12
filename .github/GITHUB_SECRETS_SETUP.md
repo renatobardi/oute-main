@@ -9,7 +9,7 @@ Após executar o script GCP (setup-gcp.sh), adicione em **Settings → Secrets a
 ### GCP_SA_KEY
 
 - **Valor**: Conteúdo do arquivo `~/oute-github-key.json`
-- **Usar para**: GitHub Actions fazer deploy em Cloud Run
+- **Usar para**: GitHub Actions fazer deploy na VM GCP
 - **Como obter**:
   ```bash
   cat ~/oute-github-key.json
@@ -24,7 +24,7 @@ Após executar o script GCP (setup-gcp.sh), adicione em **Settings → Secrets a
 ### GCP_REGION
 
 - **Valor**: `us-central1` (ou sua região preferida)
-- **Usar para**: Deploy region no Cloud Run
+- **Usar para**: Região do deploy na VM GCP
 
 ## 2. Artifact Registry
 

@@ -1,8 +1,8 @@
-# Integration Flows - OUTE
+# Fluxos de Integração - OUTE
 
-Guia detalhado dos fluxos de integração entre os 3 domínios da aplicação.
+Guia detalhado dos fluxos de integração entre os domínios da aplicação.
 
-## 📊 Arquitetura de Integração
+## Arquitetura de Integração
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -15,7 +15,7 @@ Guia detalhado dos fluxos de integração entre os 3 domínios da aplicação.
        ▼               ▼
 ┌──────────────────┐ ┌──────────────────┐
 │  01_Auth-Profile │ │   02_Projects    │
-│  (Port 3001)     │ │  (Port 3002)     │
+│  (Port 3001)     │ │  (Port 3004)     │
 │                  │ │                  │
 │ - Login          │ │ - CRUD projects  │
 │ - JWT issue      │ │ - Validate JWT   │
@@ -31,18 +31,18 @@ Guia detalhado dos fluxos de integração entre os 3 domínios da aplicação.
 
 ---
 
-## 1️⃣ Authentication Flow (01_auth-profile)
+## 1. Fluxo de Autenticação (01_auth-profile)
 
-### 1.1 Login Process
+### 1.1 Processo de Login
 
-**User flow**:
+**Fluxo do usuário**:
 
-1. User fills login form in 00_dashboard
-2. Form submits to 01_auth-profile `/auth/login`
-3. Auth service validates credentials
-4. Issues JWT token
-5. Dashboard stores JWT locally
-6. User can now access other services
+1. Usuário preenche formulário de login no 00_dashboard
+2. Formulário envia para 01_auth-profile `/auth/login`
+3. Serviço de auth valida credenciais
+4. Emite token JWT
+5. Dashboard armazena JWT localmente
+6. Usuário pode acessar outros serviços
 
 **Endpoint**: `POST /auth/login`
 
@@ -55,7 +55,7 @@ Guia detalhado dos fluxos de integração entre os 3 domínios da aplicação.
 }
 ```
 
-**Response**:
+**Resposta**:
 
 ```json
 {
@@ -68,7 +68,7 @@ Guia detalhado dos fluxos de integração entre os 3 domínios da aplicação.
 }
 ```
 
-**Code example** (00_dashboard):
+**Exemplo de código** (00_dashboard):
 
 ```typescript
 async function login(email: string, password: string) {
@@ -89,34 +89,34 @@ async function login(email: string, password: string) {
 }
 ```
 
-### 1.2 JWT Token Storage & Usage
+### 1.2 Armazenamento e Uso do Token JWT
 
-**Where stored**:
+**Onde é armazenado**:
 
-- Browser localStorage: `token` key
-- Expires in 24 hours (configurable)
+- Browser localStorage: chave `token`
+- Expira em 24 horas (configurável)
 
-**Usage in other requests**:
+**Uso em outras requisições**:
 
 ```typescript
 const token = localStorage.getItem('token');
 
-fetch('http://localhost:3002/projects', {
+fetch('http://localhost:3004/projects', {
   headers: {
     Authorization: `Bearer ${token}`,
   },
 });
 ```
 
-### 1.3 JWT Validation
+### 1.3 Validação JWT
 
-**Token structure**:
+**Estrutura do token**:
 
 ```
 Header.Payload.Signature
 ```
 
-**Payload** (decoded):
+**Payload** (decodificado):
 
 ```json
 {
@@ -127,7 +127,7 @@ Header.Payload.Signature
 }
 ```
 
-**Validation** (in 02_projects):
+**Validação** (em 02_projects):
 
 ```typescript
 import jwt from 'jsonwebtoken';
@@ -142,7 +142,7 @@ export async function validateJWT(token: string): Promise<string | null> {
 }
 ```
 
-### 1.4 Logout Flow
+### 1.4 Fluxo de Logout
 
 **Endpoint**: `POST /auth/logout`
 
@@ -153,7 +153,7 @@ curl -X POST http://localhost:3001/auth/logout \
   -H "Authorization: Bearer <token>"
 ```
 
-**Response**:
+**Resposta**:
 
 ```json
 {
@@ -161,7 +161,7 @@ curl -X POST http://localhost:3001/auth/logout \
 }
 ```
 
-**Client side** (00_dashboard):
+**Lado do cliente** (00_dashboard):
 
 ```typescript
 function logout() {
@@ -174,31 +174,31 @@ function logout() {
 
 ---
 
-## 2️⃣ Projects Flow (02_projects)
+## 2. Fluxo de Projetos (02_projects)
 
-### 2.1 Fetch Projects List
+### 2.1 Buscar Lista de Projetos
 
-**User has logged in with JWT token**
+**Usuário logado com token JWT**
 
 **Endpoint**: `GET /projects`
 
-**Request headers**:
+**Headers da requisição**:
 
 ```
 Authorization: Bearer eyJhbGc...
 ```
 
-**Flow**:
+**Fluxo**:
 
-1. 00_dashboard sends GET request to 02_projects with JWT
-2. 02_projects receives request
-3. Extracts JWT from Authorization header
-4. Validates JWT (verify signature, expiration)
-5. Extracts user ID from JWT payload
-6. Queries database: `SELECT * FROM projects WHERE user_id = ?`
-7. Returns projects list
+1. 00_dashboard envia GET request para 02_projects com JWT
+2. 02_projects recebe a requisição
+3. Extrai JWT do header Authorization
+4. Valida JWT (verifica assinatura, expiração)
+5. Extrai user ID do payload JWT
+6. Consulta banco: `SELECT * FROM projects WHERE user_id = ?`
+7. Retorna lista de projetos
 
-**Code example** (02_projects):
+**Exemplo de código** (02_projects):
 
 ```typescript
 // routes/projects/+server.ts
@@ -228,7 +228,7 @@ export async function GET({ request }) {
 }
 ```
 
-### 2.2 Create Project
+### 2.2 Criar Projeto
 
 **Endpoint**: `POST /projects`
 
@@ -249,7 +249,7 @@ Authorization: Bearer <token>
 Content-Type: application/json
 ```
 
-**Code example** (02_projects):
+**Exemplo de código** (02_projects):
 
 ```typescript
 export async function POST({ request }) {
@@ -273,7 +273,7 @@ export async function POST({ request }) {
 }
 ```
 
-### 2.3 Update Project
+### 2.3 Atualizar Projeto
 
 **Endpoint**: `PATCH /projects/:id`
 
@@ -286,17 +286,17 @@ export async function POST({ request }) {
 }
 ```
 
-### 2.4 Delete Project
+### 2.4 Deletar Projeto
 
 **Endpoint**: `DELETE /projects/:id`
 
-**Important**: Only delete if user owns the project
+**Importante**: Só deleta se o usuário for dono do projeto
 
 ---
 
-## 3️⃣ User Profile Flow (01_auth-profile)
+## 3. Fluxo de Perfil do Usuário (01_auth-profile)
 
-### 3.1 Get User Profile
+### 3.1 Obter Perfil do Usuário
 
 **Endpoint**: `GET /profile`
 
@@ -307,7 +307,7 @@ curl http://localhost:3001/profile \
   -H "Authorization: Bearer <token>"
 ```
 
-**Response**:
+**Resposta**:
 
 ```json
 {
@@ -318,7 +318,7 @@ curl http://localhost:3001/profile \
 }
 ```
 
-### 3.2 Update User Profile
+### 3.2 Atualizar Perfil do Usuário
 
 **Endpoint**: `PATCH /profile`
 
@@ -332,9 +332,9 @@ curl http://localhost:3001/profile \
 
 ---
 
-## 4️⃣ Dashboard Integration
+## 4. Integração do Dashboard
 
-### 4.1 Login Page Flow
+### 4.1 Fluxo da Página de Login
 
 ```
 ┌──────────────────┐
@@ -365,7 +365,7 @@ curl http://localhost:3001/profile \
     └──────────────────────────┘
 ```
 
-### 4.2 Dashboard Home Flow
+### 4.2 Fluxo da Home do Dashboard
 
 ```
 ┌────────────────────────────────┐
@@ -391,7 +391,7 @@ curl http://localhost:3001/profile \
     └──────────────────────────┘
 ```
 
-### 4.3 Create Project Flow
+### 4.3 Fluxo de Criar Projeto
 
 ```
 Create Project Form
@@ -415,11 +415,11 @@ Create Project Form
 
 ---
 
-## 5️⃣ Error Handling
+## 5. Tratamento de Erros
 
-### 5.1 Token Expired
+### 5.1 Token Expirado
 
-**Flow**:
+**Fluxo**:
 
 ```
 Request to 02_projects
@@ -435,13 +435,13 @@ Clear localStorage
 Redirect to /login
 ```
 
-**Code** (00_dashboard):
+**Código** (00_dashboard):
 
 ```typescript
 async function fetchProjects() {
   const token = localStorage.getItem('token');
 
-  const response = await fetch('http://localhost:3002/projects', {
+  const response = await fetch('http://localhost:3004/projects', {
     headers: { Authorization: `Bearer ${token}` },
   });
 
@@ -457,7 +457,7 @@ async function fetchProjects() {
 }
 ```
 
-### 5.2 Network Errors
+### 5.2 Erros de Rede
 
 **Fallback**:
 
@@ -474,9 +474,9 @@ try {
 
 ---
 
-## 6️⃣ Development Testing
+## 6. Testes em Desenvolvimento
 
-### Local Testing with cURL
+### Testes Locais com cURL
 
 **Login**:
 
@@ -486,17 +486,17 @@ curl -X POST http://localhost:3001/auth/login \
   -d '{"email":"test@example.com","password":"password123"}'
 ```
 
-**Fetch Projects** (replace TOKEN):
+**Buscar Projetos** (substitua TOKEN):
 
 ```bash
-curl http://localhost:3002/projects \
+curl http://localhost:3004/projects \
   -H "Authorization: Bearer TOKEN"
 ```
 
-**Create Project**:
+**Criar Projeto**:
 
 ```bash
-curl -X POST http://localhost:3002/projects \
+curl -X POST http://localhost:3004/projects \
   -H "Authorization: Bearer TOKEN" \
   -H "Content-Type: application/json" \
   -d '{"name":"My Project","description":"Test"}'
@@ -504,31 +504,31 @@ curl -X POST http://localhost:3002/projects \
 
 ---
 
-## 7️⃣ Deployment Considerations
+## 7. Considerações de Deploy
 
-### URLs in Production
+### URLs em Produção
 
-Development:
+Desenvolvimento:
 
 ```
 Dashboard:      http://localhost:3000
 Auth-Profile:   http://localhost:3001
-Projects:       http://localhost:3002
+Projects:       http://localhost:3004
 ```
 
-Production (GCP Cloud Run):
+Produção (VM com Caddy reverse proxy):
 
 ```
-Dashboard:      https://oute-dashboard-xxx.run.app
-Auth-Profile:   https://oute-auth-profile-xxx.run.app
-Projects:       https://oute-projects-xxx.run.app
+Dashboard:      http://<VM_IP>/dashboard
+Auth-Profile:   http://<VM_IP>/api/auth
+Projects:       http://<VM_IP>/api/projects
 ```
 
-**Update environment variables** in Cloud Run deployment.
+> **Nota**: O deploy principal é feito em VM (GCP Compute Engine) com Caddy como reverse proxy. Todos os serviços usam `expose` (rede Docker interna) e são acessados exclusivamente via Caddy na porta 80.
 
-### CORS Configuration
+### Configuração CORS
 
-If services run on different domains, configure CORS:
+Se os serviços rodam em domínios diferentes, configure CORS:
 
 **02_projects (+server.ts)**:
 
@@ -542,13 +542,13 @@ const headers = {
 
 ---
 
-## 📝 Summary
+## Resumo
 
-| Flow           | From      | To           | Auth     | Data          |
+| Fluxo          | De        | Para         | Auth     | Dados         |
 | -------------- | --------- | ------------ | -------- | ------------- |
-| Login          | Dashboard | Auth-Profile | Password | JWT + User    |
-| Fetch Projects | Dashboard | Projects     | JWT      | Projects list |
-| Create Project | Dashboard | Projects     | JWT      | Project data  |
-| Get Profile    | Dashboard | Auth-Profile | JWT      | User profile  |
+| Login          | Dashboard | Auth-Profile | Senha    | JWT + Usuário |
+| Buscar Projetos| Dashboard | Projects     | JWT      | Lista projetos|
+| Criar Projeto  | Dashboard | Projects     | JWT      | Dados projeto |
+| Obter Perfil   | Dashboard | Auth-Profile | JWT      | Perfil usuário|
 
-All inter-service communication is **HTTP-based**, **JWT-authenticated**, and **stateless**.
+Toda comunicação entre serviços é **baseada em HTTP**, **autenticada por JWT** e **stateless**.

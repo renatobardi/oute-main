@@ -1,304 +1,304 @@
-# E2E Tests - Auth Profile Service
+# Testes E2E - Servico Auth Profile
 
-## Overview
+## Visao Geral
 
-End-to-end tests for the authentication and profile management service using **Playwright**.
+Testes end-to-end para o servico de autenticacao e gerenciamento de perfil usando **Playwright**.
 
-### Test Files
+### Arquivos de Teste
 
-- **`auth.spec.ts`** - Authentication flows (login, register, token validation)
-  - 8 test cases
-  - Coverage: Login success/failures, registration, JWT validation
+- **`auth.spec.ts`** - Fluxos de autenticacao (login, registro, validacao de token)
+  - 8 casos de teste
+  - Cobertura: Sucesso/falhas de login, registro, validacao JWT
 
-- **`profile.spec.ts`** - Profile endpoint (protected routes) + full integration flows
-  - 13 test cases
-  - Coverage: Protected routes, authentication headers, complete flows
+- **`profile.spec.ts`** - Endpoint de perfil (rotas protegidas) + fluxos de integracao completa
+  - 13 casos de teste
+  - Cobertura: Rotas protegidas, headers de autenticacao, fluxos completos
 
-**Total: 21 E2E tests**
+**Total: 21 testes E2E**
 
 ## Setup
 
-### Prerequisites
+### Pre-requisitos
 
 1. Node.js v20+
-2. npm workspaces installed
-3. PostgreSQL running (or mock adapter configured)
-4. SvelteKit dev server running on `http://localhost:5173`
+2. npm workspaces instalado
+3. PostgreSQL rodando (ou mock adapter configurado)
+4. Servidor de dev SvelteKit rodando em `http://localhost:5173`
 
-### Installation
+### Instalacao
 
 ```bash
 cd packages/01_auth-profile
 
-# Install Playwright (if not already installed)
+# Instalar Playwright (se nao estiver instalado)
 npm install -D @playwright/test
 
-# Install other E2E testing dependencies
+# Instalar outras dependencias de teste E2E
 npm install -D playwright
 ```
 
-### Configuration
+### Configuracao
 
-The Playwright configuration is in `playwright.config.ts`:
+A configuracao do Playwright esta em `playwright.config.ts`:
 
 ```typescript
-// Key settings:
+// Configuracoes principais:
 // - baseURL: http://localhost:5173
-// - webServer: auto-starts SvelteKit dev server
+// - webServer: inicia automaticamente servidor de dev SvelteKit
 // - browser: chromium
 // - reporter: html
 ```
 
-## Running Tests
+## Executando Testes
 
-### Start the Dev Server (if not running)
+### Iniciar o Servidor de Dev (se nao estiver rodando)
 
 ```bash
 npm run dev
 ```
 
-The dev server will start on `http://localhost:5173` and auto-reload on file changes.
+O servidor de dev iniciara em `http://localhost:5173` e recarregara automaticamente ao detectar mudancas.
 
-### Run All E2E Tests
+### Executar Todos os Testes E2E
 
 ```bash
 npm run test:e2e
 ```
 
-### Run Specific Test File
+### Executar Arquivo de Teste Especifico
 
 ```bash
 npx playwright test auth.spec.ts
 npx playwright test profile.spec.ts
 ```
 
-### Run Specific Test Case
+### Executar Caso de Teste Especifico
 
 ```bash
 npx playwright test -g "should login successfully with valid credentials"
 npx playwright test -g "Profile Endpoint"
 ```
 
-### Run in Watch Mode (Development)
+### Executar em Modo Watch (Desenvolvimento)
 
 ```bash
 npx playwright test --watch
 ```
 
-### Run in UI Mode (Interactive)
+### Executar em Modo UI (Interativo)
 
 ```bash
 npx playwright test --ui
 ```
 
-This opens an interactive debugger where you can:
+Isso abre um debugger interativo onde voce pode:
 
-- Step through tests
-- Inspect network requests
-- View snapshots
-- Pause/resume execution
+- Percorrer testes passo a passo
+- Inspecionar requisicoes de rede
+- Visualizar snapshots
+- Pausar/retomar execucao
 
-### Run in Debug Mode
+### Executar em Modo Debug
 
 ```bash
 npx playwright test --debug
 ```
 
-This opens Inspector with full debugging capabilities.
+Isso abre o Inspector com capacidades completas de debugging.
 
-### Run with Verbose Output
+### Executar com Saida Detalhada
 
 ```bash
 npx playwright test --reporter=verbose
 ```
 
-## Viewing Test Reports
+## Visualizando Relatorios de Teste
 
-After running tests, view the HTML report:
+Apos executar os testes, visualize o relatorio HTML:
 
 ```bash
 npx playwright show-report
 ```
 
-This opens an interactive report showing:
+Isso abre um relatorio interativo mostrando:
 
-- Test results (passed/failed)
-- Screenshot comparisons
-- Video recordings (if enabled)
-- Execution timeline
+- Resultados dos testes (passou/falhou)
+- Comparacoes de screenshot
+- Gravacoes de video (se habilitado)
+- Timeline de execucao
 
-## Test Structure
+## Estrutura dos Testes
 
-### Authentication Tests (`auth.spec.ts`)
+### Testes de Autenticacao (`auth.spec.ts`)
 
-#### Login Tests
+#### Testes de Login
 
-1. ✅ Login with valid credentials → 200 + token
-2. ❌ Login with invalid email format → 400
-3. ❌ Login with incorrect password → 401
-4. ❌ Login with missing email → 400
+1. ✅ Login com credenciais validas → 200 + token
+2. ❌ Login com formato de email invalido → 400
+3. ❌ Login com senha incorreta → 401
+4. ❌ Login com email ausente → 400
 
-#### Registration Tests
+#### Testes de Registro
 
-5. ✅ Register with valid data → 201 + token
-6. ❌ Register with weak password → 400
-7. ❌ Register with invalid email → 400
-8. ❌ Register with missing fields → 400
+5. ✅ Registro com dados validos → 201 + token
+6. ❌ Registro com senha fraca → 400
+7. ❌ Registro com email invalido → 400
+8. ❌ Registro com campos ausentes → 400
 
-#### Token Validation
+#### Validacao de Token
 
-9. ✅ JWT token has valid 3-part structure (header.payload.signature)
+9. ✅ Token JWT possui estrutura valida de 3 partes (header.payload.signature)
 
-### Profile Tests (`profile.spec.ts`)
+### Testes de Perfil (`profile.spec.ts`)
 
-#### Protected Route Tests
+#### Testes de Rotas Protegidas
 
-1. ✅ Get profile with valid JWT → 200 + user data
-2. ❌ Get profile without auth header → 401
-3. ❌ Get profile with invalid token → 401
-4. ❌ Get profile with malformed header → 401
-5. ✅ Profile includes all user details (id, email, name, roles, timestamps)
-6. ✅ Multiple sequential requests with same token
-7. ❌ Profile access with expired token → 401
-8. ❌ Case-sensitive Bearer prefix check
+1. ✅ Obter perfil com JWT valido → 200 + dados do usuario
+2. ❌ Obter perfil sem header de autenticacao → 401
+3. ❌ Obter perfil com token invalido → 401
+4. ❌ Obter perfil com header malformado → 401
+5. ✅ Perfil inclui todos os detalhes do usuario (id, email, nome, roles, timestamps)
+6. ✅ Multiplas requisicoes sequenciais com mesmo token
+7. ❌ Acesso ao perfil com token expirado → 401
+8. ❌ Verificacao de case-sensitive do prefixo Bearer
 
-#### Full Integration Flows
+#### Fluxos de Integracao Completa
 
-9. ✅ Register → Login → Profile access (complete flow)
-10. ❌ Failed login prevents profile access
-11. ✅ Concurrent authentication requests handled
+9. ✅ Registro → Login → Acesso ao perfil (fluxo completo)
+10. ❌ Login falho impede acesso ao perfil
+11. ✅ Requisicoes concorrentes de autenticacao tratadas
 
-## Key Test Scenarios
+## Cenarios de Teste Principais
 
-### Success Scenarios ✅
+### Cenarios de Sucesso ✅
 
 ```typescript
-// Login & get profile
+// Login e obter perfil
 POST /api/auth?action=login { email, password }
   → 200 + { token, user }
 
 GET /api/profile (Authorization: Bearer <token>)
   → 200 + { id, email, name, roles, createdAt, lastLogin }
 
-// Register & get profile
+// Registro e obter perfil
 POST /api/auth?action=register { email, password, name }
   → 201 + { token, user }
 
 GET /api/profile (Authorization: Bearer <token>)
-  → 200 + user data
+  → 200 + dados do usuario
 ```
 
-### Error Scenarios ❌
+### Cenarios de Erro ❌
 
 ```typescript
-// No auth header
+// Sem header de autenticacao
 GET /api/profile
   → 401 + { error }
 
-// Invalid token
+// Token invalido
 GET /api/profile (Authorization: Bearer invalid)
   → 401 + { error }
 
-// Malformed header
+// Header malformado
 GET /api/profile (Authorization: InvalidFormat token)
   → 401 + { error }
 
 // Case sensitivity
-GET /api/profile (Authorization: bearer <token>)  // lowercase
+GET /api/profile (Authorization: bearer <token>)  // minusculo
   → 401 + { error }
 
-// Expired token
+// Token expirado
 GET /api/profile (Authorization: Bearer <expired-token>)
   → 401 + { error }
 ```
 
-## Testing Best Practices
+## Boas Praticas de Teste
 
-### 1. Use Unique Test Data
+### 1. Usar Dados de Teste Unicos
 
-Tests use `Date.now()` for unique emails:
+Testes usam `Date.now()` para emails unicos:
 
 ```typescript
 const testEmail = `flow-test-${Date.now()}@example.com`;
 ```
 
-This prevents conflicts when running tests multiple times.
+Isso previne conflitos ao executar testes multiplas vezes.
 
-### 2. Test Isolation
+### 2. Isolamento de Testes
 
-Each test is independent:
+Cada teste eh independente:
 
-- No shared state
-- Register/login within each test
-- No test dependencies
+- Sem estado compartilhado
+- Registro/login dentro de cada teste
+- Sem dependencias entre testes
 
-### 3. Comprehensive Error Scenarios
+### 3. Cenarios de Erro Abrangentes
 
-Tests cover:
+Testes cobrem:
 
-- Happy path (success)
-- Missing required fields
-- Invalid formats
-- Authentication failures
-- Security checks (case sensitivity, token format)
+- Happy path (sucesso)
+- Campos obrigatorios ausentes
+- Formatos invalidos
+- Falhas de autenticacao
+- Verificacoes de seguranca (case sensitivity, formato de token)
 
-### 4. Full Integration Testing
+### 4. Teste de Integracao Completa
 
-`profile.spec.ts` includes complete workflows:
+`profile.spec.ts` inclui workflows completos:
 
-- Register → Login → Profile (validates entire flow)
-- Concurrent requests (validates system stability)
+- Registro → Login → Perfil (valida fluxo inteiro)
+- Requisicoes concorrentes (valida estabilidade do sistema)
 
-## Common Issues & Solutions
+## Problemas Comuns e Solucoes
 
-### Issue: `Target page, context or browser has been closed`
+### Problema: `Target page, context or browser has been closed`
 
-**Cause**: Dev server not running or wrong baseURL
+**Causa**: Servidor de dev nao esta rodando ou baseURL incorreta
 
-**Solution**:
+**Solucao**:
 
 ```bash
-npm run dev  # Start dev server first
-npm run test:e2e  # Then run tests
+npm run dev  # Iniciar servidor de dev primeiro
+npm run test:e2e  # Depois executar testes
 ```
 
-### Issue: `Timeout waiting for predicate`
+### Problema: `Timeout waiting for predicate`
 
-**Cause**: Requests taking too long or server unresponsive
+**Causa**: Requisicoes demorando muito ou servidor sem resposta
 
-**Solution**: Increase timeout in `playwright.config.ts`:
+**Solucao**: Aumentar timeout em `playwright.config.ts`:
 
 ```typescript
-expect.setDefaultTimeout(5000); // 5 seconds
+expect.setDefaultTimeout(5000); // 5 segundos
 ```
 
-### Issue: `Navigation to "http://localhost:5173/" failed`
+### Problema: `Navigation to "http://localhost:5173/" failed`
 
-**Cause**: Dev server not reachable
+**Causa**: Servidor de dev inacessivel
 
-**Solution**:
+**Solucao**:
 
 ```bash
-# Verify dev server is running
+# Verificar se o servidor de dev esta rodando
 curl http://localhost:5173
 ```
 
-### Issue: Tests pass locally but fail in CI
+### Problema: Testes passam localmente mas falham no CI
 
-**Cause**: Different environment, different test data
+**Causa**: Ambiente diferente, dados de teste diferentes
 
-**Solution**:
+**Solucao**:
 
-- Use environment variables for API endpoints
-- Don't hardcode localhost URLs
-- Use test data seeding in CI
+- Usar variaveis de ambiente para endpoints da API
+- Nao hardcodar URLs localhost
+- Usar seeding de dados de teste no CI
 
-## CI/CD Integration
+## Integracao CI/CD
 
-### GitHub Actions Example
+### Exemplo GitHub Actions
 
 ```yaml
-name: E2E Tests
+name: Testes E2E
 
 on: [pull_request, push]
 
@@ -312,7 +312,7 @@ jobs:
           node-version: '20'
 
       - run: npm ci
-      - run: npm run dev & # Start dev server
+      - run: npm run dev & # Iniciar servidor de dev
       - run: npm run test:e2e
 
       - uses: actions/upload-artifact@v3
@@ -322,69 +322,69 @@ jobs:
           path: playwright-report/
 ```
 
-## Performance Considerations
+## Consideracoes de Performance
 
-### Test Execution Time
+### Tempo de Execucao dos Testes
 
-- **auth.spec.ts**: ~5-10 seconds (8 tests)
-- **profile.spec.ts**: ~10-15 seconds (13 tests)
-- **Total**: ~20-30 seconds
+- **auth.spec.ts**: ~5-10 segundos (8 testes)
+- **profile.spec.ts**: ~10-15 segundos (13 testes)
+- **Total**: ~20-30 segundos
 
-### Parallel Execution
+### Execucao Paralela
 
-Playwright runs tests in parallel by default:
+Playwright executa testes em paralelo por padrao:
 
 ```bash
-npx playwright test --workers=4  # 4 parallel workers
+npx playwright test --workers=4  # 4 workers paralelos
 ```
 
-To run serially (for debugging):
+Para executar sequencialmente (para debugging):
 
 ```bash
 npx playwright test --workers=1
 ```
 
-## Next Steps
+## Proximos Passos
 
-### Additional Test Coverage
+### Cobertura de Teste Adicional
 
-Consider adding:
+Considere adicionar:
 
-- [ ] Token refresh tests
-- [ ] Logout functionality tests
-- [ ] Role-based access control tests
-- [ ] Rate limiting tests
-- [ ] CORS validation tests
-- [ ] SQL injection prevention tests
-- [ ] XSS prevention tests
+- [ ] Testes de refresh de token
+- [ ] Testes de funcionalidade de logout
+- [ ] Testes de controle de acesso baseado em roles
+- [ ] Testes de rate limiting
+- [ ] Testes de validacao CORS
+- [ ] Testes de prevencao de SQL injection
+- [ ] Testes de prevencao de XSS
 
-### Performance Tests
+### Testes de Performance
 
 ```bash
 npx playwright test --reporter=json > results.json
-# Analyze response times, throughput
+# Analisar tempos de resposta, throughput
 ```
 
-### Visual Regression Testing
+### Testes de Regressao Visual
 
-Add screenshot comparisons:
+Adicionar comparacoes de screenshot:
 
 ```typescript
 await expect(page).toHaveScreenshot();
 ```
 
-## Resources
+## Recursos
 
-- [Playwright Documentation](https://playwright.dev)
+- [Documentacao Playwright](https://playwright.dev)
 - [Playwright Test](https://playwright.dev/docs/intro)
-- [Test Reports](https://playwright.dev/docs/test-reporters)
-- [Debugging Guide](https://playwright.dev/docs/debug)
+- [Relatorios de Teste](https://playwright.dev/docs/test-reporters)
+- [Guia de Debugging](https://playwright.dev/docs/debug)
 
-## Troubleshooting
+## Solucao de Problemas
 
-For more help, check:
+Para mais ajuda, verifique:
 
-- `playwright.config.ts` - Playwright configuration
-- `.env.example` - Environment variables
-- GitHub Actions logs - CI/CD issues
-- `npm run test:e2e -- --help` - CLI options
+- `playwright.config.ts` - Configuracao do Playwright
+- `.env.example` - Variaveis de ambiente
+- Logs do GitHub Actions - Problemas de CI/CD
+- `npm run test:e2e -- --help` - Opcoes de CLI

@@ -109,7 +109,7 @@ docs: update ARCHITECTURE.md with new flow diagram
    - Reference related issues: `Closes #123`
 
 5. **Wait for reviews**
-   - CI/CD must pass (lint, tests, SonarQube)
+   - CI/CD must pass (lint, tests, SonarCloud)
    - Minimum 1 review approval required
    - Address feedback in new commits
 
@@ -246,7 +246,7 @@ git push origin --delete feature/my-feature
 - ✅ All tests pass
 - ✅ No ESLint warnings
 - ✅ TypeScript strict mode passes
-- ✅ SonarQube quality gate passes
+- ✅ SonarCloud quality gate passes
 - ✅ Code coverage ≥ 80% (enforced by CI)
 - ✅ TDD practiced (tests written before implementation — see [TDD_GUIDE.md](./TDD_GUIDE.md))
 - ✅ At least 1 review approval
@@ -259,12 +259,14 @@ git push origin --delete feature/my-feature
 lsof -i :3000 | grep LISTEN | awk '{print $2}' | xargs kill -9
 ```
 
-### Pre-commit hook failing
+### Lint ou formato incorreto
+
+Pre-commit hooks não estão configurados. Execute manualmente antes de commitar:
 
 ```bash
-npm run lint      # Fix linting errors
-npm run format    # Auto-format code
-npm run test      # Run tests
+npm run lint      # Corrigir erros de lint
+npm run format    # Auto-formatar código
+npm run test      # Rodar testes
 ```
 
 ### Merge conflicts

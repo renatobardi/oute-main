@@ -1,4 +1,4 @@
-# OUTE Database - Excalidraw Mermaid Diagrams
+# OUTE Database - Diagramas Mermaid para Excalidraw
 
 > 8 diagramas separados por bounded context para importar no Excalidraw.
 > **Como importar**: Menu > Insert > Mermaid > colar o diagrama desejado.
@@ -6,7 +6,7 @@
 
 ---
 
-## 1. Identity & Access (IAM)
+## 1. Identidade & Acesso (IAM)
 
 ```mermaid
 erDiagram
@@ -56,14 +56,14 @@ erDiagram
         timestamptz deleted_at
     }
 
-    users ||--o{ organization_members : "has memberships"
-    organizations ||--o{ organization_members : "has members"
-    users ||--o{ refresh_tokens : "has tokens"
+    users ||--o{ organization_members : "possui membros"
+    organizations ||--o{ organization_members : "possui membros"
+    users ||--o{ refresh_tokens : "possui tokens"
 ```
 
 ---
 
-## 2. Project Management
+## 2. Gestao de Projetos
 
 ```mermaid
 erDiagram
@@ -110,14 +110,14 @@ erDiagram
         timestamptz created_at
     }
 
-    projects ||--o{ project_members : "has members"
-    projects ||--o{ project_tags : "tagged with"
-    tags ||--o{ project_tags : "applied to"
+    projects ||--o{ project_members : "possui membros"
+    projects ||--o{ project_tags : "marcado com"
+    tags ||--o{ project_tags : "aplicado a"
 ```
 
 ---
 
-## 3. Interview & Chat
+## 3. Entrevista & Chat
 
 ```mermaid
 erDiagram
@@ -162,13 +162,13 @@ erDiagram
         timestamptz deleted_at
     }
 
-    interviews ||--o{ messages : "contains"
-    interviews ||--|| interview_notes : "has notes"
+    interviews ||--o{ messages : "contem"
+    interviews ||--|| interview_notes : "possui notas"
 ```
 
 ---
 
-## 4. SDLC Template Engine
+## 4. Motor de Templates SDLC
 
 ```mermaid
 erDiagram
@@ -240,16 +240,16 @@ erDiagram
         timestamptz deleted_at
     }
 
-    sdlc_templates ||--o{ template_milestones : "has milestones"
-    template_milestones ||--o{ template_epics : "has epics"
-    template_epics ||--o{ template_issues : "has issues"
-    template_issues ||--o{ template_issues : "has sub-issues"
-    template_issues ||--o{ template_checklist_items : "has checklist"
+    sdlc_templates ||--o{ template_milestones : "possui milestones"
+    template_milestones ||--o{ template_epics : "possui epics"
+    template_epics ||--o{ template_issues : "possui issues"
+    template_issues ||--o{ template_issues : "possui sub-issues"
+    template_issues ||--o{ template_checklist_items : "possui checklist"
 ```
 
 ---
 
-## 5. Estimation Engine
+## 5. Motor de Estimativas
 
 ```mermaid
 erDiagram
@@ -329,15 +329,15 @@ erDiagram
         timestamptz deleted_at
     }
 
-    estimation_sessions ||--o{ estimation_milestone_statuses : "tracks milestones"
-    estimation_sessions ||--o{ estimation_responses : "collects answers"
-    estimation_sessions ||--o{ estimation_checklist_results : "checks items"
-    estimation_sessions ||--o{ estimation_outputs : "generates"
+    estimation_sessions ||--o{ estimation_milestone_statuses : "rastreia milestones"
+    estimation_sessions ||--o{ estimation_responses : "coleta respostas"
+    estimation_sessions ||--o{ estimation_checklist_results : "verifica itens"
+    estimation_sessions ||--o{ estimation_outputs : "gera"
 ```
 
 ---
 
-## 6. Integrations
+## 6. Integracoes
 
 ```mermaid
 erDiagram
@@ -388,13 +388,13 @@ erDiagram
         timestamptz deleted_at
     }
 
-    integration_connections ||--o{ export_sessions : "used by"
-    export_sessions ||--o{ export_mappings : "maps entities"
+    integration_connections ||--o{ export_sessions : "usado por"
+    export_sessions ||--o{ export_mappings : "mapeia entidades"
 ```
 
 ---
 
-## 7. Audit
+## 7. Auditoria
 
 ```mermaid
 erDiagram
@@ -415,7 +415,7 @@ erDiagram
 
 ---
 
-## 8. Cross-Context Relationships
+## 8. Relacionamentos entre Contextos
 
 > Diagrama mostrando como os bounded contexts se conectam entre si.
 > Tabelas simplificadas (apenas PK/FK) para foco nos relacionamentos.
@@ -472,23 +472,23 @@ erDiagram
         uuid user_id FK
     }
 
-    %% User is the central actor
-    users ||--o{ projects : "creates"
-    users ||--o{ interviews : "conducts"
-    users ||--o{ estimation_sessions : "starts"
-    users ||--o{ integration_connections : "sets up"
-    users ||--o{ export_sessions : "triggers"
-    users ||--o{ audit_log : "performed by"
+    %% Usuario eh o ator central
+    users ||--o{ projects : "cria"
+    users ||--o{ interviews : "conduz"
+    users ||--o{ estimation_sessions : "inicia"
+    users ||--o{ integration_connections : "configura"
+    users ||--o{ export_sessions : "aciona"
+    users ||--o{ audit_log : "realizado por"
 
-    %% Org scopes everything
-    organizations ||--o{ projects : "owns"
-    organizations ||--o{ integration_connections : "connects"
-    organizations ||--o{ audit_log : "audited"
+    %% Org define o escopo de tudo
+    organizations ||--o{ projects : "possui"
+    organizations ||--o{ integration_connections : "conecta"
+    organizations ||--o{ audit_log : "auditado"
 
-    %% Core flow: Project -> Interview -> Estimation -> Export
-    projects ||--o{ interviews : "has interviews"
-    projects ||--o{ estimation_sessions : "estimated via"
-    sdlc_templates ||--o{ estimation_sessions : "uses template"
-    estimation_sessions ||--o{ export_sessions : "exported via"
-    integration_connections ||--o{ export_sessions : "used by"
+    %% Fluxo principal: Projeto -> Entrevista -> Estimativa -> Exportacao
+    projects ||--o{ interviews : "possui entrevistas"
+    projects ||--o{ estimation_sessions : "estimado via"
+    sdlc_templates ||--o{ estimation_sessions : "usa template"
+    estimation_sessions ||--o{ export_sessions : "exportado via"
+    integration_connections ||--o{ export_sessions : "usado por"
 ```

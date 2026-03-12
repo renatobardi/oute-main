@@ -1,33 +1,33 @@
-# Applying Hexagonal Architecture Pattern to Other Services
+# Aplicando o Padrao de Arquitetura Hexagonal a Outros Servicos
 
-## Overview
+## Visao Geral
 
-This document provides a **template and step-by-step guide** for applying the same Hexagonal Architecture + DDD + Clean Code + TDD pattern used in `01_auth-profile` to the other services:
+Este documento fornece um **template e guia passo a passo** para aplicar o mesmo padrao de Arquitetura Hexagonal + DDD + Clean Code + TDD utilizado no `01_auth-profile` aos demais servicos:
 
-- **00_dashboard** - Dashboard UI and widget management (Priority 2)
-- **02_projects** - Project management and collaboration (Priority 1)
+- **00_dashboard** - Interface do dashboard e gerenciamento de widgets (Prioridade 2)
+- **02_projects** - Gerenciamento de projetos e colaboracao (Prioridade 1)
 
-## Current Status
+## Status Atual
 
-**✅ Already Refactored**:
-- `01_auth-profile` - Complete Hexagonal Architecture + DDD + TDD (178 tests, 80%+ coverage)
+**✅ Ja Refatorado**:
+- `01_auth-profile` - Arquitetura Hexagonal + DDD + TDD completa (178 testes, 80%+ cobertura)
 
-**✅ Already Implemented** (Marketing & Interview):
-- `99_home` - Landing page with hero + CTA + stats
-- `03_interview` - 3-panel chat interface with notes
+**✅ Ja Implementado** (Marketing & Entrevista):
+- `99_home` - Landing page com hero + CTA + estatisticas
+- `03_interview` - Interface de chat com 3 paineis e anotacoes
 
-**🔄 Next to Refactor** (in order):
-1. `02_projects` - Project management API (~5-6 weeks)
-2. `00_dashboard` - Main dashboard UI (~5-6 weeks)
+**🔄 Proximos a Refatorar** (em ordem):
+1. `02_projects` - API de gerenciamento de projetos (~5-6 semanas)
+2. `00_dashboard` - Interface principal do dashboard (~5-6 semanas)
 
-## Architecture Template
+## Template de Arquitetura
 
-Every service should follow this structure:
+Todo servico deve seguir esta estrutura:
 
 ```
 packages/XX_service/
 ├── src/
-│   ├── domain/                          # Pure business logic
+│   ├── domain/                          # Logica de negocio pura
 │   │   ├── entities/
 │   │   │   └── [Entity].ts
 │   │   ├── value-objects/
@@ -39,7 +39,7 @@ packages/XX_service/
 │   │   └── errors/
 │   │       └── [Error].ts
 │   │
-│   ├── application/                     # Orchestration
+│   ├── application/                     # Orquestracao
 │   │   ├── use-cases/
 │   │   │   └── [use-case]/[UseCase].ts
 │   │   ├── dto/
@@ -49,13 +49,13 @@ packages/XX_service/
 │   │   └── ports/
 │   │       └── I[Adapter].ts
 │   │
-│   ├── infrastructure/                  # Adapters
+│   ├── infrastructure/                  # Adaptadores
 │   │   ├── adapters/
 │   │   │   └── [Adapter].ts
 │   │   └── config/
 │   │       └── [config].ts
 │   │
-│   ├── presentation/                    # HTTP/API Layer
+│   ├── presentation/                    # Camada HTTP/API
 │   │   ├── handlers/
 │   │   │   └── [Handler].ts
 │   │   ├── middleware/
@@ -65,8 +65,8 @@ packages/XX_service/
 │   │   └── routes/
 │   │       └── api/[endpoint]/+server.ts
 │   │
-│   ├── app.ts                           # Entry point
-│   ├── hooks.server.ts                  # DI setup
+│   ├── app.ts                           # Ponto de entrada
+│   ├── hooks.server.ts                  # Configuracao de DI
 │   └── __tests__/
 │       ├── unit/
 │       ├── integration/
@@ -76,18 +76,18 @@ packages/XX_service/
 ├── tsconfig.json
 ├── package.json
 ├── README.md
-└── PHASE_*.md                          # Documentation
+└── REFACTORING_COMPLETION.md            # Documentacao da refatoracao
 ```
 
 ---
 
-## Service-Specific Patterns
+## Padroes Especificos por Servico
 
-### 00_dashboard Service
+### Servico 00_dashboard
 
-#### Domain Layer
+#### Camada de Dominio
 
-**Key Entities**:
+**Entidades Principais**:
 
 ```typescript
 // domain/entities/Dashboard.ts
@@ -103,7 +103,7 @@ export class Dashboard {
   ) {}
 
   static create(props: { userId: UserId; name: string; description: string }): Dashboard {
-    // Factory method with validation
+    // Metodo factory com validacao
   }
 
   addWidget(widget: Widget): void {
@@ -118,7 +118,7 @@ export class Dashboard {
   }
 
   getWidgets(): Widget[] {
-    return [...this.widgets]; // Immutable for external use
+    return [...this.widgets]; // Imutavel para uso externo
   }
 }
 
@@ -139,16 +139,16 @@ export class Widget {
     type: WidgetType;
     config: Record<string, unknown>;
   }): Widget {
-    // Validation & construction
+    // Validacao e construcao
   }
 
   updateConfig(config: Record<string, unknown>): void {
-    // Domain logic for config update
+    // Logica de dominio para atualizacao de configuracao
   }
 }
 ```
 
-**Key Value Objects**:
+**Value Objects Principais**:
 
 ```typescript
 // domain/value-objects/DashboardId.ts
@@ -194,7 +194,7 @@ export class WidgetType {
 }
 ```
 
-**Key Ports**:
+**Portas Principais**:
 
 ```typescript
 // domain/repositories/IDashboardRepository.ts
@@ -214,9 +214,9 @@ export interface IWidgetRepository {
 }
 ```
 
-#### Application Layer
+#### Camada de Aplicacao
 
-**Use Cases**:
+**Casos de Uso**:
 
 ```typescript
 // application/use-cases/create-dashboard/CreateDashboardUseCase.ts
@@ -388,11 +388,11 @@ describe('Dashboard E2E', () => {
 
 ---
 
-### 02_projects Service
+### Servico 02_projects
 
-#### Domain Layer
+#### Camada de Dominio
 
-**Key Entities**:
+**Entidades Principais**:
 
 ```typescript
 // domain/entities/Project.ts
@@ -503,7 +503,7 @@ export class ProjectMember {
 }
 ```
 
-**Key Value Objects**:
+**Value Objects Principais**:
 
 ```typescript
 // domain/value-objects/ProjectName.ts
@@ -571,7 +571,7 @@ export class MemberRole {
 }
 ```
 
-**Key Ports**:
+**Portas Principais**:
 
 ```typescript
 // domain/repositories/IProjectRepository.ts
@@ -593,9 +593,9 @@ export interface IProjectMemberRepository {
 }
 ```
 
-#### Application Layer
+#### Camada de Aplicacao
 
-**Use Cases**:
+**Casos de Uso**:
 
 ```typescript
 // application/use-cases/create-project/CreateProjectUseCase.ts
@@ -660,61 +660,61 @@ export class AddMemberUseCase {
 
 ---
 
-## Implementation Roadmap
+## Roteiro de Implementacao
 
-### Step 1: Domain Layer (1-2 weeks)
+### Etapa 1: Camada de Dominio (1-2 semanas)
 
-1. **Identify Entities**: What are the core business concepts?
-2. **Define Value Objects**: What validates, immutable objects do we need?
-3. **Design Repositories**: What persistence operations are required?
-4. **Create Errors**: What domain-specific errors can occur?
-5. **Write Tests**: TDD - tests before implementation
+1. **Identificar Entidades**: Quais sao os conceitos centrais de negocio?
+2. **Definir Value Objects**: Quais objetos imutaveis e validados precisamos?
+3. **Projetar Repositorios**: Quais operacoes de persistencia sao necessarias?
+4. **Criar Erros**: Quais erros especificos de dominio podem ocorrer?
+5. **Escrever Testes**: TDD - testes antes da implementacao
 
-**Deliverables**: Domain layer complete with 60+ unit tests
+**Entregas**: Camada de dominio completa com 60+ testes unitarios
 
-### Step 2: Infrastructure Layer (1 week)
+### Etapa 2: Camada de Infraestrutura (1 semana)
 
-1. **Implement Repositories**: Persist entities
-2. **Create Adapters**: External integrations (APIs, databases)
-3. **Setup DI**: Configure dependencies
-4. **Write Integration Tests**: Test adapters with real/mock resources
+1. **Implementar Repositorios**: Persistir entidades
+2. **Criar Adapters**: Integracoes externas (APIs, bancos de dados)
+3. **Configurar DI**: Configurar dependencias
+4. **Escrever Testes de Integracao**: Testar adapters com recursos reais/mock
 
-**Deliverables**: Infrastructure layer complete with 30+ integration tests
+**Entregas**: Camada de infraestrutura completa com 30+ testes de integracao
 
-### Step 3: Application Layer (1 week)
+### Etapa 3: Camada de Aplicacao (1 semana)
 
-1. **Create Use Cases**: Orchestrate domain + infrastructure
-2. **Design DTOs**: Input/output contracts
-3. **Implement Mappers**: Entity → DTO conversion
-4. **Write Tests**: Use case validation
+1. **Criar Casos de Uso**: Orquestrar dominio + infraestrutura
+2. **Projetar DTOs**: Contratos de entrada/saida
+3. **Implementar Mappers**: Conversao Entidade → DTO
+4. **Escrever Testes**: Validacao dos casos de uso
 
-**Deliverables**: Application layer complete with 40+ tests
+**Entregas**: Camada de aplicacao completa com 40+ testes
 
-### Step 4: Presentation Layer (1 week)
+### Etapa 4: Camada de Apresentacao (1 semana)
 
-1. **Create Handlers**: HTTP request orchestration
-2. **Setup Routes**: SvelteKit API routes
-3. **Implement Middleware**: Authentication, authorization
-4. **Error Mapping**: Domain errors → HTTP responses
+1. **Criar Handlers**: Orquestracao de requisicoes HTTP
+2. **Configurar Rotas**: Rotas de API do SvelteKit
+3. **Implementar Middleware**: Autenticacao, autorizacao
+4. **Mapeamento de Erros**: Erros de dominio → respostas HTTP
 
-**Deliverables**: Presentation layer complete with 40+ tests
+**Entregas**: Camada de apresentacao completa com 40+ testes
 
-### Step 5: E2E Tests (1 week)
+### Etapa 5: Testes E2E (1 semana)
 
-1. **Setup Playwright**: Configuration & fixtures
-2. **Write Flows**: Complete user workflows
-3. **Security Tests**: Authentication, authorization
-4. **Integration Tests**: Service-to-service calls
+1. **Configurar Playwright**: Configuracao e fixtures
+2. **Escrever Fluxos**: Fluxos completos de usuario
+3. **Testes de Seguranca**: Autenticacao, autorizacao
+4. **Testes de Integracao**: Chamadas entre servicos
 
-**Deliverables**: E2E test suite complete with 20+ tests
+**Entregas**: Suite de testes E2E completa com 20+ testes
 
-### Total Effort: ~5-6 weeks per service
+### Esforco Total: ~5-6 semanas por servico
 
 ---
 
-## Code Generation Script
+## Script de Geracao de Codigo
 
-To speed up scaffolding, create:
+Para acelerar o scaffolding, crie:
 
 ```bash
 #!/bin/bash
@@ -740,30 +740,30 @@ echo "✅ Service generated: $SERVICE_NAME"
 
 ---
 
-## Reusable Patterns
+## Padroes Reutilizaveis
 
-### 1. Entity Factory Pattern
+### 1. Padrao Entity Factory
 
 ```typescript
 export class Entity {
   private constructor(...props) {}
 
-  // Create new instance with validation
+  // Criar nova instancia com validacao
   static create(props: CreateProps): Entity {
-    // Validate
-    // Return new instance
+    // Validar
+    // Retornar nova instancia
   }
 
-  // Reconstruct from DB
+  // Reconstruir a partir do BD
   static reconstruct(props: DBProps): Entity {
-    // Return new instance from DB data
+    // Retornar nova instancia a partir dos dados do BD
   }
 
-  // Business methods...
+  // Metodos de negocio...
 }
 ```
 
-### 2. Value Object Pattern
+### 2. Padrao Value Object
 
 ```typescript
 export class ValueObject {
@@ -781,7 +781,7 @@ export class ValueObject {
   }
 
   private static validate(value: string): void {
-    // Throw specific error if invalid
+    // Lancar erro especifico se invalido
   }
 
   getValue(): string {
@@ -794,7 +794,7 @@ export class ValueObject {
 }
 ```
 
-### 3. Repository Port Pattern
+### 3. Padrao de Porta de Repositorio
 
 ```typescript
 export interface IRepository {
@@ -805,7 +805,7 @@ export interface IRepository {
 }
 ```
 
-### 4. Use Case Pattern
+### 4. Padrao de Caso de Uso
 
 ```typescript
 export class UseCase {
@@ -815,24 +815,24 @@ export class UseCase {
   ) {}
 
   async execute(input: Input): Promise<Output> {
-    // 1. Validate input
-    // 2. Load entities
-    // 3. Execute domain logic
-    // 4. Persist changes
-    // 5. Return output
+    // 1. Validar entrada
+    // 2. Carregar entidades
+    // 3. Executar logica de dominio
+    // 4. Persistir alteracoes
+    // 5. Retornar saida
   }
 }
 ```
 
-### 5. Handler Pattern
+### 5. Padrao de Handler
 
 ```typescript
 export class Handler {
   async handle(request: Request): Promise<Response> {
     try {
-      // 1. Extract & validate request
-      // 2. Call use case
-      // 3. Return formatted response
+      // 1. Extrair e validar requisicao
+      // 2. Chamar caso de uso
+      // 3. Retornar resposta formatada
     } catch (error) {
       return ErrorMapper.toHttpResponse(error);
     }
@@ -868,38 +868,38 @@ export class ErrorMapper {
 
 ---
 
-## Testing Strategy
+## Estratégia de Testes
 
-Each service should have:
+Cada serviço deve ter:
 
-### Unit Tests (60%+)
+### Testes Unitários (60%+)
 
-- Domain layer (entities, value objects, errors)
-- Application layer (use cases, DTOs)
-- Utilities and helpers
+- Camada de domínio (entidades, value objects, erros)
+- Camada de aplicação (use cases, DTOs)
+- Utilitários e helpers
 
-### Integration Tests (20%+)
+### Testes de Integração (20%+)
 
-- Infrastructure adapters
-- Repository implementations
-- External service integrations
+- Adaptadores de infraestrutura
+- Implementações de repositório
+- Integrações com serviços externos
 
-### E2E Tests (15%+)
+### Testes E2E (15%+)
 
-- Complete user workflows
-- API contracts
-- Cross-service communication
+- Fluxos completos do usuário
+- Contratos de API
+- Comunicação entre serviços
 
-### Total Coverage: 80%+
+### Cobertura Total: 80%+
 
 ```bash
-# Run all tests
+# Rodar todos os testes
 npm run test --workspaces
 
-# Run with coverage
+# Rodar com cobertura
 npm run test -- --coverage
 
-# Run E2E tests
+# Rodar testes E2E
 npm run test:e2e --workspaces
 ```
 
@@ -985,12 +985,7 @@ npm run test:e2e --workspaces
 
 ### Documentation
 
-- `REFACTORING_COMPLETION.md` - Overall refactoring details
-- `PHASE_1_SUMMARY.md` - Domain layer deep-dive
-- `PHASE_2_SUMMARY.md` - Infrastructure deep-dive
-- `PHASE_3_SUMMARY.md` - Application deep-dive
-- `PHASE_4_SUMMARY.md` - Presentation deep-dive
-- `PHASE_5_SUMMARY.md` - E2E testing deep-dive
+- `REFACTORING_COMPLETION.md` - Detalhes completos da refatoracao, incluindo resumos de todas as fases (Domain, Infrastructure, Application, Presentation, E2E)
 
 ### Tools & Commands
 

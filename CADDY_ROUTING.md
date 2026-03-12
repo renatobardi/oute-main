@@ -1,60 +1,60 @@
-# Caddy Reverse Proxy Configuration for Production
+# Configuracao do Reverse Proxy Caddy para Producao
 
-This document describes how Caddy should be configured to route traffic for the OUTE monorepo in production.
+Este documento descreve como o Caddy deve ser configurado para rotear o trafego do monorepo OUTE em producao.
 
-## Overview
+## Visao Geral
 
-The OUTE application consists of 5 main services running on the VM at `34.132.93.171`:
+A aplicacao OUTE consiste em 5 servicos principais rodando na VM em `34.132.93.171`:
 
-| Service | Internal Port | Purpose |
-|---------|---------------|---------|
-| **99_home** | 3003 | Landing page (root `/`) |
-| **03_interview** | 3002 | Chat interface (`/chat`) |
-| **00_dashboard** | 3000 | Main dashboard (default fallback) |
-| **01_auth-profile** | 3001 | Authentication API (`/api/auth/*`) |
-| **02_projects** | 3002 | Projects API (`/api/projects/*`) |
+| Servico | Porta Host | Porta Container | Finalidade |
+|---------|-----------|-----------------|------------|
+| **99_home** | 3003 | 3003 | Landing page (raiz `/`) |
+| **03_interview** | 3002 | 3002 | Interface de chat (`/chat`) |
+| **00_dashboard** | 3000 | 3000 | Dashboard principal (fallback padrao) |
+| **01_auth-profile** | 3001 | 3001 | API de autenticacao (`/api/auth/*`) |
+| **02_projects** | 3004 | 3002 | API de projetos (`/api/projects/*`) |
 
-## Required Caddy Configuration
+## Configuracao Necessaria do Caddy
 
-The Caddy reverse proxy (located in `~/oute-mind/Caddyfile`) should be configured as follows:
+O reverse proxy Caddy (localizado em `~/oute-mind/Caddyfile`) deve ser configurado da seguinte forma:
 
 ```caddyfile
-# OUTE Production Routing Configuration
-# Caddy uses Docker DNS to resolve container names within the oute-network.
-# Services use `expose` (not `ports`), so they are only reachable via the Docker network.
+# Configuracao de Roteamento OUTE em Producao
+# O Caddy usa DNS do Docker para resolver nomes de containers dentro da oute-network.
+# Servicos usam `expose` (nao `ports`), entao sao acessiveis apenas pela rede Docker.
 
-# Root domain routing
+# Roteamento do dominio raiz
 34.132.93.171 {
-  # Landing page at root
+  # Landing page na raiz
   @root path /
   handle @root {
     reverse_proxy http://oute-home:3003
   }
 
-  # Chat interface
+  # Interface de chat
   @chat path /chat*
   handle @chat {
     reverse_proxy http://oute-interview:3002
   }
 
-  # Auth API endpoints
+  # Endpoints da API de autenticacao
   @auth path /api/auth*
   handle @auth {
     reverse_proxy http://01_auth-profile:3001
   }
 
-  # Projects API endpoints
+  # Endpoints da API de projetos
   @projects path /api/projects*
   handle @projects {
     reverse_proxy http://02_projects:3002
   }
 
-  # Default fallback to Dashboard
+  # Fallback padrao para o Dashboard
   handle {
     reverse_proxy http://00_dashboard:3000
   }
 
-  # CORS headers for cross-origin requests
+  # Headers CORS para requisicoes cross-origin
   header * {
     Access-Control-Allow-Origin "34.132.93.171"
     Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
@@ -70,76 +70,76 @@ The Caddy reverse proxy (located in `~/oute-mind/Caddyfile`) should be configure
 }
 ```
 
-## Routing Logic
+## Logica de Roteamento
 
-### Request Flow
+### Fluxo de Requisicoes
 
 ```
-Client Request (34.132.93.171)
-    ↓
-Caddy Reverse Proxy (Port 80 on host)
-    ↓  (routes to containers via Docker internal network)
-    ├─→ /                  → http://oute-home:3003 (99_home - Landing Page)
-    ├─→ /chat              → http://oute-interview:3002 (03_interview - Chat)
-    ├─→ /api/auth/*        → http://01_auth-profile:3001 (Auth API)
-    ├─→ /api/projects/*    → http://02_projects:3002 (Projects API)
-    └─→ /* (default)       → http://00_dashboard:3000 (Main App)
+Requisicao do Cliente (34.132.93.171)
+    |
+Caddy Reverse Proxy (Porta 80 no host)
+    |  (roteia para containers via rede interna Docker)
+    |-- /                  -> http://oute-home:3003 (99_home - Landing Page)
+    |-- /chat              -> http://oute-interview:3002 (03_interview - Chat)
+    |-- /api/auth/*        -> http://01_auth-profile:3001 (API de Auth)
+    |-- /api/projects/*    -> http://02_projects:3002 (API de Projetos)
+    +-- /* (padrao)        -> http://00_dashboard:3000 (App Principal)
 ```
 
-## User Journey
+## Jornada do Usuario
 
-1. **User visits `34.132.93.171/`**
-   - Caddy routes to `http://oute-home:3003` (99_home)
-   - Landing page loads with hero, CTA, stats
+1. **Usuario visita `34.132.93.171/`**
+   - Caddy roteia para `http://oute-home:3003` (99_home)
+   - Landing page carrega com hero, CTA, estatisticas
 
-2. **User clicks "Entrar na Oute" (CTA)**
-   - Redirects to `/login`
-   - Still served by 99_home (3003)
+2. **Usuario clica "Entrar na Oute" (CTA)**
+   - Redireciona para `/login`
+   - Ainda servido pelo 99_home (3003)
 
-3. **User submits login form**
-   - Frontend calls `POST 34.132.93.171/api/auth?action=login`
-   - Caddy routes to `http://01_auth-profile:3001`
-   - Login API processes credentials, returns JWT
+3. **Usuario submete formulario de login**
+   - Frontend chama `POST 34.132.93.171/api/auth?action=login`
+   - Caddy roteia para `http://01_auth-profile:3001`
+   - API de login processa credenciais, retorna JWT
 
-4. **User redirected to `/chat` after login**
-   - Caddy routes to `http://oute-interview:3002` (03_interview)
-   - Chat interface loads with authentication
+4. **Usuario redirecionado para `/chat` apos login**
+   - Caddy roteia para `http://oute-interview:3002` (03_interview)
+   - Interface de chat carrega com autenticacao
 
-5. **User interacts with chat**
-   - All API calls go through Caddy routing
-   - Auth tokens are validated by 01_auth-profile
+5. **Usuario interage com o chat**
+   - Todas as chamadas de API passam pelo roteamento do Caddy
+   - Tokens de autenticacao sao validados pelo 01_auth-profile
 
-## Implementation Steps
+## Passos de Implementacao
 
-### On the VM (`oute-mind` repository)
+### Na VM (repositorio `oute-mind`)
 
-1. **Update `Caddyfile`** with the configuration above
-2. **Reload Caddy**:
+1. **Atualizar `Caddyfile`** com a configuracao acima
+2. **Recarregar Caddy**:
    ```bash
    cd ~/oute-mind
    docker compose up -d caddy
    ```
 
-3. **Test routing**:
+3. **Testar roteamento**:
    ```bash
-   # Test each endpoint (via Caddy on port 80)
+   # Testar cada endpoint (via Caddy na porta 80)
    curl http://localhost/
    curl http://localhost/chat
    curl http://localhost/api/auth/status
    ```
 
-## Health Checks
+## Verificacoes de Saude
 
-Each service exposes a `/health` endpoint:
+Cada servico expoe um endpoint `/health`:
 
 ```bash
-# Via Caddy (recommended - service ports are not exposed on host)
+# Via Caddy (recomendado - portas dos servicos nao sao expostas no host)
 curl http://localhost/health
 curl http://localhost/dashboard/health
 curl http://localhost/api/auth/health
 curl http://localhost/api/projects/health
 
-# Via docker exec (for debugging when Caddy is down)
+# Via docker exec (para depuracao quando o Caddy estiver fora)
 docker exec oute-home curl -sf http://localhost:3003/health
 docker exec oute-interview curl -sf http://localhost:3002/health
 docker exec oute-dashboard curl -sf http://localhost:3000/health
@@ -147,9 +147,9 @@ docker exec oute-auth curl -sf http://localhost:3001/health
 docker exec oute-projects curl -sf http://localhost:3002/health
 ```
 
-## Environment Variables for Services
+## Variaveis de Ambiente dos Servicos
 
-Each service reads environment variables from `.env.production`:
+Cada servico le variaveis de ambiente do `.env.production`:
 
 ### 99_home (.env.production)
 ```
@@ -180,61 +180,61 @@ JWT_SECRET=your-production-secret-key
 NODE_ENV=production
 ```
 
-## Troubleshooting
+## Resolucao de Problemas
 
-### Issue: "API at root instead of landing page"
+### Problema: "API na raiz ao inves da landing page"
 
-**Cause**: Caddy routing not configured correctly, or wrong container is set as default handler.
+**Causa**: Roteamento do Caddy nao configurado corretamente, ou container errado definido como handler padrao.
 
-**Solution**:
-1. Verify `Caddyfile` has root path pattern for 99_home (3003)
-2. Check Caddy logs: `docker compose logs caddy`
-3. Ensure 99_home is running: `docker compose ps`
+**Solucao**:
+1. Verificar se o `Caddyfile` tem o padrao de rota raiz para 99_home (3003)
+2. Verificar logs do Caddy: `docker compose logs caddy`
+3. Garantir que 99_home esta rodando: `docker compose ps`
 
-### Issue: "CORS errors when calling `/api/auth`"
+### Problema: "Erros de CORS ao chamar `/api/auth`"
 
-**Cause**: CORS headers not set or origin mismatch.
+**Causa**: Headers CORS nao configurados ou origin incorreto.
 
-**Solution**:
-1. Check `01_auth-profile/src/hooks.server.ts` has CORS middleware
-2. Verify Caddy is passing CORS headers
-3. Ensure `VITE_AUTH_SERVICE_URL` matches production domain
+**Solucao**:
+1. Verificar se `01_auth-profile/src/hooks.server.ts` tem middleware de CORS
+2. Verificar se o Caddy esta passando os headers CORS
+3. Garantir que `VITE_AUTH_SERVICE_URL` corresponde ao dominio de producao
 
-### Issue: "Chat not loading after login"
+### Problema: "Chat nao carrega apos login"
 
-**Cause**: JWT not being passed from 99_home to 03_interview, or routing issue.
+**Causa**: JWT nao esta sendo passado do 99_home para o 03_interview, ou problema de roteamento.
 
-**Solution**:
-1. Check browser console for JWT storage
-2. Verify `/chat` route is routed to 03_interview (3002)
-3. Check network tab for auth failures
+**Solucao**:
+1. Verificar console do navegador para armazenamento do JWT
+2. Verificar se a rota `/chat` esta sendo roteada para 03_interview (3002)
+3. Verificar aba de rede para falhas de autenticacao
 
-## Monitoring
+## Monitoramento
 
-Monitor service health in production:
+Monitorar saude dos servicos em producao:
 
 ```bash
-# SSH to VM
+# SSH na VM
 gcloud compute ssh oute-mind --zone=us-central1-a
 
-# Check all containers
+# Verificar todos os containers
 cd ~/oute-mind
 docker compose ps
 
-# Check specific service logs
+# Verificar logs de servico especifico
 docker compose logs -f 99_home
 docker compose logs -f 03_interview
 docker compose logs -f 01_auth-profile
 
-# Test endpoint availability (via docker exec, ports not exposed on host)
+# Testar disponibilidade dos endpoints (via docker exec, portas nao expostas no host)
 docker exec oute-home curl -sf http://localhost:3003/health
 docker exec oute-interview curl -sf http://localhost:3002/health
 docker exec oute-auth curl -sf http://localhost:3001/health
 ```
 
-## Notes
+## Observacoes
 
-- All internal service communication uses Docker DNS (e.g., `http://01_auth-profile:3001`)
-- Frontend services use environment variables pointing to the public domain (`http://34.132.93.171`)
-- This configuration supports both HTTP and HTTPS (when TLS is configured)
-- Caddy auto-renews SSL certificates if HTTPS is enabled
+- Toda comunicacao interna entre servicos usa DNS do Docker (ex: `http://01_auth-profile:3001`)
+- Servicos frontend usam variaveis de ambiente apontando para o dominio publico (`http://34.132.93.171`)
+- Esta configuracao suporta tanto HTTP quanto HTTPS (quando TLS estiver configurado)
+- O Caddy renova automaticamente certificados SSL se HTTPS estiver habilitado
