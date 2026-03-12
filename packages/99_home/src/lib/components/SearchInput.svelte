@@ -2,6 +2,7 @@
   let inputValue = '';
 
   function handleSubmit() {
+    console.log('UNIQUE_MARKER_20260312_SEARCHINPUT_HANDLER');
     // Build chat URL with initial message as query parameter if provided
     let chatUrl = window.location.hostname === 'localhost'
       ? 'http://localhost:3002/'
