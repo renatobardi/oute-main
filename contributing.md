@@ -79,14 +79,22 @@ docs: update ARCHITECTURE.md with new flow diagram
    - Check existing PRs/issues to avoid duplicate work
    - Create an issue if feature is major
 
-2. **Develop your feature**
+2. **Develop your feature using TDD**
 
    ```bash
    git checkout -b feature/my-feature develop
-   # Make changes, test locally
+   # Start vitest in watch mode
+   npx vitest --watch --root packages/XX_service
+   # Follow the TDD cycle:
+   # 1. Write a failing test (RED)
+   # 2. Write minimum code to pass (GREEN)
+   # 3. Refactor keeping tests green (REFACTOR)
+   # 4. Repeat
    npm run lint
    npm run test
    ```
+
+   See **[TDD_GUIDE.md](./TDD_GUIDE.md)** for the complete TDD guide with examples per architectural layer.
 
 3. **Commit your changes**
 
@@ -150,22 +158,26 @@ export function getUser(id: string): User | null {
 - Run `npm run format` before committing
 - Pre-commit hooks will catch violations
 
-## Testing
+## Testing (TDD)
 
-- Write tests for new features
-- Unit tests: `src/**/*.test.ts`
-- E2E tests: `e2e/**/*.spec.ts`
-- Aim for 70%+ coverage (measured by SonarQube)
+OUTE adopts **TDD (Test-Driven Development)** as the standard development practice. All new features and bug fixes must follow the Red-Green-Refactor cycle. See **[TDD_GUIDE.md](./TDD_GUIDE.md)** for the complete guide.
+
+- **Write tests BEFORE implementation** (TDD Red-Green-Refactor)
+- Unit tests: `src/__tests__/unit/**/*.test.ts`
+- Integration tests: `src/__tests__/integration/**/*.test.ts`
+- E2E tests: `src/__tests__/e2e/**/*.spec.ts`
+- Minimum **80%+ coverage** (enforced by CI)
+- Commit after each GREEN or REFACTOR step
 
 ```typescript
-// Button.test.ts
-import { render } from '@testing-library/svelte';
-import Button from './Button.svelte';
+// Example: Value Object test (RED step)
+import { describe, it, expect } from 'vitest';
+import { ProjectName } from '../../../../domain/value-objects/ProjectName';
 
-describe('Button', () => {
-  it('renders with correct text', () => {
-    const { getByText } = render(Button, { props: { text: 'Click me' } });
-    expect(getByText('Click me')).toBeTruthy();
+describe('ProjectName Value Object', () => {
+  it('should create ProjectName with valid value', () => {
+    const name = ProjectName.create('My Project');
+    expect(name.getValue()).toBe('My Project');
   });
 });
 ```
@@ -235,7 +247,8 @@ git push origin --delete feature/my-feature
 - ✅ No ESLint warnings
 - ✅ TypeScript strict mode passes
 - ✅ SonarQube quality gate passes
-- ✅ Code coverage ≥ 70%
+- ✅ Code coverage ≥ 80% (enforced by CI)
+- ✅ TDD practiced (tests written before implementation — see [TDD_GUIDE.md](./TDD_GUIDE.md))
 - ✅ At least 1 review approval
 
 ## Common Issues

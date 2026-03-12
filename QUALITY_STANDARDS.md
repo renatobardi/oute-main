@@ -5,7 +5,7 @@
 This document outlines the **mandatory quality gates** enforced on all pull requests to ensure code excellence, security, and maintainability.
 
 **Status**: ✅ ENFORCED (All-at-once rollout)
-**Last Updated**: 2026-03-08
+**Last Updated**: 2026-03-12
 
 ---
 
@@ -66,6 +66,23 @@ npm run test -- --ui      # Run with UI visualization
 - ✅ `00_dashboard` - New vitest.config.ts, needs tests
 - ✅ `02_projects` - New vitest.config.ts, needs tests
 - ✅ `design-system` - New vitest.config.ts, needs tests
+
+### 2.1 TDD (Test-Driven Development) - Mandatory Practice
+
+OUTE adopts **TDD Red-Green-Refactor** as the standard development methodology. See **[TDD_GUIDE.md](./TDD_GUIDE.md)** for the complete guide.
+
+**Requirements**:
+
+- ✅ Tests written **BEFORE** implementation (commit history must evidence TDD cycle)
+- ✅ Red-Green-Refactor cycle followed for all new features and bug fixes
+- ✅ Commit messages evidence TDD: `test(scope):` before `feat(scope):`
+- ✅ No `.skip` or `.only` in committed tests
+
+**Code Review Verification**:
+
+- Reviewer must check commit history for test-first evidence
+- New production files must have corresponding test files
+- Coverage must meet 80%+ thresholds across all metrics
 
 ---
 
@@ -214,6 +231,7 @@ docker build -f packages/design-system/Dockerfile .
 
 Before requesting review:
 
+- [ ] TDD practiced (tests written before implementation — see [TDD_GUIDE.md](./TDD_GUIDE.md))
 - [ ] `npm run lint` passes (no errors)
 - [ ] `npm run format --check` passes
 - [ ] `npm run typecheck` passes
