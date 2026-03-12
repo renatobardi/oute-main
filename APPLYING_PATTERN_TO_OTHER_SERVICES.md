@@ -223,22 +223,22 @@ export interface IWidgetRepository {
 export class CreateDashboardUseCase {
   constructor(
     private dashboardRepository: IDashboardRepository,
-    private authService: IAuthService // From 01_auth-profile
+    private authService: IAuthService // Do 01_auth-profile
   ) {}
 
   async execute(input: CreateDashboardInput): Promise<CreateDashboardOutput> {
-    // Validate user authenticated
+    // Validar usuario autenticado
     const user = await this.authService.getCurrentUser();
     if (!user) throw new UnauthorizedError();
 
-    // Create dashboard
+    // Criar dashboard
     const dashboard = Dashboard.create({
       userId: UserId.fromString(user.id),
       name: input.name,
       description: input.description,
     });
 
-    // Persist
+    // Persistir
     await this.dashboardRepository.save(dashboard);
 
     return new CreateDashboardOutput({
@@ -257,13 +257,13 @@ export class AddWidgetUseCase {
   ) {}
 
   async execute(input: AddWidgetInput): Promise<AddWidgetOutput> {
-    // Load dashboard
+    // Carregar dashboard
     const dashboard = await this.dashboardRepository.findById(
       DashboardId.fromString(input.dashboardId)
     );
     if (!dashboard) throw new DashboardNotFoundError();
 
-    // Create widget
+    // Criar widget
     const widget = Widget.create({
       dashboardId: dashboard.id,
       title: input.title,
@@ -271,10 +271,10 @@ export class AddWidgetUseCase {
       config: input.config,
     });
 
-    // Add to dashboard
+    // Adicionar ao dashboard
     dashboard.addWidget(widget);
 
-    // Persist both
+    // Persistir ambos
     await this.widgetRepository.save(widget);
     await this.dashboardRepository.save(dashboard);
 
@@ -287,29 +287,29 @@ export class AddWidgetUseCase {
 
 ```typescript
 // __tests__/unit/domain/entities/Dashboard.test.ts
-describe('Dashboard Entity', () => {
-  it('should create dashboard with valid data', async () => {
+describe('Entidade Dashboard', () => {
+  it('deve criar dashboard com dados validos', async () => {
     const userId = UserId.fromString('550e8400-e29b-41d4-a716-446655440000');
     const dashboard = Dashboard.create({
       userId,
-      name: 'My Dashboard',
-      description: 'Dashboard description'
+      name: 'Meu Dashboard',
+      description: 'Descricao do dashboard'
     });
 
-    expect(dashboard.name).toBe('My Dashboard');
+    expect(dashboard.name).toBe('Meu Dashboard');
     expect(dashboard.getWidgets()).toHaveLength(0);
   });
 
-  it('should add widget to dashboard', async () => {
+  it('deve adicionar widget ao dashboard', async () => {
     const dashboard = Dashboard.create({
       userId,
-      name: 'My Dashboard',
+      name: 'Meu Dashboard',
       description: 'desc'
     });
 
     const widget = Widget.create({
       dashboardId: dashboard.id,
-      title: 'Chart Widget',
+      title: 'Widget Grafico',
       type: WidgetType.CHART,
       config: { datasource: 'api' }
     });
@@ -318,7 +318,7 @@ describe('Dashboard Entity', () => {
     expect(dashboard.getWidgets()).toHaveLength(1);
   });
 
-  it('should reject more than 10 widgets', async () => {
+  it('deve rejeitar mais de 10 widgets', async () => {
     const dashboard = Dashboard.create({...});
 
     for (let i = 0; i < 10; i++) {
@@ -334,11 +334,11 @@ describe('Dashboard Entity', () => {
 
 // __tests__/integration/repositories/PostgresDashboardRepository.test.ts
 describe('PostgresDashboardRepository', () => {
-  it('should persist and retrieve dashboard', async () => {
+  it('deve persistir e recuperar dashboard', async () => {
     const repository = new PostgresDashboardRepository(db);
     const dashboard = Dashboard.create({
       userId,
-      name: 'Test Dashboard',
+      name: 'Dashboard de Teste',
       description: 'desc'
     });
 
@@ -346,22 +346,22 @@ describe('PostgresDashboardRepository', () => {
     const retrieved = await repository.findById(dashboard.id);
 
     expect(retrieved).toBeDefined();
-    expect(retrieved?.name).toBe('Test Dashboard');
+    expect(retrieved?.name).toBe('Dashboard de Teste');
   });
 });
 
 // __tests__/e2e/dashboard.spec.ts
 describe('Dashboard E2E', () => {
-  test('should create dashboard and add widget', async ({ page }) => {
+  test('deve criar dashboard e adicionar widget', async ({ page }) => {
     // Login
     const token = await login(page, 'test@example.com', 'SecurePass123!');
 
-    // Create dashboard
+    // Criar dashboard
     const dashResponse = await page.request.post('/api/dashboard', {
       headers: { Authorization: `Bearer ${token}` },
       data: {
-        name: 'E2E Dashboard',
-        description: 'Testing dashboard'
+        name: 'Dashboard E2E',
+        description: 'Testando dashboard'
       }
     });
 
@@ -369,7 +369,7 @@ describe('Dashboard E2E', () => {
     const dashboard = await dashResponse.json();
     const dashboardId = dashboard.id;
 
-    // Add widget
+    // Adicionar widget
     const widgetResponse = await page.request.post('/api/dashboard/:id/widgets', {
       headers: { Authorization: `Bearer ${token}` },
       data: {
@@ -420,7 +420,7 @@ export class Project {
       new Date()
     );
 
-    // Owner is always added as member
+    // Proprietario e sempre adicionado como membro
     project.addMember(props.owner, MemberRole.OWNER);
     return project;
   }
@@ -457,7 +457,7 @@ export class Project {
   }
 
   transitionStatus(newStatus: ProjectStatus): void {
-    // Business logic: validate state transitions
+    // Logica de negocio: validar transicoes de estado
     const validTransitions: Record<string, ProjectStatus[]> = {
       [ProjectStatus.DRAFT]: [ProjectStatus.ACTIVE],
       [ProjectStatus.ACTIVE]: [ProjectStatus.COMPLETED, ProjectStatus.DRAFT],
@@ -510,10 +510,10 @@ export class ProjectMember {
 export class ProjectName {
   private constructor(private value: string) {
     if (!value || value.trim().length === 0) {
-      throw new InvalidProjectNameError('Name cannot be empty');
+      throw new InvalidProjectNameError('Nome nao pode ser vazio');
     }
     if (value.length > 100) {
-      throw new InvalidProjectNameError('Name must be <= 100 chars');
+      throw new InvalidProjectNameError('Nome deve ter <= 100 caracteres');
     }
   }
 
@@ -639,9 +639,9 @@ export class AddMemberUseCase {
     const project = await this.projectRepository.findById(ProjectId.fromString(input.projectId));
     if (!project) throw new ProjectNotFoundError();
 
-    // Only owner can add members
+    // Apenas o proprietario pode adicionar membros
     if (!project.owner.equals(UserId.fromString(input.requestingUserId))) {
-      throw new UnauthorizedError('Only project owner can add members');
+      throw new UnauthorizedError('Apenas o proprietario do projeto pode adicionar membros');
     }
 
     const member = ProjectMember.create({
@@ -723,19 +723,19 @@ Para acelerar o scaffolding, crie:
 SERVICE_NAME=$1
 SERVICE_DESC=$2
 
-echo "Generating service: $SERVICE_NAME - $SERVICE_DESC"
+echo "Gerando servico: $SERVICE_NAME - $SERVICE_DESC"
 
-# Create directories
+# Criar diretorios
 mkdir -p packages/$SERVICE_NAME/src/{domain,application,infrastructure,presentation}/__tests__
 mkdir -p packages/$SERVICE_NAME/src/domain/{entities,value-objects,services,repositories,errors}
 mkdir -p packages/$SERVICE_NAME/src/application/{use-cases,dto/mappers,ports}
 mkdir -p packages/$SERVICE_NAME/src/infrastructure/{adapters,config}
 mkdir -p packages/$SERVICE_NAME/src/presentation/{handlers,middleware,routes/api,errors}
 
-# Generate boilerplate files...
-# (Copy from template files)
+# Gerar arquivos boilerplate...
+# (Copiar dos arquivos template)
 
-echo "✅ Service generated: $SERVICE_NAME"
+echo "Servico gerado: $SERVICE_NAME"
 ```
 
 ---
