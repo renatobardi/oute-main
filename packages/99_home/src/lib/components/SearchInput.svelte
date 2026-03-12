@@ -3,7 +3,7 @@
 
   let inputValue = '';
 
-  function handleSubmit() {
+  async function handleSubmit() {
     // Build chat URL with initial message as query parameter if provided
     let chatUrl = window.location.hostname === 'localhost'
       ? 'http://localhost:3002/'
@@ -14,9 +14,14 @@
       chatUrl += `?initial=${encoded}`;
     }
 
-    window.location.href = chatUrl;
+    // Use goto for Svelte navigation, fallback to window.location for cross-origin
+    if (chatUrl.startsWith('/')) {
+      await goto(chatUrl);
+    } else {
+      window.location.href = chatUrl;
+    }
 
-    // Clear input (may not execute if page reloads, but good to have)
+    // Clear input
     inputValue = '';
   }
 
