@@ -3,7 +3,7 @@
   export let googleHref = 'https://accounts.google.com/';
 </script>
 
-<div class="flex flex-col gap-3 items-center w-full max-w-xs">
+<div class="flex flex-col gap-3 items-center w-full max-w-xs" data-version="branding-v2">
   <!-- GitHub Sign-In Button (per GitHub guidelines: simple, clean, no effects) -->
   <a
     href={githubHref}
