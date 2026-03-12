@@ -1,11 +1,23 @@
 <script lang="ts">
+  import { goto } from '$app/navigation';
+
   let inputValue = '';
 
   function handleSubmit() {
+    // Build chat URL with initial message as query parameter if provided
+    let chatUrl = window.location.hostname === 'localhost'
+      ? 'http://localhost:3002/'
+      : '/chat';
+
     if (inputValue.trim()) {
-      console.log('Search query:', inputValue);
-      // TODO: Handle search/navigation
+      const encoded = encodeURIComponent(inputValue.trim());
+      chatUrl += `?initial=${encoded}`;
     }
+
+    window.location.href = chatUrl;
+
+    // Clear input (may not execute if page reloads, but good to have)
+    inputValue = '';
   }
 
   function handleKeydown(e: KeyboardEvent) {
