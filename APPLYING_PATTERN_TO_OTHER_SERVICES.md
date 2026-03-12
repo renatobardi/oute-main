@@ -840,7 +840,7 @@ export class Handler {
 }
 ```
 
-### 6. Error Mapping Pattern
+### 6. Padrao de Mapeamento de Erros
 
 ```typescript
 export class ErrorMapper {
@@ -905,71 +905,71 @@ npm run test:e2e --workspaces
 
 ---
 
-## Checklist for Each Service
+## Checklist para Cada Servico
 
-### Before Starting
+### Antes de Comecar
 
-- [ ] Clear domain understanding
-- [ ] Key entities identified
-- [ ] Value objects designed
-- [ ] Use cases listed
-- [ ] API contracts sketched
+- [ ] Entendimento claro do dominio
+- [ ] Entidades principais identificadas
+- [ ] Value objects projetados
+- [ ] Use cases listados
+- [ ] Contratos de API esbocados
 
-### Domain Layer
+### Camada de Dominio
 
-- [ ] Entities created with factories
-- [ ] Value objects with validation
-- [ ] Repository ports defined
-- [ ] Domain errors hierarchy
-- [ ] 60+ unit tests, all passing
-- [ ] No infrastructure imports
-- [ ] Business logic isolated
+- [ ] Entidades criadas com factories
+- [ ] Value objects com validacao
+- [ ] Ports de repositorio definidos
+- [ ] Hierarquia de erros de dominio
+- [ ] 60+ testes unitarios passando
+- [ ] Sem imports de infraestrutura
+- [ ] Logica de negocio isolada
 
-### Infrastructure Layer
+### Camada de Infraestrutura
 
-- [ ] Repository adapters implemented
-- [ ] Database/API integrations
-- [ ] Dependency injection setup
-- [ ] 30+ integration tests
-- [ ] Adapters swappable (mock support)
+- [ ] Adaptadores de repositorio implementados
+- [ ] Integracoes com banco/API
+- [ ] Injecao de dependencia configurada
+- [ ] 30+ testes de integracao
+- [ ] Adaptadores substituiveis (suporte a mock)
 
-### Application Layer
+### Camada de Aplicacao
 
-- [ ] Use cases implemented
-- [ ] DTOs designed
-- [ ] Mappers created
-- [ ] 40+ use case tests
-- [ ] Clear orchestration
-- [ ] No business logic in adapters
+- [ ] Use cases implementados
+- [ ] DTOs projetados
+- [ ] Mappers criados
+- [ ] 40+ testes de use case
+- [ ] Orquestracao clara
+- [ ] Sem logica de negocio nos adaptadores
 
-### Presentation Layer
+### Camada de Apresentacao
 
-- [ ] HTTP handlers created
-- [ ] SvelteKit routes setup
-- [ ] Error mapping working
-- [ ] Authentication/authorization enforced
-- [ ] 40+ presentation tests
-- [ ] CORS configured
+- [ ] Handlers HTTP criados
+- [ ] Rotas SvelteKit configuradas
+- [ ] Mapeamento de erros funcionando
+- [ ] Autenticacao/autorizacao aplicada
+- [ ] 40+ testes de apresentacao
+- [ ] CORS configurado
 
-### E2E Tests
+### Testes E2E
 
-- [ ] 20+ E2E tests
-- [ ] Happy path scenarios
-- [ ] Error scenarios
-- [ ] Security checks
-- [ ] CI/CD ready
-- [ ] Documentation complete
+- [ ] 20+ testes E2E
+- [ ] Cenarios de caminho feliz
+- [ ] Cenarios de erro
+- [ ] Verificacoes de seguranca
+- [ ] Pronto para CI/CD
+- [ ] Documentacao completa
 
 ---
 
-## Success Criteria
+## Criterios de Sucesso
 
-✅ **100% of above completed**
-✅ **All tests passing (unit + integration + E2E)**
-✅ **80%+ code coverage**
-✅ **Architecture follows template**
-✅ **Documentation complete**
-✅ **Ready for production deployment**
+- **100% do checklist acima completado**
+- **Todos os testes passando (unitario + integracao + E2E)**
+- **80%+ de cobertura de codigo**
+- **Arquitetura segue o template**
+- **Documentacao completa**
+- **Pronto para deploy em producao**
 
 ---
 
