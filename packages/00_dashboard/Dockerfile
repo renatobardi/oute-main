@@ -29,13 +29,14 @@ COPY shared ./shared
 # Install production dependencies only
 RUN npm ci --legacy-peer-deps --omit=dev && npm cache clean --force
 
-# Copy built app from builder
+# Copy built app and custom server from builder
 COPY --from=builder /app/packages/00_dashboard/build ./packages/00_dashboard/build
+COPY packages/00_dashboard/server.js ./packages/00_dashboard/server.js
 
 EXPOSE 3000
 
 ENV NODE_ENV=production
 ENV PORT=3000
 
-# Run the SvelteKit Node server
-CMD ["node", "packages/00_dashboard/build/index.js"]
+# Run custom server with /health endpoint
+CMD ["node", "packages/00_dashboard/server.js"]
