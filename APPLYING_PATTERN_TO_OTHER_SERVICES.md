@@ -973,69 +973,69 @@ npm run test:e2e --workspaces
 
 ---
 
-## Resources
+## Recursos
 
-### From 01_auth-profile (Template)
+### Do 01_auth-profile (Template)
 
-- Domain layer: `packages/01_auth-profile/src/domain/`
-- Infrastructure: `packages/01_auth-profile/src/infrastructure/`
-- Application: `packages/01_auth-profile/src/application/`
-- Presentation: `packages/01_auth-profile/src/presentation/`
-- E2E tests: `packages/01_auth-profile/src/__tests__/e2e/`
+- Camada de dominio: `packages/01_auth-profile/src/domain/`
+- Infraestrutura: `packages/01_auth-profile/src/infrastructure/`
+- Aplicacao: `packages/01_auth-profile/src/application/`
+- Apresentacao: `packages/01_auth-profile/src/presentation/`
+- Testes E2E: `packages/01_auth-profile/src/__tests__/e2e/`
 
-### Documentation
+### Documentacao
 
 - `REFACTORING_COMPLETION.md` - Detalhes completos da refatoracao, incluindo resumos de todas as fases (Domain, Infrastructure, Application, Presentation, E2E)
 
-### Tools & Commands
+### Ferramentas e Comandos
 
 ```bash
-# Generate new service
-./scripts/generate-service.sh 03_new-service "Service Description"
+# Gerar novo servico
+./scripts/generate-service.sh 04_novo-servico "Descricao do Servico"
 
-# Run tests
+# Rodar testes
 npm run test --workspaces
 npm run test:e2e --workspaces
 
-# Code coverage
+# Cobertura de codigo
 npm run test -- --coverage
 
-# Lint & format
+# Lint e formatacao
 npm run lint --workspaces
 npm run format --workspaces
 ```
 
 ---
 
-## Timeline Estimate
+## Estimativa de Tempo
 
-| Phase          | 00_dashboard  | 02_projects   |
-| -------------- | ------------- | ------------- |
-| Domain         | 1-2 weeks     | 1-2 weeks     |
-| Infrastructure | 1 week        | 1 week        |
-| Application    | 1 week        | 1 week        |
-| Presentation   | 1 week        | 1 week        |
-| E2E Tests      | 1 week        | 1 week        |
-| **Total**      | **5-6 weeks** | **5-6 weeks** |
+| Fase           | 00_dashboard    | 02_projects     |
+| -------------- | --------------- | --------------- |
+| Dominio        | 1-2 semanas     | 1-2 semanas     |
+| Infraestrutura | 1 semana        | 1 semana        |
+| Aplicacao      | 1 semana        | 1 semana        |
+| Apresentacao   | 1 semana        | 1 semana        |
+| Testes E2E     | 1 semana        | 1 semana        |
+| **Total**      | **5-6 semanas** | **5-6 semanas** |
 
-**Total for both services: 10-12 weeks**
-
----
-
-## Conclusion
-
-By following this template and pattern, you can consistently implement:
-
-✅ **Hexagonal Architecture** across all services
-✅ **Domain-Driven Design** principles
-✅ **Clean Code** standards
-✅ **Comprehensive Testing** (TDD)
-✅ **Professional Practices** (DoD, DoR)
-
-This ensures **consistency, maintainability, and quality** across the entire OUTE monorepo.
+**Total para ambos os servicos: 10-12 semanas**
 
 ---
 
-**Template Version**: 1.0
-**Based on**: 01_auth-profile implementation
-**Status**: Ready for application
+## Conclusao
+
+Seguindo este template e padrao, e possivel implementar consistentemente:
+
+- **Arquitetura Hexagonal** em todos os servicos
+- Principios de **Domain-Driven Design**
+- Padroes de **Clean Code**
+- **Testes Abrangentes** (TDD)
+- **Praticas Profissionais** (DoD, DoR)
+
+Isso garante **consistencia, manutenibilidade e qualidade** em todo o monorepo OUTE.
+
+---
+
+**Versao do Template**: 1.0
+**Baseado em**: implementacao do 01_auth-profile
+**Status**: Pronto para aplicacao
