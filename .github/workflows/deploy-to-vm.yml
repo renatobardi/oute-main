@@ -20,39 +20,46 @@ jobs:
         with:
           workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+          project_id: oute-mind
 
       - name: Set up Cloud SDK
         uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: oute-mind
 
       - name: Deploy to VM
         run: |
-          gcloud compute ssh oute@oute-mind \
+          gcloud compute ssh oute-mind \
             --zone=us-central1-a \
+            --project=oute-mind \
             --tunnel-through-iap \
             --command='
               set -e
+              cd /home/ubuntu
 
               # Pull latest oute-main (source for SvelteKit services)
-              cd ~/oute-main
-              git pull origin main
+              cd oute-main
+              sudo -u ubuntu git pull origin main
+              cd ..
 
               # Pull latest oute-mind (docker-compose lives here)
-              cd ~/oute-mind
-              git pull origin main
+              cd oute-mind
+              sudo -u ubuntu git pull origin main
 
               # Ensure .env is linked
-              ln -sf .env.production .env
+              sudo -u ubuntu ln -sf .env.production .env
 
               # Build and restart all oute-main services + caddy
-              docker compose build 00_dashboard 01_auth-profile 02_projects 99_home 03_interview
-              docker compose up -d 00_dashboard 01_auth-profile 02_projects 99_home 03_interview
-              docker compose restart caddy
+              sudo docker compose build 00_dashboard 01_auth-profile 02_projects 99_home 03_interview
+              sudo docker compose up -d 00_dashboard 01_auth-profile 02_projects 99_home 03_interview
+              sudo docker compose restart caddy
             '
 
       - name: Health checks
         run: |
-          gcloud compute ssh oute@oute-mind \
+          gcloud compute ssh oute-mind \
             --zone=us-central1-a \
+            --project=oute-mind \
             --tunnel-through-iap \
             --command='
               for svc in "Dashboard:oute-dashboard:3000:/dashboard/health" "Auth:oute-auth-profile:3001:/health" "Projects:oute-projects:3002:/health" "Home:oute-home:3003:/health" "Interview:oute-interview:3002:/chat/health"; do
@@ -61,7 +68,7 @@ jobs:
                 port=$(echo "$svc" | cut -d: -f3)
                 path=$(echo "$svc" | cut -d: -f4)
                 for i in $(seq 1 20); do
-                  if docker exec "$container" wget -qO- "http://127.0.0.1:${port}${path}" > /dev/null 2>&1; then
+                  if sudo docker exec "$container" wget -qO- "http://127.0.0.1:${port}${path}" > /dev/null 2>&1; then
                     echo "✅ ${name} health check PASSED (container ${container})"
                     break
                   fi
@@ -90,21 +97,22 @@ jobs:
         if: failure()
         run: |
           echo "❌ Deployment FAILED — capturing container logs..."
-          gcloud compute ssh oute@oute-mind \
+          gcloud compute ssh oute-mind \
             --zone=us-central1-a \
+            --project=oute-mind \
             --tunnel-through-iap \
             --command='
-              cd ~/oute-mind
+              cd /home/ubuntu/oute-mind
               echo "=== Container Status ==="
-              docker compose ps
+              sudo docker compose ps
               echo "=== Dashboard Logs ==="
-              docker compose logs --tail=30 00_dashboard 2>&1 || true
+              sudo docker compose logs --tail=30 00_dashboard 2>&1 || true
               echo "=== Auth Logs ==="
-              docker compose logs --tail=30 01_auth-profile 2>&1 || true
+              sudo docker compose logs --tail=30 01_auth-profile 2>&1 || true
               echo "=== Projects Logs ==="
-              docker compose logs --tail=30 02_projects 2>&1 || true
+              sudo docker compose logs --tail=30 02_projects 2>&1 || true
               echo "=== Home Logs ==="
-              docker compose logs --tail=30 99_home 2>&1 || true
+              sudo docker compose logs --tail=30 99_home 2>&1 || true
               echo "=== Interview Logs ==="
-              docker compose logs --tail=30 03_interview 2>&1 || true
+              sudo docker compose logs --tail=30 03_interview 2>&1 || true
             ' || echo "Could not connect to VM for log capture"
