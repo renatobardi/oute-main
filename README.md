@@ -253,7 +253,7 @@ Ver [DEPLOYMENT.md](./DEPLOYMENT.md) para detalhes completos.
 - **Cloud**: GCP Cloud Run, Cloud SQL, Artifact Registry, Secret Manager
 - **CI/CD**: GitHub Actions
 - **Code Quality**: SonarQube, ESLint, TypeScript
-- **Containers**: Docker, docker-compose
+- **Containers**: Docker, Docker Compose
 
 ## 📋 Roadmap
 

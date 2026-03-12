@@ -531,7 +531,7 @@ npm install
 ### Docker issues
 
 ```bash
-docker-compose down -v
+docker compose down -v
 npm run docker:up
 ```
 
