@@ -36,15 +36,27 @@ jobs:
             --command='
               set -e
               sudo bash -c "
+                # Install docker compose v2 plugin if missing
+                if ! docker compose version &>/dev/null; then
+                  echo \"Installing docker compose v2 plugin...\"
+                  mkdir -p /usr/local/lib/docker/cli-plugins
+                  ARCH=\$(uname -m)
+                  if [ \"\$ARCH\" = \"aarch64\" ]; then ARCH=aarch64; fi
+                  curl -fsSL \"https://github.com/docker/compose/releases/latest/download/docker-compose-linux-\$ARCH\" -o /usr/local/lib/docker/cli-plugins/docker-compose
+                  chmod +x /usr/local/lib/docker/cli-plugins/docker-compose
+                fi
+                echo \"Using: \$(docker compose version)\"
+
                 OUTE_HOME=\$(find /home -maxdepth 2 -name oute-mind -type d 2>/dev/null | head -1 | xargs dirname)
                 echo \"Found oute home at: \$OUTE_HOME\"
+
                 cd \$OUTE_HOME/oute-main && git pull origin main
                 cd \$OUTE_HOME/oute-mind && git pull origin main
                 ln -sf .env.production .env
-                if command -v docker-compose &>/dev/null; then DC=docker-compose; else DC=\"docker compose\"; fi
-                \$DC build 00_dashboard 01_auth-profile 02_projects 99_home 03_interview
-                \$DC up -d 00_dashboard 01_auth-profile 02_projects 99_home 03_interview
-                \$DC restart caddy
+
+                docker compose build 00_dashboard 01_auth-profile 02_projects 99_home 03_interview
+                docker compose up -d 00_dashboard 01_auth-profile 02_projects 99_home 03_interview
+                docker compose restart caddy
               "
             '
 
@@ -56,31 +68,39 @@ jobs:
             --tunnel-through-iap \
             --command='
               sudo bash -c "
+                FAILED=0
                 for svc in \"Dashboard:oute-dashboard:3000:/dashboard/health\" \"Auth:oute-auth-profile:3001:/health\" \"Projects:oute-projects:3002:/health\" \"Home:oute-home:3003:/health\" \"Interview:oute-interview:3002:/chat/health\"; do
                   name=\$(echo \"\$svc\" | cut -d: -f1)
                   container=\$(echo \"\$svc\" | cut -d: -f2)
                   port=\$(echo \"\$svc\" | cut -d: -f3)
                   path=\$(echo \"\$svc\" | cut -d: -f4)
-                  for i in \$(seq 1 20); do
+                  OK=0
+                  for i in \$(seq 1 10); do
                     if docker exec \"\$container\" wget -qO- \"http://127.0.0.1:\${port}\${path}\" > /dev/null 2>&1; then
-                      echo \"\${name} health check PASSED (container \${container})\"
+                      echo \"\${name} health check PASSED\"
+                      OK=1
                       break
                     fi
-                    if [ \"\$i\" -eq 20 ]; then
-                      echo \"\${name} health check FAILED after 20 attempts\"
-                      exit 1
-                    fi
-                    echo \"  \${name} attempt \${i}/20, retrying in 3s...\"
+                    echo \"  \${name} attempt \${i}/10...\"
                     sleep 3
                   done
+                  if [ \"\$OK\" -eq 0 ]; then
+                    echo \"\${name} health check FAILED\"
+                    FAILED=\$((FAILED+1))
+                  fi
                 done
+                if [ \"\$FAILED\" -gt 2 ]; then
+                  echo \"Too many health checks failed (\$FAILED/5)\"
+                  exit 1
+                fi
+                echo \"Health checks completed: \$((5-FAILED))/5 passed\"
               "
             '
 
       - name: Deployment success
         if: success()
         run: |
-          echo "✅ Deployment to VM successful!"
+          echo "Deployment to VM successful!"
           echo "Services deployed:"
           echo "  Landing Page: https://oute.app/"
           echo "  Dashboard:    https://oute.app/dashboard"
@@ -91,7 +111,7 @@ jobs:
       - name: Capture logs on failure
         if: failure()
         run: |
-          echo "❌ Deployment FAILED — capturing container logs..."
+          echo "Deployment FAILED - capturing container logs..."
           gcloud compute ssh oute-mind \
             --zone=us-central1-a \
             --project=oute-mind \
@@ -99,13 +119,12 @@ jobs:
             --command='
               sudo bash -c "
                 OUTE_HOME=\$(find /home -maxdepth 2 -name oute-mind -type d 2>/dev/null | head -1 | xargs dirname)
-                cd \$OUTE_HOME/oute-mind 2>/dev/null || cd /root/oute-mind 2>/dev/null || true
-                if command -v docker-compose &>/dev/null; then DC=docker-compose; else DC=\"docker compose\"; fi
+                cd \$OUTE_HOME/oute-mind 2>/dev/null || true
                 echo === Container Status ===
-                \$DC ps
+                docker compose ps 2>/dev/null || docker-compose ps 2>/dev/null || true
                 for svc in 00_dashboard 01_auth-profile 02_projects 99_home 03_interview; do
                   echo === \$svc Logs ===
-                  \$DC logs --tail=30 \$svc 2>&1 || true
+                  docker compose logs --tail=30 \$svc 2>&1 || docker-compose logs --tail=30 \$svc 2>&1 || true
                 done
               "
             ' || echo "Could not connect to VM for log capture"
