@@ -1,10 +1,7 @@
 <script lang="ts">
-  import { goto } from '$app/navigation';
-
   let inputValue = '';
 
-  async function handleSubmit() {
-    console.log('[DEBUG] handleSubmit called - NEW VERSION 2026-03-12');
+  function handleSubmit() {
     // Build chat URL with initial message as query parameter if provided
     let chatUrl = window.location.hostname === 'localhost'
       ? 'http://localhost:3002/'
@@ -15,15 +12,8 @@
       chatUrl += `?initial=${encoded}`;
     }
 
-    console.log('[DEBUG] Attempting navigation to:', chatUrl);
-    // Use goto for Svelte navigation, fallback to window.location for cross-origin
-    if (chatUrl.startsWith('/')) {
-      console.log('[DEBUG] Using goto() for same-origin navigation');
-      await goto(chatUrl);
-    } else {
-      console.log('[DEBUG] Using window.location.href for cross-origin');
-      window.location.href = chatUrl;
-    }
+    // Use window.location.href for navigation (works in both dev and production)
+    window.location.href = chatUrl;
 
     // Clear input
     inputValue = '';
