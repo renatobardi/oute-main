@@ -1,17 +1,16 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
   import { page } from '$app/stores';
   import Sidebar from '$lib/components/Sidebar.svelte';
   import ChatWindow from '$lib/components/ChatWindow.svelte';
   import NotesPanel from '$lib/components/NotesPanel.svelte';
   import { currentInterview, messages, notes } from '$lib/stores/conversation';
 
-  // Initialize with sample data
-  onMount(() => {
-    if (!$currentInterview) {
-      // Get initial message from URL parameter if provided
-      const initialMessageParam = $page.url.searchParams.get('initial');
+  // React to URL parameter changes
+  $: if ($page && $page.url) {
+    const initialMessageParam = $page.url.searchParams.get('initial');
 
+    // Initialize if not yet loaded
+    if (!$currentInterview) {
       currentInterview.set({
         id: 'INT-2024-WHAT',
         title: 'Web Platform Architecture',
@@ -80,7 +79,7 @@
         content: 'Análise em progresso...',
       });
     }
-  });
+  }
 </script>
 
 <div class="flex h-full w-full">
