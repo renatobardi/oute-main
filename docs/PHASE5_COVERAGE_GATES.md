@@ -1,23 +1,23 @@
-# Phase 5: Coverage Gates Enforcement
+# Fase 5: Enforcement de Coverage Gates
 
-## Overview
+## Visao Geral
 
-Phase 5 implements automated code coverage enforcement in the CI/CD pipeline. All PRs must meet minimum coverage thresholds before merging.
+A Fase 5 implementa enforcement automatizado de cobertura de codigo no pipeline de CI/CD. Todos os PRs devem atingir os limites minimos de cobertura antes do merge.
 
-## Coverage Thresholds
+## Limites de Cobertura
 
-| Metric | Target | Status |
-|--------|--------|--------|
-| Lines | 80% | ✅ Enforced |
-| Branches | 75% | ✅ Enforced |
-| Functions | 80% | ✅ Enforced |
-| Statements | 80% | ✅ Enforced |
+| Metrica | Alvo | Status |
+|---------|------|--------|
+| Lines | 80% | ✅ Ativo |
+| Branches | 75% | ✅ Ativo |
+| Functions | 80% | ✅ Ativo |
+| Statements | 80% | ✅ Ativo |
 
-## Implementation Details
+## Detalhes de Implementacao
 
-### 1. Vitest Configuration
+### 1. Configuracao Vitest
 
-All packages have coverage configuration in `vitest.config.ts`:
+Todos os pacotes possuem configuracao de cobertura em `vitest.config.ts`:
 
 ```typescript
 coverage: {
@@ -31,58 +31,58 @@ coverage: {
 }
 ```
 
-**Packages covered:**
+**Pacotes cobertos:**
 - `packages/00_dashboard`
 - `packages/01_auth-profile`
 - `packages/02_projects`
 - `packages/design-system`
 - `shared`
 
-### 2. CI/CD Workflow Integration
+### 2. Integracao com CI/CD
 
-The PR workflow (`1-pull-request.yml`) enforces coverage with:
+O workflow de PR (`1-pull-request.yml`) aplica cobertura com:
 
-1. **Test execution with coverage**: `npm run test -- --run --coverage`
-2. **Coverage threshold validation**: Parse `coverage/coverage-final.json` and verify:
-   - Lines: ≥ 80%
-   - Branches: ≥ 75%
-   - Functions: ≥ 80%
-   - Statements: ≥ 80%
-3. **Coverage artifacts**: Reports uploaded for 30 days retention
+1. **Execucao de testes com cobertura**: `npm run test -- --run --coverage`
+2. **Validacao de limites de cobertura**: Parse do `coverage/coverage-final.json` e verificacao:
+   - Lines: >= 80%
+   - Branches: >= 75%
+   - Functions: >= 80%
+   - Statements: >= 80%
+3. **Artefatos de cobertura**: Relatorios armazenados por 30 dias
 
-### 3. Test Coverage Summary
+### 3. Relatorios de Cobertura
 
-Coverage reports are generated in:
-- `coverage/lcov.info` - LCOV format (for SonarQube)
-- `coverage/index.html` - HTML report (browser view)
-- `coverage/coverage-final.json` - JSON format (for parsing)
+Relatorios de cobertura sao gerados em:
+- `coverage/lcov.info` - Formato LCOV (para SonarCloud)
+- `coverage/index.html` - Relatorio HTML (visualizacao no navegador)
+- `coverage/coverage-final.json` - Formato JSON (para parsing)
 
-## How Coverage Gates Work
+## Como Funcionam os Coverage Gates
 
-### On PR Creation
+### Na Criacao do PR
 
 ```
-1. Code pushed → PR created
-2. GitHub Actions triggered
-3. Tests run with coverage collection
-4. Coverage thresholds validated
-5. If coverage < thresholds → PR blocked ❌
-6. If coverage ≥ thresholds → PR allowed ✅
+1. Codigo enviado → PR criado
+2. GitHub Actions acionado
+3. Testes executados com coleta de cobertura
+4. Limites de cobertura validados
+5. Se cobertura < limites → PR bloqueado ❌
+6. Se cobertura >= limites → PR permitido ✅
 ```
 
-### Checking Coverage Locally
+### Verificando Cobertura Localmente
 
-Run tests with coverage before pushing:
+Execute testes com cobertura antes de fazer push:
 
 ```bash
 npm run test -- --coverage
 ```
 
-This generates coverage reports and shows summary in terminal.
+Isso gera relatorios de cobertura e mostra o resumo no terminal.
 
-### View Coverage Report
+### Visualizar Relatorio de Cobertura
 
-After running tests:
+Apos executar os testes:
 
 ```bash
 open coverage/index.html  # macOS
@@ -90,9 +90,9 @@ xdg-open coverage/index.html  # Linux
 start coverage/index.html  # Windows
 ```
 
-## Exclusions
+## Exclusoes
 
-The following files are excluded from coverage calculations:
+Os seguintes arquivos sao excluidos do calculo de cobertura:
 
 - `node_modules/`
 - `dist/`
@@ -101,50 +101,49 @@ The following files are excluded from coverage calculations:
 - `**/*.spec.ts`
 - `**/index.ts` (barrel files)
 
-## Pragmatic Approach
+## Abordagem Pragmatica
 
-- **80% threshold**: Enforced for critical metrics (lines, functions, statements)
-- **75% threshold**: Slightly relaxed for branches (complex conditional logic)
-- **Exclusions**: Test and build files not counted (only production code)
+- **Limite de 80%**: Aplicado para metricas criticas (lines, functions, statements)
+- **Limite de 75%**: Ligeiramente relaxado para branches (logica condicional complexa)
+- **Exclusoes**: Arquivos de teste e build nao contabilizados (apenas codigo de producao)
 
-## Integration with SonarQube
+## Integracao com SonarCloud
 
-Coverage reports are also consumed by SonarQube:
+Relatorios de cobertura tambem sao consumidos pelo SonarCloud:
 
-- **LCOV report**: `coverage/lcov.info`
-- **SonarQube metric**: Lines of Code with coverage
-- **Quality gate**: Combines coverage with other metrics
+- **Relatorio LCOV**: `coverage/lcov.info`
+- **Metrica SonarCloud**: Linhas de codigo com cobertura
+- **Quality gate**: Combina cobertura com outras metricas
 
-## Troubleshooting
+## Solucao de Problemas
 
-### Coverage reports not generated
+### Relatorios de cobertura nao gerados
 
 ```bash
-# Ensure coverage is enabled in vitest.config.ts
+# Verificar se cobertura esta habilitada no vitest.config.ts
 npm run test -- --coverage --reporter=verbose
 ```
 
-### Coverage below threshold
+### Cobertura abaixo do limite
 
-1. Analyze the HTML report: `open coverage/index.html`
-2. Identify uncovered lines
-3. Add tests to cover the code
-4. Re-run tests locally to verify
+1. Analise o relatorio HTML: `open coverage/index.html`
+2. Identifique linhas nao cobertas
+3. Adicione testes para cobrir o codigo
+4. Re-execute os testes localmente para verificar
 
-### False positives
+### Falsos positivos
 
-If coverage is genuinely low but acceptable:
-- Document the reasoning in PR description
-- Request review from maintainers
-- Consider if code is actually testable
+Se a cobertura esta genuinamente baixa mas aceitavel:
+- Documente o motivo na descricao do PR
+- Solicite revisao dos mantenedores
+- Considere se o codigo eh realmente testavel
 
-## Next Phases
+## Proximas Fases
 
-- **Phase 6**: SonarQube Enforcement (quality gates)
-- **Phase 7**: Documentation Standards
+- **Fase 6**: SonarCloud Enforcement (quality gates)
+- **Fase 7**: Padroes de Documentacao
 
-## Related Documentation
+## Documentacao Relacionada
 
-- [QUALITY_GATES.md](./QUALITY_GATES.md) - All quality gates overview
-- [DEVELOPMENT.md](./DEVELOPMENT.md) - Development workflow
-- [Testing Guide](./E2E_TESTING.md) - E2E testing
+- [PHASE6_SONARQUBE_ENFORCEMENT.md](./PHASE6_SONARQUBE_ENFORCEMENT.md) - Quality gates SonarCloud
+- [PHASE7_DOCUMENTATION_STANDARDS.md](./PHASE7_DOCUMENTATION_STANDARDS.md) - Padroes de documentacao

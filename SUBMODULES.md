@@ -1,8 +1,8 @@
-# Submodules / Packages Documentation
+# Documentacao dos Submodulos / Packages
 
-## Overview
+## Visao Geral
 
-OUTE is organized into 6 main packages (5 services + 1 design system), each with a specific responsibility.
+A OUTE e organizada em 6 packages principais (5 servicos + 1 design system), cada um com uma responsabilidade especifica.
 
 ```
 packages/
@@ -18,9 +18,9 @@ packages/
 
 ## 1. Design System (packages/design-system)
 
-**Purpose**: Centralized design tokens and reusable components
+**Proposito**: Design tokens centralizados e componentes reutilizaveis
 
-**Tech Stack**:
+**Stack Tecnologica**:
 
 - Svelte 5 components
 - Tailwind 4

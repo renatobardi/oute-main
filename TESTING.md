@@ -1,4 +1,4 @@
-# Testing OUTE Locally
+# Testando a OUTE Localmente
 
 Guia para testar a aplicação OUTE em ambiente local.
 
@@ -56,7 +56,7 @@ Serviços disponíveis:
 
 - **Dashboard**: http://localhost:3000
 - **Auth Service**: http://localhost:3001
-- **Projects Service**: http://localhost:3002
+- **Projects Service**: http://localhost:3004 (host) / 3002 (container)
 - **Design System (Storybook)**: http://localhost:6006
 
 ### Opção B: Rodar Manualmente (sem Docker)
@@ -74,8 +74,8 @@ docker run --name oute-postgres \
 #### Terminal 2: Design System (Storybook)
 
 ```bash
-cd packages/design-system
-npm run dev:storybook
+npm run dev:storybook --workspace=design-system
+# http://localhost:6006
 ```
 
 #### Terminal 3: Auth Service
@@ -158,7 +158,7 @@ Resposta (salve o token):
 
 ```bash
 # Substitua TOKEN pelo token do login acima
-curl http://localhost:3002/projects \
+curl http://localhost:3004/projects \
   -H "Authorization: Bearer TOKEN"
 ```
 
@@ -213,7 +213,7 @@ docker-compose up -d postgres
 
 ---
 
-## Scripts Disponíveis
+## Scripts disponíveis
 
 ### Raiz (npm)
 
@@ -243,7 +243,7 @@ npm run lint               # ESLint
 
 ---
 
-## Next Steps
+## Próximos passos
 
 Após testar o "Hello World", as próximas implementações são:
 
@@ -251,14 +251,13 @@ Após testar o "Hello World", as próximas implementações são:
 2. **Auth Service**: Implementar rotas POST /auth/login, /auth/logout, GET /profile
 3. **Projects Service**: Implementar CRUD de projetos
 4. **Database**: Scripts de migração e seeding
-5. **CI/CD**: Configure GitHub Actions e GCP
+5. **CI/CD**: Configurar GitHub Actions e deploy na VM
 
 ---
 
 ## Dúvidas?
 
-Ver documentação:
+Consulte a documentação:
 
 - **DEVELOPMENT.md**: Setup detalhado
-- **ARCHITECTURE.md**: Decisões arquiteturais
 - **INTEGRATIONS.md**: Fluxos de integração entre serviços

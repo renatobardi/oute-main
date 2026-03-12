@@ -1,4 +1,4 @@
-# ESLint Configuration Guide
+# Guia de Configuração do ESLint
 
 ## Arquitetura do Monorepo & TypeScript
 
@@ -89,7 +89,7 @@ Cada `tsconfig.json` deve incluir:
 }
 ```
 
-## Overrides: Regras Especiais
+## Overrides: Regras Especiais por Tipo de Arquivo
 
 ### 1. Arquivos Svelte
 
@@ -104,9 +104,9 @@ Cada `tsconfig.json` deve incluir:
 }
 ```
 
-Svelte files precisam de um parser especial que entenda a sintaxe `.svelte`.
+Arquivos Svelte precisam de um parser especial que entenda a sintaxe `.svelte`.
 
-### 2. Config Files
+### 2. Arquivos de Configuração
 
 ```json
 {
@@ -114,17 +114,25 @@ Svelte files precisam de um parser especial que entenda a sintaxe `.svelte`.
     "**/vite.config.ts",
     "**/vitest.config.ts",
     "**/svelte.config.js",
-    "**/playwright.config.ts"
+    "**/playwright.config.ts",
+    "**/tailwind.config.js"
   ],
+  "parserOptions": {
+    "project": null
+  },
   "rules": {
     "@typescript-eslint/no-floating-promises": "off",
+    "@typescript-eslint/no-misused-promises": "off",
+    "@typescript-eslint/await-thenable": "off",
+    "@typescript-eslint/strict-boolean-expressions": "off",
+    "@typescript-eslint/no-unnecessary-type-assertion": "off",
     "@typescript-eslint/no-explicit-any": "off",
-    ...
+    "@typescript-eslint/explicit-function-return-types": "off"
   }
 }
 ```
 
-Config files podem ser mais flexíveis com types e promises porque são executados em build-time, não em runtime.
+Arquivos de configuração podem ser mais flexíveis com types e promises porque são executados em build-time, não em runtime.
 
 ## Checklist: Adicionando um Novo Pacote
 
@@ -147,9 +155,9 @@ Exemplo:
 }
 ```
 
-## Debbugando Problemas de ESLint
+## Depurando Problemas de ESLint
 
-### Comando Útil
+### Comandos Úteis
 
 ```bash
 # Ver qual tsconfig.json ESLint está usando
@@ -179,13 +187,13 @@ Todas as regras críticas estão em **warn** para manter pragmatismo:
 - Warnings alertam sobre melhorias
 - Fácil de atualizar para `error` quando cobertura melhorar
 
-## Performance
+## Desempenho
 
 O padrão glob `./packages/*/tsconfig.json` é eficiente porque:
 
-1. Node.js cache os globos resolvidos
-2. ESLint cache os resultados de parsing
-3. TypeScript cache incrementalmente
+1. Node.js faz cache dos globs resolvidos
+2. ESLint faz cache dos resultados de parsing
+3. TypeScript faz cache incremental
 
 Para repositórios maiores, considere ser específico:
 
@@ -200,10 +208,10 @@ Para repositórios maiores, considere ser específico:
 ]
 ```
 
-## Recursos Adicionais
+## Referências
 
 - `.eslintrc.json`: Configuração principal
 - `.eslintignore`: Arquivos ignorados
-- `package.json` scripts:
+- Scripts em `package.json`:
   - `npm run lint`: Verificar código
   - `npm run lint:fix`: Corrigir automaticamente

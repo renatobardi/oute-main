@@ -2,6 +2,7 @@
 
 > Documentacao completa do schema de banco de dados da plataforma OUTE.
 > PostgreSQL 15 | 25 tabelas | 7 bounded contexts
+> 12 arquivos de migracao (001-012) em `database/migrations/`
 
 ---
 
@@ -27,7 +28,7 @@
 │ orgs        │ proj_members │ messages     │ template_milestones (14)   │
 │ org_members │ tags         │ int_notes    │ template_epics (40+)       │
 │ refresh_tok │ project_tags │              │ template_issues (80+)      │
-│             │              │              │ template_checklists        │
+│             │              │              │ template_checklist_items    │
 ├─────────────┴──────────────┴──────────────┼────────────────────────────┤
 │  5. ESTIMATION ENGINE (5 tables)          │ 6. INTEGRATIONS (3 tables) │
 │                                           │                            │

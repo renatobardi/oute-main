@@ -1,4 +1,4 @@
-# GitHub Secrets Setup Guide
+# Guia de Configuração de Secrets do GitHub
 
 Configure estes secrets no repositório GitHub para que os workflows funcionem.
 
@@ -35,14 +35,14 @@ Após criar repo npm em Artifact Registry:
 - **Valor**: `us-central1-npm.pkg.dev/oute-app/npm/`
 - **Usar para**: Publicar design-system package
 
-## 3. SonarQube
+## 3. SonarCloud
 
-Para integração com SonarQube Cloud:
+Para integração com SonarCloud:
 
 ### SONAR_TOKEN
 
 - **Valor**: Token gerado em sonarcloud.io
-- **Usar para**: SonarQube analysis nos workflows
+- **Usar para**: Análise do SonarCloud nos workflows
 - **Como obter**:
   1. Vá em https://sonarcloud.io
   2. Login com GitHub
@@ -50,7 +50,7 @@ Para integração com SonarQube Cloud:
   4. Generate token em Account → Security
   5. Copie o token
 
-## 4. Slack Notifications (Opcional)
+## 4. Notificações Slack (Opcional)
 
 Para notificações de deploy em Slack:
 
@@ -64,29 +64,29 @@ Para notificações de deploy em Slack:
   3. Create New Webhook para seu canal
   4. Copie a URL
 
-## 5. GitHub Token (Automático)
+## 5. Token do GitHub (Automático)
 
 GitHub fornece automaticamente:
 
 ### GITHUB_TOKEN
 
-- **Automático**: Fornecido por GitHub Actions
+- **Automático**: Fornecido pelo GitHub Actions
 - **Permissões**: Configuradas no workflow
-- **Usar para**: Upload SARIF, create releases
+- **Usar para**: Upload SARIF, criação de releases
 
 ---
 
-## Checklist de Setup
+## Checklist de Configuração
 
 - [ ] Executado `setup-gcp.sh` (criou GCP_SA_KEY)
 - [ ] `GCP_SA_KEY` adicionado ao GitHub Secrets
 - [ ] `GCP_PROJECT_ID` adicionado
 - [ ] `GCP_REGION` adicionado
-- [ ] Criado SonarQube organization
+- [ ] Criada organização no SonarCloud
 - [ ] `SONAR_TOKEN` adicionado
 - [ ] (Opcional) `SLACK_WEBHOOK` adicionado
 
-## Branch Protection Rules
+## Regras de Proteção de Branch
 
 Configure em **Settings → Branches → Protect main**:
 
@@ -96,17 +96,17 @@ Configure em **Settings → Branches → Protect main**:
 ✅ Require branches to be up to date
 ✅ Include administrators
 
-Status checks required:
+Status checks obrigatórios:
 
 - `lint`
 - `typecheck`
 - `test`
 - `docker-build`
-- `sonarqube`
+- `SonarCloud Code Analysis` (automático via GitHub App)
 
-Repita para branch `staging`.
+Repita para a branch `staging`.
 
-## Testing Secrets
+## Testando os Secrets
 
 Para testar se os secrets estão corretos:
 
@@ -120,11 +120,11 @@ Para testar se os secrets estão corretos:
     gcloud projects list
 ```
 
-## Troubleshooting
+## Solução de Problemas
 
 ### "Secret not found"
 
-- Verifique se secret foi adicionado em **Settings → Secrets**
+- Verifique se o secret foi adicionado em **Settings → Secrets**
 - Verifique se o nome do secret é exato (case-sensitive)
 
 ### "Invalid GCP credentials"
@@ -132,10 +132,10 @@ Para testar se os secrets estão corretos:
 - Verifique se `GCP_SA_KEY` é o JSON completo do arquivo
 - Crie nova chave se a antiga expirou: `gcloud iam service-accounts keys create`
 
-### "SonarQube quality gate failed"
+### "SonarCloud quality gate failed"
 
-- Verifique `SONAR_TOKEN` é válido
-- Verifique se organization em sonarcloud.io corresponde ao workflow
+- Verifique se `SONAR_TOKEN` é válido
+- Verifique se a organização em sonarcloud.io corresponde ao workflow
 
 ---
 

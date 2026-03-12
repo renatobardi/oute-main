@@ -32,23 +32,23 @@ shared/               ← Tipos e utilitários compartilhados
 
 ```
 ┌─────────────────────────────────────┐
-│      PRESENTATION LAYER             │
-│  (HTTP Routes, Handlers, Errors)    │
+│      CAMADA DE APRESENTAÇÃO         │
+│  (Rotas HTTP, Handlers, Erros)      │
 └──────────────┬──────────────────────┘
                │
 ┌──────────────▼──────────────────────┐
-│      APPLICATION LAYER              │
-│  (Use Cases, DTOs, Orchestration)   │
+│      CAMADA DE APLICAÇÃO            │
+│  (Use Cases, DTOs, Orquestração)    │
 └──────────────┬──────────────────────┘
                │
 ┌──────────────▼──────────────────────┐
-│   INFRASTRUCTURE LAYER              │
-│  (Adapters, Repositories, Config)   │
+│   CAMADA DE INFRAESTRUTURA          │
+│  (Adapters, Repositórios, Config)   │
 └──────────────┬──────────────────────┘
                │
 ┌──────────────▼──────────────────────┐
-│       DOMAIN LAYER (Isolated)       │
-│  (Entities, Value Objects, Errors)  │
+│    CAMADA DE DOMÍNIO (Isolada)      │
+│  (Entidades, Value Objects, Erros)  │
 └─────────────────────────────────────┘
 ```
 
@@ -64,13 +64,13 @@ shared/               ← Tipos e utilitários compartilhados
 **Stack**: PostgreSQL 15 | 25 tabelas | 7 bounded contexts
 
 **Bounded Contexts**:
-- **IAM** (4 tables): users, orgs, org_members, refresh_tokens
-- **PROJECT** (4 tables): projects, proj_members, tags, project_tags
-- **INTERVIEW** (3 tables): interviews, messages, int_notes
-- **TEMPLATE ENGINE** (5 tables): sdlc_templates, milestones, epics, issues, checklists
-- **ESTIMATION ENGINE** (5 tables): sessions, responses, results, outputs, etc
-- **INTEGRATIONS** (3 tables): connections, export_sessions, mappings
-- **AUDIT** (1 table): audit_log (append-only, imutável)
+- **IAM** (4 tabelas): users, orgs, org_members, refresh_tokens
+- **PROJECT** (4 tabelas): projects, proj_members, tags, project_tags
+- **INTERVIEW** (3 tabelas): interviews, messages, int_notes
+- **TEMPLATE ENGINE** (5 tabelas): sdlc_templates, milestones, epics, issues, checklists
+- **ESTIMATION ENGINE** (5 tabelas): sessions, responses, results, outputs, etc
+- **INTEGRATIONS** (3 tabelas): connections, export_sessions, mappings
+- **AUDIT** (1 tabela): audit_log (append-only, imutável)
 
 **Características**:
 - UUID v7 (time-ordered)
@@ -92,10 +92,10 @@ Conceitos DDD implementados:
 **Exemplo - Criando um usuário**:
 
 ```typescript
-// Domain layer - pure business logic, no DB/HTTP/etc.
-const email = Email.fromString('user@example.com'); // Validates RFC 5322
-const password = await Password.create('SecurePass123!'); // Validates strength
-const user = User.create({ email, password, name: 'John' }); // Aggregate
+// Camada de domínio - lógica de negócio pura, sem BD/HTTP/etc.
+const email = Email.fromString('user@example.com'); // Valida RFC 5322
+const password = await Password.create('SecurePass123!'); // Valida força
+const user = User.create({ email, password, name: 'John' }); // Agregado
 ```
 
 ### 4. Práticas de Clean Code
@@ -121,15 +121,15 @@ Code Duplication: ✅ ~2%
 
 ```
 ┌────────────────────────────────────┐
-│        TEST PYRAMID                │
+│      PIRÂMIDE DE TESTES            │
 ├────────────────────────────────────┤
-│         E2E (21 tests)             │ ← Complete workflows
-│    Presentation (39 tests)         │ ← HTTP layer
-│    Application (34 tests)          │ ← Use cases
-│   Infrastructure (28 tests)        │ ← Adapters
-│      Domain (56 tests)             │ ← Business logic
+│       E2E (21 testes)              │ ← Fluxos completos
+│  Apresentação (39 testes)          │ ← Camada HTTP
+│    Aplicação (34 testes)           │ ← Use cases
+│  Infraestrutura (28 testes)        │ ← Adapters
+│     Domínio (56 testes)            │ ← Lógica de negócio
 └────────────────────────────────────┘
-     Coverage: 80%+
+     Cobertura: 80%+
 ```
 
 **O Que É Testado**:
@@ -143,7 +143,7 @@ Code Duplication: ✅ ~2%
 
 ### 6. Padrões Profissionais
 
-#### Definition of Done (DoD)
+#### Definição de Pronto (Definition of Done - DoD)
 
 Toda feature deve ter:
 
@@ -151,10 +151,10 @@ Toda feature deve ter:
 - ✅ 100% de cobertura de testes
 - ✅ Validação de segurança
 - ✅ Documentação
-- ✅ Code review
+- ✅ Revisão de código
 - ✅ Tratamento de erros
 
-#### Definition of Ready (DoR)
+#### Definição de Preparado (Definition of Ready - DoR)
 
 Toda issue deve ter:
 
@@ -199,7 +199,7 @@ Toda issue deve ter:
 ### Antes (Responsabilidades Misturadas)
 
 ```typescript
-// ❌ Lógica de domínio misturada com HTTP/DB/tratamento de erros
+// ❌ Lógica de domínio misturada com HTTP/BD/tratamento de erros
 app.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -208,7 +208,7 @@ app.post('/login', async (req, res) => {
     if (!email || !password) return res.status(400).send('Missing fields');
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return res.status(400).send('Invalid email');
 
-    // Query direta ao DB (fortemente acoplado)
+    // Query direta ao BD (fortemente acoplado)
     const user = await db.query('SELECT * FROM users WHERE email = ?', [email]);
 
     // Verificação de senha (sem abstração)
@@ -222,7 +222,7 @@ app.post('/login', async (req, res) => {
     // Formatação da resposta
     return res.json({ token, user: { id: user.id, email: user.email } });
   } catch (err) {
-    return res.status(500).send('Something went wrong'); // ❌ Generic error
+    return res.status(500).send('Something went wrong'); // ❌ Erro genérico
   }
 });
 ```
@@ -375,24 +375,24 @@ class PostgresUserRepository implements IUserRepository {
 ```
 1. HTTP POST /api/auth?action=register
    ↓
-2. RegisterHandler (presentation)
-   - Validates request structure
+2. RegisterHandler (apresentação)
+   - Valida estrutura da requisição
    ↓
-3. RegisterUseCase (application)
-   - Orchestrates domain logic + adapters
+3. RegisterUseCase (aplicação)
+   - Orquestra lógica de domínio + adapters
    ↓
-4. Domain Layer (pure business logic)
-   - Email.fromString() - validates email
-   - Password.create() - validates strength
-   - User.create() - creates aggregate
+4. Camada de Domínio (lógica de negócio pura)
+   - Email.fromString() - valida e-mail
+   - Password.create() - valida força
+   - User.create() - cria agregado
    ↓
-5. Infrastructure Layer
-   - PostgresUserRepository - persists user
-   - BcryptPasswordAdapter - hashes password
-   - JwtTokenAdapter - generates token
+5. Camada de Infraestrutura
+   - PostgresUserRepository - persiste usuário
+   - BcryptPasswordAdapter - aplica hash na senha
+   - JwtTokenAdapter - gera token
    ↓
-6. Response (presentation)
-   - HTTP 201 + token + user data
+6. Resposta (apresentação)
+   - HTTP 201 + token + dados do usuário
 ```
 
 ### Todas as Camadas Testadas
@@ -478,7 +478,7 @@ Veja: `APPLYING_PATTERN_TO_OTHER_SERVICES.md`
 
 ---
 
-## Services Available
+## Serviços Disponíveis
 
 ### 99_home (packages/99_home) - Landing Page
 
@@ -488,12 +488,12 @@ Veja: `APPLYING_PATTERN_TO_OTHER_SERVICES.md`
 Landing page de marketing pública. Primeira página que usuários veem.
 
 **Funcionalidades**:
-- Hero section com headline "Olá! Sou seu Arquiteto de Software."
-- Search input para descrever projetos
-- CTA "Entrar na Oute" + GitHub login
-- Stats section (57 estimações, 127 arquitetos, ∞ impacto)
-- Navbar com links (Docs, Pricing), signup button
-- Responsive design com tema dark idêntico ao dashboard
+- Seção hero com headline "Olá! Sou seu Arquiteto de Software."
+- Campo de busca para descrever projetos
+- CTA "Entrar na Oute" + login GitHub
+- Seção de estatísticas (57 estimações, 127 arquitetos, ∞ impacto)
+- Navbar com links (Docs, Pricing), botão de cadastro
+- Design responsivo com tema dark idêntico ao dashboard
 
 ---
 
@@ -506,41 +506,41 @@ Interface web principal para gerenciamento de projetos e estimações. Acessa os
 
 ---
 
-### 🔐 01_auth-profile (packages/01_auth-profile) - Autenticação
+### 01_auth-profile (packages/01_auth-profile) - Autenticação
 
-**Status**: ✅ REFATORADO & Production-Ready
+**Status**: ✅ REFATORADO e Pronto para Produção
 **Porta**: 3001
 
 Serviço de autenticação JWT. Todos os outros serviços validam tokens aqui.
 
 **Padrões Implementados**:
-- Hexagonal Architecture (Ports & Adapters)
-- Domain-Driven Design (Entities, Value Objects, Aggregates)
-- Test-Driven Development (178 testes, 80%+ coverage)
-- Clean Code (SOLID principles, small functions, clear naming)
+- Arquitetura Hexagonal (Ports & Adapters)
+- Domain-Driven Design (Entidades, Value Objects, Agregados)
+- Test-Driven Development (178 testes, 80%+ cobertura)
+- Clean Code (princípios SOLID, funções pequenas, nomenclatura clara)
 
 ---
 
-### 💬 03_interview (packages/03_interview) - Chat Interviews
+### 03_interview (packages/03_interview) - Entrevistas por Chat
 
 **Status**: ✅ Implementado
 **Porta**: 3002
 
-Interface de chat para entrevistas com IA. 3-panel layout:
-- **Left Panel**: Sidebar com histórico de entrevistas
-- **Center Panel**: Chat conversation window
-- **Right Panel**: Editable notes com métricas e export
+Interface de chat para entrevistas com IA. Layout de 3 painéis:
+- **Painel Esquerdo**: Sidebar com histórico de entrevistas
+- **Painel Central**: Janela de conversa do chat
+- **Painel Direito**: Notas editáveis com métricas e exportação
 
-**Features**:
+**Funcionalidades**:
 - Chat com mensagens de usuário e IA
-- Notas editáveis com save/cancel
-- Export de notas como .txt
-- Métricas de progresso (progress %, horas, orçamento)
+- Notas editáveis com salvar/cancelar
+- Exportação de notas como .txt
+- Métricas de progresso (progresso %, horas, orçamento)
 - Tema dark idêntico ao dashboard
 
 ---
 
-### 📋 02_projects (packages/02_projects) - Gerenciamento de Projetos
+### 02_projects (packages/02_projects) - Gerenciamento de Projetos
 
 **Status**: Em refatoração
 **Porta**: 3004 (host) / 3002 (container)
@@ -549,7 +549,7 @@ API de gerenciamento de projetos com CRUD completo. Validação de JWT via 01_au
 
 ---
 
-### 🎨 design-system (packages/design-system)
+### design-system (packages/design-system)
 
 **Status**: ✅ Implementado
 **Storybook**: http://localhost:6006
@@ -557,139 +557,139 @@ API de gerenciamento de projetos com CRUD completo. Validação de JWT via 01_au
 Sistema de design modular com Tailwind 4, componentes reutilizáveis e Storybook.
 
 **Inclui**:
-- Tokens de cores, tipografia, spacing
+- Tokens de cores, tipografia, espaçamento
 - Componentes reutilizáveis (Button, Card, etc)
 - Tema dark/light
 - Storybook para documentação visual
 
 ---
 
-## Next Steps
+## Próximos Passos
 
-### Immediate (This Week)
+### Imediato (Esta Semana)
 
-1. ✅ Review monorepo structure with team
-2. ✅ Understand database schema (25 tables, 7 bounded contexts)
-3. ✅ Get feedback on 99_home landing page
+1. ✅ Revisar estrutura do monorepo com a equipe
+2. ✅ Compreender schema do banco de dados (25 tabelas, 7 bounded contexts)
+3. ✅ Obter feedback sobre a landing page 99_home
 
-### Short Term (Next 2-4 Weeks)
+### Curto Prazo (Próximas 2-4 Semanas)
 
-1. Apply Hexagonal Architecture pattern to 00_dashboard
-2. Apply Hexagonal Architecture pattern to 02_projects
-3. Setup CI/CD pipelines for all services
+1. Aplicar padrão de Arquitetura Hexagonal ao 00_dashboard
+2. Aplicar padrão de Arquitetura Hexagonal ao 02_projects
+3. Configurar pipelines de CI/CD para todos os serviços
 
-### Medium Term (Months 2-3)
+### Médio Prazo (Meses 2-3)
 
-1. Complete refactoring of all services with same pattern
-2. Add cross-service integration tests
-3. Production deployment preparation
+1. Completar refatoração de todos os serviços com o mesmo padrão
+2. Adicionar testes de integração entre serviços
+3. Preparação para deploy em produção
 
-### Long Term
+### Longo Prazo
 
-1. Continuous improvement & optimization
-2. Team knowledge transfer sessions
-3. Shared utilities library across services
+1. Melhoria contínua e otimização
+2. Sessões de transferência de conhecimento para a equipe
+3. Biblioteca de utilitários compartilhados entre serviços
 
 ---
 
-## Commands for Getting Started
+## Comandos para Começar
 
-### Run Tests
+### Executar Testes
 
 ```bash
-# All tests
+# Todos os testes
 npm run test --workspaces
 
-# Specific service
+# Serviço específico
 cd packages/01_auth-profile
 npm run test
 
-# E2E tests
+# Testes E2E
 npm run test:e2e
 
-# With coverage
+# Com cobertura
 npm run test -- --coverage
 ```
 
-### Code Quality
+### Qualidade de Código
 
 ```bash
 # Lint
 npm run lint --workspaces
 
-# Format
+# Formatação
 npm run format --workspaces
 
-# Both
+# Ambos
 npm run lint --workspaces && npm run format --workspaces
 ```
 
-### Development
+### Desenvolvimento
 
 ```bash
-# Start dev server
+# Iniciar servidor de desenvolvimento
 npm run dev
 
-# Start service specifically
+# Iniciar serviço específico
 cd packages/01_auth-profile
 npm run dev
 ```
 
 ---
 
-## Conclusion
+## Conclusão
 
-The OUTE authentication service is now a **production-ready, well-architected, thoroughly-tested** example of professional software engineering.
+O serviço de autenticação OUTE é agora um exemplo **pronto para produção, bem arquitetado e exaustivamente testado** de engenharia de software profissional.
 
-### What You're Getting
+### O Que Você Está Recebendo
 
-✅ **Scalable Architecture** - Grows with your team
-✅ **Professional Quality** - Enterprise-grade standards
-✅ **Clear Patterns** - Reusable across services
-✅ **Complete Testing** - Confidence in code quality
-✅ **Great Documentation** - Easy for team to understand
+✅ **Arquitetura Escalável** - Cresce com sua equipe
+✅ **Qualidade Profissional** - Padrões de nível empresarial
+✅ **Padrões Claros** - Reutilizáveis entre serviços
+✅ **Testes Completos** - Confiança na qualidade do código
+✅ **Excelente Documentação** - Fácil para a equipe entender
 
-### Ready to Deploy?
+### Pronto para Deploy?
 
-This service is ready for:
+Este serviço está pronto para:
 
-- ✅ Development environment
-- ✅ Staging environment
-- ✅ Production deployment (with pre-prod security checks)
+- ✅ Ambiente de desenvolvimento
+- ✅ Ambiente de staging
+- ✅ Deploy em produção (com verificações de segurança pré-produção)
 
-### Questions?
+### Dúvidas?
 
-Refer to the comprehensive documentation in `REFACTORING_COMPLETION.md` and phase summaries.
+Consulte a documentação abrangente em `REFACTORING_COMPLETION.md` e `packages/01_auth-profile/PHASE_5_SUMMARY.md`.
 
 ---
 
-## Contact & Support
+## Contato e Suporte
 
-For questions about:
+Para dúvidas sobre:
 
 - **Arquitetura**: Veja `REFACTORING_COMPLETION.md` (fases 1-4) e `packages/01_auth-profile/PHASE_5_SUMMARY.md` (testes E2E)
-- **Testing**: See `src/__tests__/e2e/README.md`
-- **New Services**: See `APPLYING_PATTERN_TO_OTHER_SERVICES.md`
-- **Specific Code**: Look at tests - they document expected behavior
+- **Testes**: Veja `src/__tests__/e2e/README.md`
+- **Novos Serviços**: Veja `APPLYING_PATTERN_TO_OTHER_SERVICES.md`
+- **Código Específico**: Consulte os testes - eles documentam o comportamento esperado
 
 ---
 
-**Date**: March 7, 2026
-**Status**: ✅ COMPLETE & READY FOR PRODUCTION
-**Quality Level**: 🏆 Gold Standard
-**Team**: Ready to replicate pattern across monorepo
+**Data**: 7 de Março de 2026
+**Status**: ✅ COMPLETO E PRONTO PARA PRODUÇÃO
+**Nível de Qualidade**: Padrão Ouro
+**Equipe**: Pronta para replicar o padrão no monorepo
 
 ---
 
-## One More Thing...
+## Uma Última Coisa...
 
-This refactoring demonstrates that professional software engineering practices:
+Esta refatoração demonstra que práticas profissionais de engenharia de software:
 
-- **Don't slow you down** - Tests catch bugs before they reach production
-- **Don't overcomplicate** - Clear architecture is simple to understand
-- **Don't hurt** - Clean code is easier to modify
-- **Save money** - Fewer bugs = fewer fixes = lower costs
+- **Não atrasam** - Testes capturam bugs antes de chegarem à produção
+- **Não complicam demais** - Arquitetura clara é simples de entender
+- **Não prejudicam** - Código limpo é mais fácil de modificar
+- **Economizam dinheiro** - Menos bugs = menos correções = menores custos
 
-It's an investment that pays dividends. 📈
+É um investimento que gera dividendos.
 
-🎉 **Congratulations on a job well done!** 🎉
+**Parabéns pelo excelente trabalho realizado!**
