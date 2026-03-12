@@ -1,17 +1,11 @@
 <script lang="ts">
+	import OuteLogo from './OuteLogo.svelte';
 </script>
 
 <nav class="bg-[#162a31] border-b border-[#21404a]">
   <div class="max-w-7xl mx-auto px-6 py-3 flex items-center">
     <!-- Logo (Left) -->
-    <div class="flex items-center gap-2">
-      <div class="w-8 h-8 bg-primary-600 rounded-lg flex items-center justify-center">
-        <svg class="w-4 h-4 text-white" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M12 2L2 19h20L12 2zm0 4l7 11H5l7-11z" />
-        </svg>
-      </div>
-      <span class="text-lg font-bold text-white">Oute</span>
-    </div>
+    <OuteLogo size="md" showSlogan={true} />
 
     <!-- Right Section (Nav Links + Button) -->
     <div class="ml-auto flex items-center gap-8">
