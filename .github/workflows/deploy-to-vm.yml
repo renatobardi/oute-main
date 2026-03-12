@@ -54,7 +54,7 @@ jobs:
                 cd \$OUTE_HOME/oute-mind && git pull origin main
                 ln -sf .env.production .env
 
-                docker compose build 00_dashboard 01_auth-profile 02_projects 99_home 03_interview
+                docker compose build --no-cache 00_dashboard 01_auth-profile 02_projects 99_home 03_interview
                 docker compose up -d 00_dashboard 01_auth-profile 02_projects 99_home 03_interview
                 docker compose restart caddy
               "
