@@ -7,9 +7,9 @@
 </script>
 
 {#if hasHref}
-  <a {href} class="inline-block">
+  <a {href} class="w-full max-w-xs mx-auto block">
     <button
-      class="bg-primary-600 hover:bg-primary-700 text-white px-8 py-3 rounded-lg font-semibold text-lg transition-colors"
+      class="w-full bg-primary-600 hover:bg-primary-700 text-white px-4 py-3 rounded-lg font-medium transition-colors flex items-center justify-center"
     >
       {text}
     </button>
@@ -17,7 +17,7 @@
 {:else}
   <button
     on:click
-    class="bg-primary-600 hover:bg-primary-700 text-white px-8 py-3 rounded-lg font-semibold text-lg transition-colors"
+    class="w-full max-w-xs mx-auto bg-primary-600 hover:bg-primary-700 text-white px-4 py-3 rounded-lg font-medium transition-colors flex items-center justify-center"
   >
     {text}
   </button>

@@ -3,7 +3,7 @@
   export let googleHref = 'https://accounts.google.com/';
 </script>
 
-<div class="flex flex-col gap-3 items-center w-full max-w-xs" data-version="branding-v2">
+<div class="flex flex-col gap-3 items-center w-full max-w-xs mx-auto" data-version="branding-v2">
   <!-- GitHub Sign-In Button (per GitHub guidelines: simple, clean, no effects) -->
   <a
     href={githubHref}
@@ -18,13 +18,12 @@
     <span>Continuar com GitHub</span>
   </a>
 
-  <!-- Google Sign-In Button (per Google official guidelines: dark theme) -->
+  <!-- Google Sign-In Button (matching GitHub style) -->
   <a
     href={googleHref}
     target="_blank"
     rel="noopener noreferrer"
-    class="w-full bg-[#131314] hover:bg-[#1a1a1c] text-[#e3e3e3] px-4 py-3 rounded-lg transition-colors flex items-center gap-3 justify-center border border-[#8e918f]"
-    style="font-family: 'Roboto', sans-serif; font-weight: 500;"
+    class="w-full bg-neutral-800 hover:bg-neutral-700 text-white px-4 py-3 rounded-lg font-medium transition-colors flex items-center gap-3 justify-center border border-neutral-700"
   >
     <!-- Google Official G Logo (Blue) -->
     <svg class="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24">
