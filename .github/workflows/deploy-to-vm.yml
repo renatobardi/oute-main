@@ -5,94 +5,106 @@ on:
     branches: [main]
   workflow_dispatch:
 
+permissions:
+  contents: read
+  id-token: write
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
     timeout-minutes: 15
 
     steps:
-      - name: Configure SSH
-        run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.VM_SSH_PRIVATE_KEY }}" | base64 -d > ~/.ssh/id_ed25519
-          chmod 600 ~/.ssh/id_ed25519
-          echo "${{ secrets.VM_SSH_KNOWN_HOSTS }}" >> ~/.ssh/known_hosts
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
 
-      - name: Test SSH connection
-        run: |
-          ssh ${{ secrets.VM_USER }}@${{ secrets.VM_HOSTNAME }} "echo 'SSH OK'"
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
 
       - name: Deploy to VM
         run: |
-          ssh ${{ secrets.VM_USER }}@${{ secrets.VM_HOSTNAME }} << 'EOFVM'
-            # Pull latest oute-main (source for SvelteKit services)
-            cd ~/oute-main
-            git pull origin main
+          gcloud compute ssh oute@oute-mind \
+            --zone=us-central1-a \
+            --tunnel-through-iap \
+            --command='
+              set -e
 
-            # Pull latest oute-mind (docker-compose lives here)
-            cd ~/oute-mind
-            git pull origin main
+              # Pull latest oute-main (source for SvelteKit services)
+              cd ~/oute-main
+              git pull origin main
 
-            # Ensure .env is linked
-            ln -sf .env.production .env
+              # Pull latest oute-mind (docker-compose lives here)
+              cd ~/oute-mind
+              git pull origin main
 
-            # Build and restart all oute-main services + caddy
-            docker compose build 00_dashboard 01_auth-profile 02_projects 99_home 03_interview
-            docker compose up -d 00_dashboard 01_auth-profile 02_projects 99_home 03_interview
-            docker compose restart caddy
-          EOFVM
+              # Ensure .env is linked
+              ln -sf .env.production .env
 
-      - name: Health checks (via SSH + docker exec)
+              # Build and restart all oute-main services + caddy
+              docker compose build 00_dashboard 01_auth-profile 02_projects 99_home 03_interview
+              docker compose up -d 00_dashboard 01_auth-profile 02_projects 99_home 03_interview
+              docker compose restart caddy
+            '
+
+      - name: Health checks
         run: |
-          ssh ${{ secrets.VM_USER }}@${{ secrets.VM_HOSTNAME }} << 'EOFVM'
-            for svc in "Dashboard:oute-dashboard:3000:/dashboard/health" "Auth:oute-auth-profile:3001:/health" "Projects:oute-projects:3002:/health" "Home:oute-home:3003:/health" "Interview:oute-interview:3002:/chat/health"; do
-              name=$(echo "$svc" | cut -d: -f1)
-              container=$(echo "$svc" | cut -d: -f2)
-              port=$(echo "$svc" | cut -d: -f3)
-              path=$(echo "$svc" | cut -d: -f4)
-              for i in $(seq 1 20); do
-                if docker exec "$container" wget -qO- "http://127.0.0.1:${port}${path}" > /dev/null 2>&1; then
-                  echo "✅ ${name} health check PASSED (container ${container})"
-                  break
-                fi
-                if [ "$i" -eq 20 ]; then
-                  echo "❌ ${name} health check FAILED after 20 attempts"
-                  exit 1
-                fi
-                echo "  ${name} attempt ${i}/20, retrying in 3s..."
-                sleep 3
+          gcloud compute ssh oute@oute-mind \
+            --zone=us-central1-a \
+            --tunnel-through-iap \
+            --command='
+              for svc in "Dashboard:oute-dashboard:3000:/dashboard/health" "Auth:oute-auth-profile:3001:/health" "Projects:oute-projects:3002:/health" "Home:oute-home:3003:/health" "Interview:oute-interview:3002:/chat/health"; do
+                name=$(echo "$svc" | cut -d: -f1)
+                container=$(echo "$svc" | cut -d: -f2)
+                port=$(echo "$svc" | cut -d: -f3)
+                path=$(echo "$svc" | cut -d: -f4)
+                for i in $(seq 1 20); do
+                  if docker exec "$container" wget -qO- "http://127.0.0.1:${port}${path}" > /dev/null 2>&1; then
+                    echo "✅ ${name} health check PASSED (container ${container})"
+                    break
+                  fi
+                  if [ "$i" -eq 20 ]; then
+                    echo "❌ ${name} health check FAILED after 20 attempts"
+                    exit 1
+                  fi
+                  echo "  ${name} attempt ${i}/20, retrying in 3s..."
+                  sleep 3
+                done
               done
-            done
-          EOFVM
+            '
 
       - name: Deployment success
         if: success()
         run: |
           echo "✅ Deployment to VM successful!"
           echo "Services deployed:"
-          echo "  Landing Page: http://${{ secrets.VM_HOSTNAME }}/"
-          echo "  Dashboard:    http://${{ secrets.VM_HOSTNAME }}/dashboard"
-          echo "  Chat:         http://${{ secrets.VM_HOSTNAME }}/chat"
-          echo "  Auth API:     http://${{ secrets.VM_HOSTNAME }}/api/auth"
-          echo "  Projects:     http://${{ secrets.VM_HOSTNAME }}/api/projects"
-          echo "  FastAPI:      http://${{ secrets.VM_HOSTNAME }}/health"
+          echo "  Landing Page: https://oute.app/"
+          echo "  Dashboard:    https://oute.app/dashboard"
+          echo "  Chat:         https://oute.app/chat"
+          echo "  Auth API:     https://oute.app/api/auth"
+          echo "  Projects:     https://oute.app/api/projects"
 
       - name: Capture logs on failure
         if: failure()
         run: |
           echo "❌ Deployment FAILED — capturing container logs..."
-          ssh ${{ secrets.VM_USER }}@${{ secrets.VM_HOSTNAME }} << 'EOFVM'
-            cd ~/oute-mind
-            echo "=== Container Status ==="
-            docker compose ps
-            echo "=== Dashboard Logs ==="
-            docker compose logs --tail=30 00_dashboard 2>&1 || true
-            echo "=== Auth Logs ==="
-            docker compose logs --tail=30 01_auth-profile 2>&1 || true
-            echo "=== Projects Logs ==="
-            docker compose logs --tail=30 02_projects 2>&1 || true
-            echo "=== Home Logs ==="
-            docker compose logs --tail=30 99_home 2>&1 || true
-            echo "=== Interview Logs ==="
-            docker compose logs --tail=30 03_interview 2>&1 || true
-          EOFVM
+          gcloud compute ssh oute@oute-mind \
+            --zone=us-central1-a \
+            --tunnel-through-iap \
+            --command='
+              cd ~/oute-mind
+              echo "=== Container Status ==="
+              docker compose ps
+              echo "=== Dashboard Logs ==="
+              docker compose logs --tail=30 00_dashboard 2>&1 || true
+              echo "=== Auth Logs ==="
+              docker compose logs --tail=30 01_auth-profile 2>&1 || true
+              echo "=== Projects Logs ==="
+              docker compose logs --tail=30 02_projects 2>&1 || true
+              echo "=== Home Logs ==="
+              docker compose logs --tail=30 99_home 2>&1 || true
+              echo "=== Interview Logs ==="
+              docker compose logs --tail=30 03_interview 2>&1 || true
+            ' || echo "Could not connect to VM for log capture"
