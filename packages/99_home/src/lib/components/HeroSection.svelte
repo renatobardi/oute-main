@@ -14,6 +14,6 @@
 
 <style>
   section {
-    background: linear-gradient(135deg, #000000 0%, #111111 50%, #000000 100%);
+    background: #000000;
   }
 </style>

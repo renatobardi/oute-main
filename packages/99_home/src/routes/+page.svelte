@@ -9,7 +9,7 @@
   import { getToken, initializeAuth } from '$lib/auth';
 
   let ctaHref = '/login';
-  let ctaText = 'Entrar no Oute';
+  let ctaText = 'Continuar com E-mail';
 
   onMount(() => {
     // Initialize auth from localStorage
@@ -28,7 +28,7 @@
   }
 </script>
 
-<div class="flex flex-col min-h-[calc(100vh-120px)]">
+<div class="flex flex-col min-h-[calc(100vh-120px)] bg-black">
   <!-- Hero Section -->
   <HeroSection />
 
