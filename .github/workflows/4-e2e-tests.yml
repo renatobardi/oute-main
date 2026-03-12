@@ -115,30 +115,35 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const summary = `
-## E2E Testing Complete 🎭
-
-**Packages tested:**
-- ✅ 01_auth-profile (21 tests)
-- ✅ 00_dashboard (14 tests)
-- ✅ 02_projects (11 tests)
-
-**Total: 46 E2E tests**
-
-All test reports are available in the artifacts section.
-
----
-
-**Test Coverage:**
-- Authentication flows
-- API endpoints (CRUD)
-- Authorization checks
-- Form validation
-- UI navigation
-- Accessibility standards
-
-For details, see [E2E Testing Documentation](.github/E2E_TESTING.md)
-            `;
+            const packages = [
+              { name: '01_auth-profile', tests: 21 },
+              { name: '00_dashboard', tests: 14 },
+              { name: '02_projects', tests: 11 }
+            ];
+            const total = packages.reduce((s, p) => s + p.tests, 0);
+            const pkgList = packages.map(p => `- ✅ ${p.name} (${p.tests} tests)`).join('\n');
+            const summary = [
+              '## E2E Testing Complete 🎭',
+              '',
+              'Packages tested:',
+              pkgList,
+              '',
+              `Total: ${total} E2E tests`,
+              '',
+              'All test reports are available in the artifacts section.',
+              '',
+              '---',
+              '',
+              'Test Coverage:',
+              '- Authentication flows',
+              '- API endpoints (CRUD)',
+              '- Authorization checks',
+              '- Form validation',
+              '- UI navigation',
+              '- Accessibility standards',
+              '',
+              'For details, see [E2E Testing Documentation](.github/E2E_TESTING.md)'
+            ].join('\n');
 
             github.rest.issues.createComment({
               issue_number: context.issue.number,
