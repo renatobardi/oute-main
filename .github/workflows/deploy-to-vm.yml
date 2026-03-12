@@ -53,6 +53,10 @@ jobs:
                 OUTE_HOME=\$(find /home -maxdepth 2 -name oute-mind -type d 2>/dev/null | head -1 | xargs dirname)
                 echo \"Found oute home at: \$OUTE_HOME\"
 
+                # Fix git dubious ownership issue
+                git config --global --add safe.directory \$OUTE_HOME/oute-main
+                git config --global --add safe.directory \$OUTE_HOME/oute-mind
+
                 cd \$OUTE_HOME/oute-main && git pull origin main
                 cd \$OUTE_HOME/oute-mind && git pull origin main
                 ln -sf .env.production .env
