@@ -2,10 +2,10 @@
 	import OuteLogo from './OuteLogo.svelte';
 </script>
 
-<nav class="bg-[#162a31] border-b border-[#21404a]">
+<nav class="bg-black border-b border-neutral-800">
   <div class="max-w-7xl mx-auto px-6 py-3 flex items-center">
     <!-- Logo (Left) -->
-    <OuteLogo size="md" showSlogan={true} />
+    <OuteLogo size="md" showSlogan={true} horizontal={true} />
 
     <!-- Right Section (Nav Links + Button) -->
     <div class="ml-auto flex items-center gap-8">

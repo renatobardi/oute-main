@@ -1,5 +1,5 @@
 <script lang="ts">
-  export let headline = 'Olá! Sou seu Arquiteto de Software.';
+  export let headline = 'Olá! Sou seu Arquiteto de Software...';
   export let subtitle = 'Vamos estimar seu próximo grande projeto?';
 </script>
 
@@ -14,6 +14,6 @@
 
 <style>
   section {
-    background: linear-gradient(135deg, #0f1e23 0%, #162a31 50%, #0f1e23 100%);
+    background: linear-gradient(135deg, #000000 0%, #111111 50%, #000000 100%);
   }
 </style>

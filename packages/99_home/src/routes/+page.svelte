@@ -9,7 +9,7 @@
   import { getToken, initializeAuth } from '$lib/auth';
 
   let ctaHref = '/login';
-  let ctaText = 'Entrar na Oute';
+  let ctaText = 'Entrar no Oute';
 
   onMount(() => {
     // Initialize auth from localStorage
