@@ -50,22 +50,18 @@
   <div class="flex flex-col gap-6">
     <!-- Logo -->
     <div class="flex items-center gap-3 px-2">
-      <div class="size-8 bg-primary-500 rounded-lg flex items-center justify-center text-[#0f1e23]">
-        <span class="text-lg font-bold">A</span>
-      </div>
       <h1 class="text-xl font-bold tracking-tight text-white">Oute</h1>
     </div>
 
     <!-- Action Button -->
     <button class="flex w-full items-center justify-center gap-2 rounded-lg bg-primary-500 py-2.5 text-sm font-bold text-[#0f1e23] hover:bg-primary-600 transition-colors">
       <span class="material-symbols-outlined text-[20px]">add_box</span>
-      Nova Entrevista
+      New Interview
     </button>
 
     <!-- Navigation List -->
     <div class="flex flex-col gap-1">
-      <div class="flex items-center justify-between px-3 mb-2">
-        <p class="text-[11px] font-bold uppercase tracking-wider text-slate-500">Entrevistas</p>
+      <div class="flex items-center justify-end px-3 mb-2">
         <div class="flex gap-1">
           <button class="p-1 hover:bg-white/10 rounded text-slate-500 hover:text-slate-300 transition-colors" title="Sort">
             <span class="material-symbols-outlined text-[16px]">sort</span>
