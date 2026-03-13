@@ -78,18 +78,16 @@
   <div class="flex-1 overflow-y-auto px-6 py-5 space-y-6">
     <!-- Progress Section -->
     <div class="space-y-4">
+      <div class="flex items-center gap-2">
+        <p class="text-xs font-semibold text-neutral-400 uppercase tracking-wider">Current Progress</p>
+        <button class="text-neutral-500 hover:text-neutral-300 transition-colors">
+          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z" />
+          </svg>
+        </button>
+      </div>
       <div class="flex justify-between items-center">
-        <div>
-          <div class="flex items-center gap-2 mb-2">
-            <p class="text-xs font-semibold text-neutral-400 uppercase tracking-wider">Current Progress</p>
-            <button class="text-neutral-500 hover:text-neutral-300 transition-colors">
-              <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z" />
-              </svg>
-            </button>
-          </div>
-          <div class="text-4xl font-bold text-primary-500">{$notes.metrics.progress}%</div>
-        </div>
+        <div class="text-4xl font-bold text-primary-500">{$notes.metrics.progress}%</div>
         <div class="flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-semibold text-emerald-400 bg-emerald-500/20 border border-emerald-500/30">
           <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
           <span>{statusDisplay.text}</span>
@@ -107,15 +105,15 @@
 
       <div class="flex items-center justify-between mb-2">
         <div class="text-sm">
-          <span class="font-semibold text-white">{estimatedHours.min.toLocaleString('en-US', { maximumFractionDigits: 0 })}k</span>
+          <span class="font-semibold text-white">{estimatedHours.min.toLocaleString('en-US', { maximumFractionDigits: 0 })}h</span>
           <span class="text-neutral-500"> - </span>
-          <span class="font-semibold text-white">{estimatedHours.max.toLocaleString('en-US', { maximumFractionDigits: 0 })}k</span>
+          <span class="font-semibold text-white">{estimatedHours.max.toLocaleString('en-US', { maximumFractionDigits: 0 })}h</span>
           <span class="text-neutral-500"> Total</span>
         </div>
         {#if estimatedHours.tshirtSize}
           <div class="flex items-center gap-3">
-            <svg class="w-6 h-6 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 6h18v3l-2 8h-14l-2-8V6zm3 0v-2a2 2 0 012-2h10a2 2 0 012 2v2" />
+            <svg class="w-6 h-6 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M20.38 3.46L16 2a4 4 0 01-8 0L3.62 3.46a2 2 0 00-1.62 1.96V10a2 2 0 002 2h2v8a2 2 0 002 2h8a2 2 0 002-2v-8h2a2 2 0 002-2V5.42a2 2 0 00-1.62-1.96z" />
             </svg>
             <span class="text-white text-lg font-bold">{estimatedHours.tshirtSize}</span>
           </div>
@@ -166,12 +164,10 @@
         </div>
       </div>
     {/if}
-  </div>
 
-  <!-- Footer -->
-  <div class="px-6 py-4 border-t border-[#000000] flex flex-col gap-4">
-    <!-- Team Avatars & View Report -->
-    <div class="flex items-center justify-between">
+    <!-- Co-authors Section -->
+    <div class="space-y-3 pt-2 border-t border-[#000000]">
+      <p class="text-xs font-semibold text-neutral-400 uppercase tracking-wider">Co-authors</p>
       <div class="flex items-center gap-2">
         <div class="w-6 h-6 rounded-full bg-blue-500 flex items-center justify-center text-white text-xs font-bold">
           A
@@ -183,23 +179,17 @@
           +4
         </button>
       </div>
-
-      <button class="flex items-center gap-1 text-primary-400 hover:text-primary-300 transition-colors text-sm font-semibold group">
-        View Detailed Report
-        <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-        </svg>
-      </button>
     </div>
+  </div>
 
+  <!-- Footer -->
+  <div class="px-6 py-4 border-t border-[#000000] flex flex-col gap-4">
     <!-- Action Buttons -->
-    <div class="flex gap-2">
-      <button class="flex-1 flex items-center justify-center gap-2 rounded-lg bg-primary-500 py-2 text-sm font-bold text-[#0f1e23] hover:bg-primary-600 transition-colors">
-        <span class="material-symbols-outlined text-[18px]">dashboard</span>
+    <div class="flex flex-col gap-2">
+      <button class="flex items-center justify-center rounded-lg bg-primary-500 py-2 text-sm font-bold text-[#0f1e23] hover:bg-primary-600 transition-colors">
         Dashboard
       </button>
-      <button class="flex-1 flex items-center justify-center gap-2 rounded-lg bg-primary-500 py-2 text-sm font-bold text-[#0f1e23] hover:bg-primary-600 transition-colors">
-        <span class="material-symbols-outlined text-[18px]">folder_open</span>
+      <button class="flex items-center justify-center rounded-lg bg-primary-500 py-2 text-sm font-bold text-[#0f1e23] hover:bg-primary-600 transition-colors">
         Projetos
       </button>
     </div>
