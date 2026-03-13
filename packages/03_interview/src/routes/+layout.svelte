@@ -27,5 +27,5 @@
     <slot />
   </main>
 
-  <Footer />
+
 </div>
