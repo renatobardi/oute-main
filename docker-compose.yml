@@ -85,7 +85,7 @@ services:
       dockerfile: packages/02_projects/Dockerfile
     container_name: oute-projects
     ports:
-      - '3004:3002'
+      - '3002:3002'
     environment:
       - NODE_ENV=development
       - DATABASE_URL=postgresql://app-user:dev-password@postgres:5432/oute_db

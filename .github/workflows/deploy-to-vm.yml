@@ -68,12 +68,14 @@ jobs:
                 echo \"SearchInput.svelte content (first 10 lines):\"
                 head -10 packages/99_home/src/lib/components/SearchInput.svelte
 
-                # Aggressive cache cleanup - try multiple methods
+                # Aggressive cache cleanup
                 echo \"=== Cleaning all caches ===\"
-                find \$OUTE_HOME/oute-main/packages -type d -name \"node_modules\" -exec rm -rf {} + 2>/dev/null || true
-                find \$OUTE_HOME/oute-main/packages -type d -name \"build\" -exec rm -rf {} + 2>/dev/null || true
-                find \$OUTE_HOME/oute-main/packages -type d -name \".svelte-kit\" -exec rm -rf {} + 2>/dev/null || true
-                find \$OUTE_HOME/oute-main -type d -name \".npm\" -exec rm -rf {} + 2>/dev/null || true
+                cd \$OUTE_HOME/oute-main
+                for pkg in packages/*/; do
+                  rm -rf \"\${pkg}node_modules\" \"\${pkg}build\" \"\${pkg}.svelte-kit\" 2>/dev/null || true
+                done
+                rm -rf \$OUTE_HOME/oute-main/.npm 2>/dev/null || true
+                echo \"Cache cleanup completed\"
 
                 # Remove old Docker images to force complete rebuild
                 echo \"=== Removing old Docker images ===\"
@@ -81,12 +83,36 @@ jobs:
                 docker rmi oute-dashboard oute-auth-profile oute-projects oute-home oute-interview 2>/dev/null || true
                 docker system prune -f --all
 
-                # Build with explicit no-cache and fresh layers
+                # Build with explicit no-cache and fresh layers (with retry logic)
                 echo \"=== Building Docker images ===\"
                 cd \$OUTE_HOME/oute-mind
-                docker compose build --no-cache --pull 00_dashboard 01_auth-profile 02_projects 99_home 03_interview
+
+                BUILD_RETRY=0
+                BUILD_MAX_RETRIES=3
+                BUILD_SUCCESS=0
+
+                while [ \$BUILD_RETRY -lt \$BUILD_MAX_RETRIES ] && [ \$BUILD_SUCCESS -eq 0 ]; do
+                  echo \"Build attempt \$((BUILD_RETRY+1))/\$BUILD_MAX_RETRIES\"
+                  if docker compose build --no-cache --pull 00_dashboard 01_auth-profile 02_projects 99_home 03_interview; then
+                    BUILD_SUCCESS=1
+                    echo \"Docker images built successfully\"
+                  else
+                    BUILD_RETRY=\$((BUILD_RETRY+1))
+                    if [ \$BUILD_RETRY -lt \$BUILD_MAX_RETRIES ]; then
+                      echo \"Build failed, waiting 30s before retry...\"
+                      sleep 30
+                    fi
+                  fi
+                done
+
+                if [ \$BUILD_SUCCESS -eq 0 ]; then
+                  echo \"Failed to build Docker images after \$BUILD_MAX_RETRIES attempts\"
+                  exit 1
+                fi
+
                 docker compose up -d 00_dashboard 01_auth-profile 02_projects 99_home 03_interview
                 docker compose restart caddy
+                echo \"Containers started successfully\"
               "
             '
 
@@ -100,28 +126,30 @@ jobs:
             --command='
               sudo bash -c "
                 FAILED=0
+                # Format: name:container:port:path
                 for svc in \"Dashboard:oute-dashboard:3000:/dashboard/health\" \"Auth:oute-auth-profile:3001:/health\" \"Projects:oute-projects:3002:/health\" \"Home:oute-home:3003:/health\" \"Interview:oute-interview:3002:/chat/health\"; do
                   name=\$(echo \"\$svc\" | cut -d: -f1)
                   container=\$(echo \"\$svc\" | cut -d: -f2)
                   port=\$(echo \"\$svc\" | cut -d: -f3)
                   path=\$(echo \"\$svc\" | cut -d: -f4)
                   OK=0
-                  for i in \$(seq 1 10); do
-                    if docker exec \"\$container\" wget -qO- \"http://127.0.0.1:\${port}\${path}\" > /dev/null 2>&1; then
+                  for i in \$(seq 1 20); do
+                    # Try with wget or curl inside container
+                    if docker exec \"\$container\" sh -c \"wget -qO- http://127.0.0.1:\${port}\${path} || curl -s http://127.0.0.1:\${port}\${path}\" > /dev/null 2>&1; then
                       echo \"\${name} health check PASSED\"
                       OK=1
                       break
                     fi
-                    echo \"  \${name} attempt \${i}/10...\"
+                    echo \"  \${name} attempt \${i}/20...\"
                     sleep 3
                   done
                   if [ \"\$OK\" -eq 0 ]; then
-                    echo \"\${name} health check FAILED\"
+                    echo \"\${name} health check FAILED (tried 20 times, 60s total)\"
                     FAILED=\$((FAILED+1))
                   fi
                 done
                 if [ \"\$FAILED\" -gt 2 ]; then
-                  echo \"Too many health checks failed (\$FAILED/5)\"
+                  echo \"Too many health checks failed (\$FAILED/5) - aborting deployment\"
                   exit 1
                 fi
                 echo \"Health checks completed: \$((5-FAILED))/5 passed\"
