@@ -33,7 +33,7 @@
       bind:value={inputValue}
       on:keydown={handleKeydown}
       placeholder="Descreva seu projeto..."
-      class="flex-1 bg-neutral-900 border border-neutral-700 rounded-lg px-6 py-4 text-lg text-neutral-300 placeholder-neutral-500 focus:outline-none focus:border-primary-600 focus:ring-1 focus:ring-primary-600"
+      class="flex-1 bg-primary-500/15 border border-primary-500/20 rounded-lg px-6 py-4 text-lg text-neutral-300 placeholder-neutral-500 focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
     />
     <button
       on:click={handleSubmit}
