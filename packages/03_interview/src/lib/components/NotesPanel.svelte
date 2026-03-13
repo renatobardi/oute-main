@@ -64,9 +64,9 @@
   $: statusDisplay = getStatusDisplay(progressStatus);
 </script>
 
-<div class="flex flex-col h-full bg-[#0f1e23]">
+<div class="flex flex-col h-full bg-[#000000]">
   <!-- Header -->
-  <div class="px-6 py-5 border-b border-[#21404a] flex items-center justify-between">
+  <div class="px-6 py-5 border-b border-[#000000] flex items-center justify-between">
     <div class="flex items-center gap-3">
       <div class="p-2 bg-primary-500/10 rounded-lg">
         <span class="material-symbols-outlined text-primary-500 text-xl">rocket_launch</span>
@@ -151,7 +151,7 @@
 
     <!-- Tags Section -->
     {#if $notes.tags.length > 0}
-      <div class="space-y-3 pt-2 border-t border-[#21404a]">
+      <div class="space-y-3 pt-2 border-t border-[#000000]">
         <p class="text-xs font-semibold text-neutral-400 uppercase tracking-wider">Project Tags</p>
         <div class="flex flex-wrap gap-2">
           {#each $notes.tags as tag}
@@ -165,7 +165,7 @@
   </div>
 
   <!-- Footer -->
-  <div class="px-6 py-4 border-t border-[#21404a] flex flex-col gap-4">
+  <div class="px-6 py-4 border-t border-[#000000] flex flex-col gap-4">
     <!-- Team Avatars & View Report -->
     <div class="flex items-center justify-between">
       <div class="flex items-center gap-2">

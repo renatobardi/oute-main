@@ -34,7 +34,7 @@
   }
 </script>
 
-<div class="px-6 py-4 border-b border-[#21404a] bg-[#162a31] flex items-center justify-between">
+<div class="px-6 py-4 bg-[#000000] flex items-center justify-between">
   <div>
     <p class="text-xs text-neutral-500 font-mono">{interview.id}</p>
     <h2 class="text-lg font-semibold text-white">{interview.title}</h2>

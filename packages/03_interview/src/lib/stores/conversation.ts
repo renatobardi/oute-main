@@ -4,6 +4,7 @@ import type { Interview, Message, Note } from '$lib/types/index';
 export const currentInterview = writable<Interview | null>(null);
 export const messages = writable<Message[]>([]);
 export const initialInputValue = writable<string>('');
+export const chatWindowScrollState = writable({ showTopGradient: false, showBottomGradient: false });
 export const notes = writable<Note>({
   summary: '',
   metrics: {

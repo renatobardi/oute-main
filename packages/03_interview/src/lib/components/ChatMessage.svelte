@@ -14,12 +14,12 @@
     : 'justify-start'}"
 >
   <div
-    class="max-w-xs px-4 py-2 rounded-lg {sender === 'user'
-      ? 'bg-primary-600 text-white'
-      : 'bg-[#21404a] text-neutral-200'}"
+    class="max-w-xs px-4 py-2 rounded-lg border border-[#21404a] {sender === 'user'
+      ? 'bg-[#0f1e23] text-white'
+      : 'bg-[#0f1e23] text-white'}"
   >
     <p class="text-sm">{content}</p>
-    <p class="text-xs mt-1 {sender === 'user' ? 'text-primary-100' : 'text-neutral-500'}">
+    <p class="text-xs mt-1 {sender === 'user' ? 'text-neutral-500' : 'text-neutral-500'}">
       {formatTime(timestamp)}
     </p>
   </div>

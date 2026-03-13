@@ -21,7 +21,7 @@
   }
 </script>
 
-<div class="min-h-screen bg-dark-bg flex flex-col">
+<div class="h-screen bg-dark-bg flex flex-col">
   <!-- Main Content -->
   <main class="flex-1 overflow-hidden bg-dark-surface">
     <slot />

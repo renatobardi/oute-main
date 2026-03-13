@@ -40,7 +40,7 @@
   --color-neutral-900: #111827;
 
   /* Dark mode */
-  --color-dark-bg: #0f1e23;
+  --color-dark-bg: #000000;
   --color-dark-sidebar: #0a1519;
   --color-dark-surface: #162a31;
   --color-dark-border: #21404a;

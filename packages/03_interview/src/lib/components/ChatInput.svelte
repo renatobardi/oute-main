@@ -53,28 +53,51 @@
   }
 </script>
 
-<div class="px-6 py-4 border-t border-[#21404a] bg-[#162a31]">
-  <div class="flex gap-3 items-end">
-    <!-- Add Content Button -->
-    <button
-      class="flex-shrink-0 w-10 h-10 rounded-lg bg-[#0f1e23] border border-[#21404a] flex items-center justify-center text-primary-600 hover:bg-[#1a2a30] transition-colors"
-      title="Adicionar anexo"
-    >
-      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-      </svg>
-    </button>
+<div class="px-6 py-4 border-t border-[#000000] bg-[#000000]">
+  <div class="relative">
+    <!-- Message Input with Clip Icon Inside -->
+    <div class="flex-1 relative">
+      <!-- Icons Container -->
+      <div class="absolute left-4 top-1/2 -translate-y-1/2 flex flex-col gap-4 z-10">
+        <!-- Clip/Attachment Button -->
+        <button
+          class="w-5 h-5 text-neutral-400 hover:text-neutral-200 transition-colors flex items-center justify-center"
+          title="Adicionar anexo"
+        >
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.414a6 6 0 108.486 8.486L7.586 15" />
+          </svg>
+        </button>
 
-    <!-- Message Input -->
-    <textarea
-      bind:value={inputValue}
-      on:keydown={handleKeydown}
-      placeholder="Escreva sua mensagem..."
-      class="flex-1 bg-[#0f1e23] border border-[#21404a] rounded-lg px-4 py-2 text-sm text-neutral-300 placeholder-neutral-500 resize-none focus:outline-none focus:border-primary-600 focus:ring-1 focus:ring-primary-600"
-      rows="3"
-    ></textarea>
+        <!-- Help/Info Button -->
+        <button
+          class="w-5 h-5 text-neutral-400 hover:text-neutral-200 transition-colors flex items-center justify-center"
+          title="Ajuda"
+        >
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.546-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        </button>
+      </div>
 
-    <!-- Send Button -->
-    <Button variant="primary" size="sm" on:click={handleSend}>Enviar</Button>
+      <textarea
+        bind:value={inputValue}
+        on:keydown={handleKeydown}
+        placeholder="Digite sua resposta aqui..."
+        class="w-full bg-[#0f1e23] border border-[#21404a] rounded-lg pl-12 pr-14 py-2 text-sm text-white placeholder-neutral-500 resize-none focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
+        rows="3"
+      ></textarea>
+
+      <!-- Send Button Inside -->
+      <button
+        on:click={handleSend}
+        class="absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 rounded-lg bg-primary-500 hover:bg-primary-600 flex items-center justify-center text-[#0f1e23] transition-colors z-10"
+        title="Enviar mensagem"
+      >
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+        </svg>
+      </button>
+    </div>
   </div>
 </div>
