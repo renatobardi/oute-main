@@ -11,42 +11,49 @@
     }
     return val.toString();
   };
+
+  const getColorName = (color: string): string => {
+    const colorNames: Record<string, string> = {
+      '#3B82F6': 'from-blue-500 to-blue-600',
+      '#8B5CF6': 'from-purple-500 to-purple-600',
+      '#EC4899': 'from-pink-500 to-pink-600',
+    };
+    return colorNames[color] || 'from-blue-500 to-blue-600';
+  };
 </script>
 
 <div class="w-full">
-  {#if label}
-    <p class="text-xs text-neutral-500 mb-2">{label}</p>
-  {/if}
-
-  <!-- Range Bar -->
-  <div class="flex items-center gap-3 mb-3">
-    <span class="text-xs text-neutral-400 font-medium w-16 text-right">
+  <!-- Range Bar with Min/Max Labels -->
+  <div class="flex items-center gap-2 mb-3">
+    <!-- Min Value -->
+    <span class="text-xs text-neutral-500 font-semibold min-w-max">
       {formatValue(minValue)}
     </span>
 
     <!-- Bar Container -->
-    <div class="flex-1 h-6 bg-[#0f1e23] border border-[#21404a] rounded-lg relative overflow-hidden">
-      <!-- Colored Bar -->
+    <div class="flex-1 relative h-8 rounded-lg bg-neutral-900 overflow-hidden group">
+      <!-- Gradient Bar -->
       <div
-        class="h-full flex items-center justify-center"
-        style="width: 100%; background: linear-gradient(90deg, {barColor}, {barColor}aa);"
+        class="h-full bg-gradient-to-r transition-all duration-300"
+        style="width: 100%; background: linear-gradient(90deg, {barColor}, {barColor}cc);"
       >
+        <!-- Left Dot (Min) -->
         <div
-          class="w-2 h-2 bg-white rounded-full shadow-lg"
-          style="position: absolute; left: 50%; transform: translateX(-50%);"
+          class="absolute left-0 top-1/2 transform -translate-y-1/2 -translate-x-1/2 w-3 h-3 rounded-full bg-white shadow-md border-2 border-neutral-800 transition-all"
+          style="background: {barColor}; box-shadow: 0 0 8px {barColor}80;"
+        />
+
+        <!-- Right Dot (Max) -->
+        <div
+          class="absolute right-0 top-1/2 transform -translate-y-1/2 translate-x-1/2 w-3 h-3 rounded-full bg-white shadow-md border-2 border-neutral-800 transition-all"
+          style="background: {barColor}; box-shadow: 0 0 8px {barColor}80;"
         />
       </div>
     </div>
 
-    <span class="text-xs text-neutral-400 font-medium w-16">
+    <!-- Max Value -->
+    <span class="text-xs text-neutral-500 font-semibold min-w-max">
       {formatValue(maxValue)}
     </span>
   </div>
-
-  <!-- T-Shirt Size Label (if provided) -->
-  {#if tshirtSize}
-    <p class="text-xs text-neutral-500 text-center mb-2">
-      <span class="font-semibold text-primary-400">T-shirt: {tshirtSize}</span>
-    </p>
-  {/if}
 </div>
