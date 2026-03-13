@@ -78,7 +78,7 @@
   <div class="flex-1 overflow-y-auto px-6 py-5 space-y-6">
     <!-- Progress Section -->
     <div class="space-y-4">
-      <div class="flex justify-between items-start">
+      <div class="flex justify-between items-center">
         <div>
           <div class="flex items-center gap-2 mb-2">
             <p class="text-xs font-semibold text-neutral-400 uppercase tracking-wider">Current Progress</p>
