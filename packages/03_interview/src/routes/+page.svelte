@@ -33,6 +33,8 @@
           sender: 'user',
           content: 'Olá, gostaria de estimar um projeto de plataforma web.',
           type: 'text',
+          userName: 'João Silva',
+          avatarColor: 'bg-blue-500',
         },
         {
           id: '2',
@@ -48,6 +50,8 @@
           sender: 'user',
           content: 'Sim, é um app mobile com backend, temos 3 meses de prazo.',
           type: 'text',
+          userName: 'Maria Santos',
+          avatarColor: 'bg-pink-500',
         },
         {
           id: '4',
@@ -63,6 +67,8 @@
           sender: 'user',
           content: 'Que funcionalidades você acha que são essenciais?',
           type: 'text',
+          userName: 'João Silva',
+          avatarColor: 'bg-blue-500',
         },
         {
           id: '6',
@@ -78,6 +84,8 @@
           sender: 'user',
           content: 'E quanto à segurança? Precisamos de certificação?',
           type: 'text',
+          userName: 'Carlos Mendes',
+          avatarColor: 'bg-green-500',
         },
         {
           id: '8',
@@ -93,6 +101,8 @@
           sender: 'user',
           content: 'Qual seria o custo aproximado dessa implementação?',
           type: 'text',
+          userName: 'Maria Santos',
+          avatarColor: 'bg-pink-500',
         },
         {
           id: '10',
@@ -108,6 +118,8 @@
           sender: 'user',
           content: 'Podemos dividir em fases de entrega?',
           type: 'text',
+          userName: 'João Silva',
+          avatarColor: 'bg-blue-500',
         },
         {
           id: '12',
@@ -123,6 +135,8 @@
           sender: 'user',
           content: 'Ótimo! Vamos começar com essa abordagem.',
           type: 'text',
+          userName: 'Carlos Mendes',
+          avatarColor: 'bg-green-500',
         },
         {
           id: '14',
@@ -158,7 +172,7 @@
 
   <!-- Center Chat Window -->
   <main class="flex-1 flex flex-col h-full">
-    <div class="flex-1 overflow-y-auto">
+    <div class="flex-1">
       <ChatWindow />
     </div>
     <div>
