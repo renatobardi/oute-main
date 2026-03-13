@@ -113,8 +113,9 @@
           <span class="text-neutral-500"> Total</span>
         </div>
         {#if estimatedHours.tshirtSize}
-          <div class="px-3 py-1.5 rounded border border-primary-600 text-primary-400 text-xs font-semibold bg-primary-500/10">
-            T-SHIRT: {estimatedHours.tshirtSize}
+          <div class="flex items-center gap-2 px-3 py-1.5 rounded border border-primary-500/30 text-primary-500 text-sm font-semibold">
+            <span class="material-symbols-outlined text-lg">checkroom</span>
+            {estimatedHours.tshirtSize}
           </div>
         {/if}
       </div>
