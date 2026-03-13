@@ -1,5 +1,5 @@
 <div
-  class="flex items-center justify-between px-8 py-4 border-t border-[#21404a] text-xs text-neutral-500"
+  class="flex items-center justify-between px-8 py-4 text-xs text-neutral-500"
 >
   <div class="flex items-center gap-6">
     <a href="/docs" class="hover:text-neutral-300 transition-colors">Documentation</a>

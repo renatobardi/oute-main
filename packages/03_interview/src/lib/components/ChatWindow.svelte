@@ -65,12 +65,14 @@
   <!-- Messages -->
   <div class="flex-1 relative overflow-hidden bg-[#000000]">
     <!-- Scrollable Content -->
-    <div bind:this={scrollContainer} class="absolute inset-0 overflow-y-auto">
+    <div bind:this={scrollContainer} class="absolute inset-0 overflow-y-scroll">
       {#each $messages as message (message.id)}
         <ChatMessage
           sender={message.sender}
           content={message.content}
           timestamp={message.timestamp}
+          userName={message.userName || 'User'}
+          avatarColor={message.avatarColor || 'bg-slate-600'}
         />
       {/each}
 
@@ -79,19 +81,19 @@
     </div>
 
     <!-- Top Gradient Fade (Fixed overlay) -->
-    <div
-      class="pointer-events-none absolute top-0 left-0 right-0 h-12 transition-opacity duration-200"
-      class:opacity-0={!$chatWindowScrollState.showTopGradient}
-      class:opacity-100={$chatWindowScrollState.showTopGradient}
-      style="background: linear-gradient(to bottom, rgba(0, 0, 0, 0.8), transparent); z-index: 10;"
-    />
+    {#if $chatWindowScrollState.showTopGradient}
+      <div
+        class="pointer-events-none absolute top-0 left-0 right-0 transition-opacity duration-200"
+        style="height: 40px; background: linear-gradient(to bottom, rgba(10, 10, 15, 0.95), transparent); z-index: 20;"
+      />
+    {/if}
 
     <!-- Bottom Gradient Fade (Fixed overlay) -->
-    <div
-      class="pointer-events-none absolute bottom-0 left-0 right-0 h-12 transition-opacity duration-200"
-      class:opacity-0={!$chatWindowScrollState.showBottomGradient}
-      class:opacity-100={$chatWindowScrollState.showBottomGradient}
-      style="background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent); z-index: 10;"
-    />
+    {#if $chatWindowScrollState.showBottomGradient}
+      <div
+        class="pointer-events-none absolute bottom-0 left-0 right-0 transition-opacity duration-200"
+        style="height: 40px; background: linear-gradient(to top, rgba(10, 10, 15, 0.95), transparent); z-index: 20;"
+      />
+    {/if}
   </div>
 </div>

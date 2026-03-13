@@ -4,16 +4,40 @@
   import { onMount } from 'svelte';
 
   let inputValue = '';
+  let textareaElement: HTMLTextAreaElement;
+  const minRows = 3;
+  const maxRows = 7;
+  const lineHeight = 20; // Approximate line height in pixels
 
   // Load initial value from store when component mounts
   onMount(() => {
+    // Initialize textarea height
+    adjustTextareaHeight();
+
     initialInputValue.subscribe(value => {
       if (value) {
         inputValue = value;
         initialInputValue.set(''); // Clear after using
+        adjustTextareaHeight();
       }
     })();
   });
+
+  function adjustTextareaHeight() {
+    if (textareaElement) {
+      textareaElement.style.height = 'auto';
+      const scrollHeight = textareaElement.scrollHeight;
+      const minHeight = minRows * lineHeight + 16; // 16px for padding
+      const maxHeight = maxRows * lineHeight + 16;
+      const newHeight = Math.max(minHeight, Math.min(scrollHeight, maxHeight));
+      textareaElement.style.height = newHeight + 'px';
+      textareaElement.style.overflowY = scrollHeight > maxHeight ? 'auto' : 'hidden';
+    }
+  }
+
+  function handleInput() {
+    adjustTextareaHeight();
+  }
 
   function handleSend() {
     if (inputValue.trim()) {
@@ -28,6 +52,7 @@
         },
       ]);
       inputValue = '';
+      adjustTextareaHeight();
 
       // Simulate AI response after a delay
       setTimeout(() => {
@@ -81,11 +106,13 @@
       </div>
 
       <textarea
+        bind:this={textareaElement}
         bind:value={inputValue}
         on:keydown={handleKeydown}
+        on:input={handleInput}
         placeholder="Digite sua resposta aqui..."
-        class="w-full bg-[#0f1e23] border border-[#21404a] rounded-lg pl-12 pr-14 py-2 text-sm text-white placeholder-neutral-500 resize-none focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
-        rows="3"
+        class="w-full bg-[#0f1e23] border border-[#21404a] rounded-lg pl-12 pr-14 py-2 text-sm text-white placeholder-neutral-500 resize-none focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500 overflow-hidden"
+        rows="1"
       ></textarea>
 
       <!-- Send Button Inside -->

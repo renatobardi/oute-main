@@ -2,6 +2,7 @@
   import ProgressBar from './ProgressBar.svelte';
   import RangeVisualization from './RangeVisualization.svelte';
   import { notes } from '$lib/stores/conversation';
+  import { users } from '$lib/stores/users';
 
   // Parse estimated hours range
   const parseEstimatedHours = (value: string): { min: number; max: number; tshirtSize?: string } => {
@@ -65,22 +66,19 @@
 </script>
 
 <div class="flex flex-col h-full bg-[#000000]">
-  <!-- Header -->
-  <div class="px-6 py-5 border-b border-[#000000] flex items-center justify-end">
-    <button class="text-neutral-500 hover:text-neutral-300 transition-colors">
-      <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-        <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z" />
-      </svg>
-    </button>
-  </div>
-
   <!-- Scrollable Content -->
   <div class="flex-1 overflow-y-auto px-6 py-5 space-y-6">
     <!-- Progress Section -->
     <div class="space-y-4">
-      <div class="flex items-center gap-2">
-        <p class="text-xs font-semibold text-neutral-400 uppercase tracking-wider">Current Progress</p>
-        <button class="text-neutral-500 hover:text-neutral-300 transition-colors">
+      <div class="flex items-center">
+        <button class="flex items-center justify-center text-neutral-400 hover:text-neutral-200 transition-colors p-1 flex-shrink-0">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <rect height="18" rx="5" ry="5" width="18" x="3" y="3"></rect>
+            <line x1="12" x2="12" y1="3" y2="21"></line>
+          </svg>
+        </button>
+        <p class="text-xs font-semibold text-neutral-400 uppercase tracking-wider flex-1 text-center">Current Progress</p>
+        <button class="flex items-center justify-center text-neutral-400 hover:text-neutral-200 transition-colors p-1 flex-shrink-0">
           <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
             <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z" />
           </svg>
@@ -169,15 +167,11 @@
     <div class="space-y-3 pt-2 border-t border-[#000000]">
       <p class="text-xs font-semibold text-neutral-400 uppercase tracking-wider">Co-authors</p>
       <div class="flex items-center gap-2">
-        <div class="w-6 h-6 rounded-full bg-blue-500 flex items-center justify-center text-white text-xs font-bold">
-          A
-        </div>
-        <div class="w-6 h-6 rounded-full bg-purple-500 flex items-center justify-center text-white text-xs font-bold">
-          B
-        </div>
-        <button class="w-6 h-6 rounded-full bg-slate-700 hover:bg-slate-600 flex items-center justify-center text-white text-xs font-bold transition-colors">
-          +4
-        </button>
+        {#each users as user}
+          <div class="w-6 h-6 rounded-full {user.avatarColor} flex items-center justify-center text-white text-xs font-bold" title={user.name}>
+            {user.initials}
+          </div>
+        {/each}
       </div>
     </div>
   </div>
@@ -190,7 +184,7 @@
         Dashboard
       </button>
       <button class="flex items-center justify-center rounded-lg bg-primary-500 py-2 text-sm font-bold text-[#0f1e23] hover:bg-primary-600 transition-colors">
-        Projetos
+        Projects
       </button>
     </div>
   </div>
