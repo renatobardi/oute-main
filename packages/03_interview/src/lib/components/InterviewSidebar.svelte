@@ -1,5 +1,6 @@
 <script lang="ts">
   import { currentInterview } from '$lib/stores/conversation';
+  import { OuteLogo } from '@oute/design-system';
 
   let searchQuery = '';
   let interviews = [
@@ -49,12 +50,7 @@
 <aside class="w-72 flex-shrink-0 border-r border-[#21404a] bg-[#0a1519] flex flex-col justify-between p-4">
   <div class="flex flex-col gap-6">
     <!-- Logo -->
-    <div class="flex items-center gap-3 px-2">
-      <div class="size-8 bg-primary-500 rounded-lg flex items-center justify-center text-[#0f1e23] flex-shrink-0">
-        <span class="material-symbols-outlined text-lg">rocket_launch</span>
-      </div>
-      <h1 class="text-xl font-bold tracking-tight text-white">Oute</h1>
-    </div>
+    <OuteLogo size="sm" showSlogan={false} horizontal />
 
     <!-- Action Button -->
     <button class="flex w-full items-center justify-center gap-2 rounded-lg bg-primary-500 py-2.5 text-sm font-bold text-[#0f1e23] hover:bg-primary-600 transition-colors">
