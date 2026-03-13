@@ -1,6 +1,5 @@
 <script lang="ts">
   import { page } from '$app/stores';
-  import Sidebar from '$lib/components/Sidebar.svelte';
   import ChatWindow from '$lib/components/ChatWindow.svelte';
   import NotesPanel from '$lib/components/NotesPanel.svelte';
   import { currentInterview, messages, notes, initialInputValue } from '$lib/stores/conversation';
@@ -75,17 +74,12 @@
 </script>
 
 <div class="flex h-full w-full">
-  <!-- Left Sidebar -->
-  <div class="hidden lg:flex lg:w-64 flex-col h-full border-r border-[#21404a]">
-    <Sidebar />
-  </div>
-
   <!-- Center Chat Window -->
   <div class="flex-1 flex flex-col h-full">
     <ChatWindow />
   </div>
 
-  <!-- Right Notes Panel -->
+  <!-- Right Notes Panel (Cockpit) -->
   <div class="hidden lg:flex lg:w-80 flex-col h-full border-l border-[#21404a]">
     <NotesPanel />
   </div>

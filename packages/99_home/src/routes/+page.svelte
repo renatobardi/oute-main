@@ -17,7 +17,7 @@
 
     // Check if user is already authenticated
     const token = getToken();
-    if (token) {
+    if (token !== null) {
       ctaHref = '/chat';
       ctaText = 'Entrar no Chat';
     }

@@ -201,33 +201,48 @@ When modifying `packages/design-system/`:
 
 ## Git Workflow
 
+> 📖 **Para um guia completo sobre gitflow e CI/CD, veja [`GITFLOW_AND_CICD.md`](./GITFLOW_AND_CICD.md)**
+
 ```bash
-# Update develop branch
+# 1. Update develop branch
 git checkout develop
 git pull origin develop
 
-# Create feature branch
+# 2. Create feature branch
 git checkout -b feature/my-feature
 
-# Make changes, commit
+# 3. Make changes and commit
 git add .
 git commit -m "feat(scope): description"
 
-# Push to remote
+# 4. Push to remote
 git push -u origin feature/my-feature
 
-# On GitHub: Open PR to develop
+# 5. On GitHub: Open PR to develop branch
+#    CI/CD runs automatically - wait for all checks to pass
 
-# After approval: merge
+# 6. After approval: Merge via GitHub
+#    Squash and merge recommended for clean history
+
+# 7. Cleanup local branch
 git checkout develop
 git pull origin develop
-git merge feature/my-feature
-git push origin develop
-
-# Delete feature branch
 git branch -d feature/my-feature
 git push origin --delete feature/my-feature
+
+# 8. (Optional) Merge to main for production deployment
+#    Only do this when feature is tested and approved
+git checkout main
+git pull origin main
+git merge feature/my-feature
+git push origin main
+# ⚡ This triggers automatic deployment!
 ```
+
+**Branch Strategy:**
+- `develop` → Destination for all feature PRs (integration branch)
+- `main` → Production (auto-deploys to VM when updated)
+- `staging` → Optional pre-production testing
 
 ## Quality Standards
 
