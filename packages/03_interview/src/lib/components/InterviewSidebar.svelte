@@ -115,9 +115,8 @@
         <p class="text-[11px] text-slate-500">Professional</p>
       </div>
     </div>
-    <button class="flex items-center gap-3 rounded-lg px-3 py-2 hover:bg-white/5 cursor-pointer text-slate-400 transition-colors">
+    <button class="flex items-center gap-3 rounded-lg px-3 py-2 hover:bg-white/5 cursor-pointer text-slate-400 transition-colors" title="Settings">
       <span class="material-symbols-outlined text-[20px]">settings</span>
-      <p class="text-sm font-medium">Configurações</p>
     </button>
   </div>
 </aside>
