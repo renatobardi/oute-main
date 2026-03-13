@@ -28,7 +28,7 @@
   >
     {#if sender === 'ai'}
       <div class="absolute -top-2 -right-2 w-6 h-6 flex items-center justify-center bg-[#000000] rounded-full border border-[#21404a]">
-        <div class="w-3 h-3">
+        <div class="w-3 h-3 flex items-center justify-center">
           <OuteLogo size="xs" showSlogan={false} horizontal={false} />
         </div>
       </div>
