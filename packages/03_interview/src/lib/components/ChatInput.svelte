@@ -1,7 +1,7 @@
 <script lang="ts">
   import { Button } from '@oute/design-system';
   import { messages, initialInputValue } from '$lib/stores/conversation';
-  import { onMount } from 'svelte';
+  import { onMount, tick } from 'svelte';
 
   let inputValue = '';
   let textareaElement: HTMLTextAreaElement;
@@ -9,18 +9,18 @@
   const maxRows = 7;
   const lineHeight = 20; // Approximate line height in pixels
 
-  // Load initial value from store when component mounts
-  onMount(() => {
-    // Initialize textarea height
-    adjustTextareaHeight();
+  // React to store changes (handles both initial load and reference/reply fills)
+  $: if ($initialInputValue) {
+    inputValue = $initialInputValue;
+    initialInputValue.set('');
+    tick().then(() => {
+      adjustTextareaHeight();
+      textareaElement?.focus();
+    });
+  }
 
-    initialInputValue.subscribe(value => {
-      if (value) {
-        inputValue = value;
-        initialInputValue.set(''); // Clear after using
-        adjustTextareaHeight();
-      }
-    })();
+  onMount(() => {
+    adjustTextareaHeight();
   });
 
   function adjustTextareaHeight() {
@@ -111,7 +111,7 @@
         on:keydown={handleKeydown}
         on:input={handleInput}
         placeholder="Digite sua resposta aqui..."
-        class="w-full bg-[#0f1e23] border border-[#21404a] rounded-lg pl-12 pr-14 py-2 text-sm text-white placeholder-neutral-500 resize-none focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500 overflow-hidden"
+        class="w-full bg-primary-500/10 border border-primary-500/20 rounded-lg pl-12 pr-14 py-2 text-sm text-white placeholder-neutral-500 resize-none focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500 overflow-hidden"
         rows="1"
       ></textarea>
 
