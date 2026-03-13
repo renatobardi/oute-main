@@ -17,7 +17,7 @@ let instance: postgres.Sql | null = null;
  * Creates a singleton instance on first call.
  */
 export function getDb(databaseUrl?: string): postgres.Sql {
-  if (instance) return instance;
+  if (instance !== null) return instance;
 
   const url = databaseUrl ?? process.env.DATABASE_URL;
   if (!url) {
@@ -42,7 +42,7 @@ export function getDb(databaseUrl?: string): postgres.Sql {
  * Call on server shutdown for graceful cleanup.
  */
 export async function closeDb(): Promise<void> {
-  if (instance) {
+  if (instance !== null) {
     await instance.end();
     instance = null;
   }

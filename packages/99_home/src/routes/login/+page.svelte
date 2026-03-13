@@ -9,7 +9,7 @@
 
   async function handleLogin() {
     // Validate inputs
-    if (!email || !password) {
+    if (email === '' || password === '') {
       errorMessage = 'Por favor, preencha email e senha';
       return;
     }
@@ -46,7 +46,7 @@
     <div class="bg-[#162a31] border border-[#21404a] rounded-lg p-8">
       <h1 class="text-2xl font-bold text-white mb-6 text-center">Login</h1>
 
-      {#if errorMessage}
+      {#if errorMessage !== ''}
         <div class="mb-4 p-3 bg-red-900 border border-red-700 rounded text-red-100 text-sm">
           {errorMessage}
         </div>
