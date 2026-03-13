@@ -148,7 +148,7 @@
     <div
       class="pointer-events-none sticky top-0 left-0 right-0 h-4 transition-opacity duration-200"
       style="background: linear-gradient(to bottom, #000000, transparent); opacity: {showTopGradient ? 1 : 0}; z-index: 10;"
-    />
+    ></div>
 
     <!-- Interview Items -->
     <div class="flex flex-col gap-1">
@@ -176,7 +176,7 @@
     <div
       class="pointer-events-none sticky bottom-0 left-0 right-0 h-4 transition-opacity duration-200"
       style="background: linear-gradient(to top, #000000, transparent); opacity: {showBottomGradient ? 1 : 0}; z-index: 10;"
-    />
+    ></div>
   </div>
 
   <!-- Bottom Section (Fixed) -->
@@ -184,7 +184,7 @@
     <div class="flex items-center gap-2 border-t border-[#000000] py-6 px-4">
       <div class="size-8 rounded-full {users[0].avatarColor} flex items-center justify-center text-white font-semibold flex-shrink-0">{users[0].initials}</div>
       <p class="text-sm font-semibold text-white">{users[0].name}</p>
-      <button class="text-neutral-500 hover:text-neutral-300 transition-colors ml-auto">
+      <button class="text-neutral-500 hover:text-neutral-300 transition-colors ml-auto" aria-label="User options">
         <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
           <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z" />
         </svg>

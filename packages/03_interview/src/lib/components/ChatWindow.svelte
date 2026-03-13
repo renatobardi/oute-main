@@ -78,7 +78,7 @@
       {/each}
 
       <!-- Ref para Intersection Observer detectar última mensagem -->
-      <div bind:this={lastMessageRef} class="h-0" />
+      <div bind:this={lastMessageRef} class="h-0"></div>
     </div>
 
     <!-- Top Gradient Fade (Fixed overlay) -->
@@ -86,7 +86,7 @@
       <div
         class="pointer-events-none absolute top-0 left-0 right-0 transition-opacity duration-200"
         style="height: 40px; background: linear-gradient(to bottom, rgba(10, 10, 15, 0.95), transparent); z-index: 20;"
-      />
+      ></div>
     {/if}
 
     <!-- Bottom Gradient Fade (Fixed overlay) -->
@@ -94,7 +94,7 @@
       <div
         class="pointer-events-none absolute bottom-0 left-0 right-0 transition-opacity duration-200"
         style="height: 40px; background: linear-gradient(to top, rgba(10, 10, 15, 0.95), transparent); z-index: 20;"
-      />
+      ></div>
     {/if}
   </div>
 </div>
