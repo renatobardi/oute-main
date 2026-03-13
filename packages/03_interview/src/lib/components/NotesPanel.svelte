@@ -113,9 +113,11 @@
           <span class="text-neutral-500"> Total</span>
         </div>
         {#if estimatedHours.tshirtSize}
-          <div class="flex items-center gap-2 px-3 py-1.5 rounded border border-primary-500/30 text-primary-500 text-sm font-semibold">
-            <span class="material-symbols-outlined text-lg">checkroom</span>
-            {estimatedHours.tshirtSize}
+          <div class="flex items-center gap-3">
+            <svg class="w-6 h-6 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 6h18v3l-2 8h-14l-2-8V6zm3 0v-2a2 2 0 012-2h10a2 2 0 012 2v2" />
+            </svg>
+            <span class="text-white text-lg font-bold">{estimatedHours.tshirtSize}</span>
           </div>
         {/if}
       </div>
