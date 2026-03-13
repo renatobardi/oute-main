@@ -184,7 +184,7 @@
         Dashboard
       </button>
       <button class="flex items-center justify-center rounded-lg bg-primary-500 py-2 text-sm font-bold text-[#0f1e23] hover:bg-primary-600 transition-colors">
-        Projetos
+        Projects
       </button>
     </div>
   </div>
