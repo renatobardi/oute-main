@@ -5,6 +5,7 @@
   import ChatInput from '$lib/components/ChatInput.svelte';
   import NotesPanel from '$lib/components/NotesPanel.svelte';
   import { currentInterview, messages, notes, initialInputValue } from '$lib/stores/conversation';
+  import { sidebarCollapsed } from '$lib/stores/ui';
 
   // React to URL parameter changes
   $: if ($page && $page.url) {
@@ -278,7 +279,7 @@
 
 <div class="flex h-full w-full">
   <!-- Left Sidebar -->
-  <div class="hidden lg:flex lg:w-72 flex-col h-full">
+  <div class="sidebar-transition hidden lg:flex {$sidebarCollapsed ? 'lg:w-20' : 'lg:w-72'} flex-col h-full">
     <InterviewSidebar />
   </div>
 

@@ -1,5 +1,6 @@
 <script lang="ts">
   import { currentInterview } from '$lib/stores/conversation';
+  import { sidebarCollapsed } from '$lib/stores/ui';
   import { OuteLogo } from '@oute/design-system';
   import { users } from '$lib/stores/users';
 
@@ -88,13 +89,19 @@
   );
 </script>
 
-<aside class="w-72 flex-shrink-0 border-r border-[#000000] bg-[#000000] flex flex-col h-full">
+<aside class="sidebar-transition {$sidebarCollapsed ? 'w-20' : 'w-72'} flex-shrink-0 border-r border-[#000000] bg-[#000000] flex flex-col h-full">
   <!-- Header Section -->
   <div class="flex flex-col gap-3 p-4">
     <!-- Logo and Icon Row -->
-    <div class="flex items-center justify-between">
-      <OuteLogo size="xs" showSlogan={false} horizontal />
-      <button class="flex items-center justify-center text-neutral-400 hover:text-neutral-200 transition-colors p-1" title="Menu">
+    <div class={$sidebarCollapsed ? 'flex items-center justify-center' : 'flex items-center justify-between'}>
+      {#if !$sidebarCollapsed}
+        <OuteLogo size="xs" showSlogan={false} horizontal />
+      {/if}
+      <button
+        on:click={() => sidebarCollapsed.toggle()}
+        class="flex items-center justify-center text-neutral-400 hover:text-neutral-200 transition-colors p-1"
+        title={$sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+      >
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
           <rect height="18" rx="5" ry="5" width="18" x="3" y="3"></rect>
           <line x1="12" x2="12" y1="3" y2="21"></line>
@@ -103,12 +110,15 @@
     </div>
 
     <!-- Action Button -->
-    <button class="flex w-full items-center justify-center gap-2 rounded-lg bg-primary-500 py-2.5 text-sm font-bold text-[#0f1e23] hover:bg-primary-600 transition-colors">
-      New Interview
-    </button>
+    {#if !$sidebarCollapsed}
+      <button class="flex w-full items-center justify-center gap-2 rounded-lg bg-primary-500 py-2.5 text-sm font-bold text-[#0f1e23] hover:bg-primary-600 transition-colors">
+        New Interview
+      </button>
+    {/if}
   </div>
 
   <!-- Toolbar Section (Fixed) -->
+  {#if !$sidebarCollapsed}
   <div class="px-4 py-2">
     <!-- Search with Sort/Filter Buttons Inside -->
     <div class="relative flex items-center bg-[#0f1e23] border border-[#21404a] rounded">
@@ -132,8 +142,10 @@
       </div>
     </div>
   </div>
+  {/if}
 
   <!-- Content Section (Scrollable) -->
+  {#if !$sidebarCollapsed}
   <div
     bind:this={contentEl}
     on:scroll={handleScroll}
@@ -173,8 +185,10 @@
       style="background: linear-gradient(to top, #000000, transparent); opacity: {showBottomGradient ? 1 : 0}; z-index: 10;"
     />
   </div>
+  {/if}
 
   <!-- Bottom Section (Fixed) -->
+  {#if !$sidebarCollapsed}
   {#if users.length > 0}
     <div class="flex items-center gap-2 border-t border-[#000000] py-6 px-4">
       <div class="size-8 rounded-full {users[0].avatarColor} flex items-center justify-center text-white font-semibold flex-shrink-0">{users[0].initials}</div>
@@ -185,5 +199,6 @@
         </svg>
       </button>
     </div>
+  {/if}
   {/if}
 </aside>
