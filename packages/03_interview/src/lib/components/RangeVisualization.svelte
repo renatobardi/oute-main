@@ -31,7 +31,6 @@
         class="h-full flex items-center justify-center"
         style="width: 100%; background: linear-gradient(90deg, {barColor}, {barColor}aa);"
       >
-        {/* Centered dot indicator */}
         <div
           class="w-2 h-2 bg-white rounded-full shadow-lg"
           style="position: absolute; left: 50%; transform: translateX(-50%);"
