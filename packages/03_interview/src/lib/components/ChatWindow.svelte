@@ -2,6 +2,7 @@
   import ChatMessage from './ChatMessage.svelte';
   import InterviewHeader from './InterviewHeader.svelte';
   import { messages, currentInterview, chatWindowScrollState } from '$lib/stores/conversation';
+  import { notePanelCollapsed, sidebarCollapsed } from '$lib/stores/ui';
   import { onMount } from 'svelte';
 
   let scrollContainer: HTMLDivElement;
@@ -59,7 +60,7 @@
 <div class="flex flex-col h-full">
   <!-- Header -->
   {#if $currentInterview}
-    <InterviewHeader interview={$currentInterview} />
+    <InterviewHeader interview={$currentInterview} notePanelCollapsed={$notePanelCollapsed} sidebarCollapsed={$sidebarCollapsed} />
   {/if}
 
   <!-- Messages -->
