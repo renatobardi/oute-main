@@ -279,7 +279,7 @@
 
 <div class="flex h-full w-full">
   <!-- Left Sidebar -->
-  <div class="sidebar-transition hidden lg:flex {$sidebarCollapsed ? 'lg:w-0' : 'lg:w-72'} flex-col h-full overflow-hidden">
+  <div class="sidebar-transition hidden lg:flex {$sidebarCollapsed ? 'lg:w-0' : 'lg:w-[340px]'} flex-col h-full overflow-hidden">
     <InterviewSidebar />
   </div>
 
