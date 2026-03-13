@@ -23,38 +23,31 @@
   };
 </script>
 
-<div class="w-full">
-  <!-- Range Bar with Min/Max Labels -->
-  <div class="flex items-center gap-2 mb-3">
-    <!-- Min Value -->
-    <span class="text-xs text-neutral-500 font-semibold min-w-max">
-      {formatValue(minValue)}
-    </span>
+<div class="w-full space-y-2">
+  <!-- Range Bar with Slider visualization -->
+  <div class="relative h-2 w-full bg-slate-800 rounded-lg overflow-hidden">
+    <!-- Gradient Background -->
+    <div
+      class="absolute h-full left-[10%] right-[30%]"
+      style="background: {barColor}40;"
+    />
 
-    <!-- Bar Container -->
-    <div class="flex-1 relative h-8 rounded-lg bg-slate-800 overflow-hidden group">
-      <!-- Gradient Bar -->
-      <div
-        class="h-full bg-gradient-to-r transition-all duration-300"
-        style="width: 100%; background: linear-gradient(90deg, {barColor}, {barColor}cc);"
-      >
-        <!-- Left Dot (Min) -->
-        <div
-          class="absolute left-0 top-1/2 transform -translate-y-1/2 -translate-x-1/2 w-3 h-3 rounded-full bg-white shadow-md border-2 border-neutral-800 transition-all"
-          style="background: {barColor}; box-shadow: 0 0 10px {barColor}, 0 0 20px {barColor}40;"
-        />
+    <!-- Left Dot (Min) -->
+    <div
+      class="absolute w-4 h-4 top-1/2 -translate-y-1/2 left-[10%] rounded-full border-2 transition-all"
+      style="background: {barColor}; border-color: #0f1e23; box-shadow: 0 0 10px {barColor}66;"
+    />
 
-        <!-- Right Dot (Max) -->
-        <div
-          class="absolute right-0 top-1/2 transform -translate-y-1/2 translate-x-1/2 w-3 h-3 rounded-full bg-white shadow-md border-2 border-neutral-800 transition-all"
-          style="background: {barColor}; box-shadow: 0 0 10px {barColor}, 0 0 20px {barColor}40;"
-        />
-      </div>
-    </div>
+    <!-- Right Dot (Max) -->
+    <div
+      class="absolute w-4 h-4 top-1/2 -translate-y-1/2 right-[30%] rounded-full border-2 transition-all"
+      style="background: {barColor}; border-color: #0f1e23; box-shadow: 0 0 10px {barColor}66;"
+    />
+  </div>
 
-    <!-- Max Value -->
-    <span class="text-xs text-neutral-500 font-semibold min-w-max">
-      {formatValue(maxValue)}
-    </span>
+  <!-- Min/Max Labels -->
+  <div class="flex justify-between text-[10px] text-slate-500 font-medium px-1">
+    <span>100k</span>
+    <span>300k</span>
   </div>
 </div>

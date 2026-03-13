@@ -18,23 +18,19 @@
 </script>
 
 <div
-  class="relative h-10 rounded-lg overflow-hidden cursor-pointer transition-all group"
+  class="relative h-3 rounded-full overflow-hidden cursor-pointer transition-all group bg-[#1f2937]"
   on:mouseenter={() => (showTooltip = true)}
   on:mouseleave={() => (showTooltip = false)}
   role="progressbar"
   aria-valuenow={percentage}
   aria-valuemin={0}
   aria-valuemax={100}
-  style="background-color: {colors.bg};"
 >
   <!-- Progress Bar Fill -->
   <div
-    class="h-full flex items-center justify-center text-sm font-bold text-white transition-all duration-500"
-    style="width: {percentage}%; background: linear-gradient(90deg, {colors.bar}, {colors.bar}dd);"
+    class="h-full transition-all duration-500"
+    style="width: {percentage}%; background: linear-gradient(90deg, #06bcf9, #00d2ff);"
   >
-    {#if percentage > 15}
-      <span class="px-2">{percentage}%</span>
-    {/if}
   </div>
 
   <!-- Tooltip on Hover -->
