@@ -91,7 +91,7 @@
 
 <aside class="sidebar-transition w-[340px] flex-shrink-0 border-r border-[#000000] bg-[#000000] flex flex-col h-full">
   <!-- Header Section -->
-  <div class="flex flex-col gap-3 p-4">
+  <div class="flex flex-col gap-5 p-4">
     <!-- Logo and Icon Row -->
     <div class="flex items-center justify-between">
       <OuteLogo size="xs" showSlogan={false} horizontal />
