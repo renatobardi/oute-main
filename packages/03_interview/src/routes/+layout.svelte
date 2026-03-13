@@ -39,9 +39,9 @@
             >Interviews</a
           >
           <a
-            href="/architect-chat"
+            href="/projects"
             class="text-neutral-500 hover:text-neutral-300 font-medium text-sm transition-colors"
-            >Architect Chat</a
+            >Projects</a
           >
         </div>
       </div>

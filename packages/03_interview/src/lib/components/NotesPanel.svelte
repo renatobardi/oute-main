@@ -1,44 +1,88 @@
 <script lang="ts">
-  import MetricBadge from './MetricBadge.svelte';
-  import { notes, exportNotes } from '$lib/stores/conversation';
+  import ProgressBar from './ProgressBar.svelte';
+  import RangeVisualization from './RangeVisualization.svelte';
+  import { notes } from '$lib/stores/conversation';
 
-  let editMode = false;
-  let editContent = $notes.content;
+  // Parse estimated hours range
+  const parseEstimatedHours = (value: string): { min: number; max: number; tshirtSize?: string } => {
+    // Format: "180k - 240k" or "180k-240k"
+    const match = value.match(/(\d+k?)\s*-\s*(\d+k?)/i);
+    if (match) {
+      const parseNum = (str: string): number => {
+        const num = parseFloat(str);
+        return str.toLowerCase().includes('k') ? num * 1000 : num;
+      };
+      return {
+        min: parseNum(match[1]),
+        max: parseNum(match[2]),
+        tshirtSize: 'M', // Default or could be derived
+      };
+    }
+    return { min: 0, max: 0 };
+  };
 
-  function handleSave() {
-    notes.update((n) => ({
-      ...n,
-      content: editContent,
-    }));
-    editMode = false;
-  }
+  // Parse budget range
+  const parseBudget = (value: string): { min: string; max: string } => {
+    // Format: "$134k" - for single value, use as midpoint approximation
+    const match = value.match(/\$([\d.]+)([km]?)/i);
+    if (match) {
+      const num = parseFloat(match[1]);
+      const suffix = match[2] || '';
+      const base = suffix.toLowerCase() === 'k' ? num * 1000 : suffix.toLowerCase() === 'm' ? num * 1000000 : num;
+      return {
+        min: `$${(base * 0.8).toLocaleString('en-US', { maximumFractionDigits: 0 })}`,
+        max: `$${(base * 1.2).toLocaleString('en-US', { maximumFractionDigits: 0 })}`,
+      };
+    }
+    return { min: '$0', max: '$0' };
+  };
 
-  function handleExport() {
-    const exportText = exportNotes();
-    const blob = new Blob([exportText], { type: 'text/plain' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'interview-notes.txt';
-    a.click();
-    URL.revokeObjectURL(url);
-  }
+  $: estimatedHours = parseEstimatedHours($notes.metrics.estimatedHours);
+  $: budgetRange = parseBudget($notes.metrics.budget);
+
+  // Determine progress status based on percentage
+  const getProgressStatus = (
+    percentage: number
+  ): 'Initial' | 'Low' | 'Medium' | 'High' => {
+    if (percentage < 25) return 'Initial';
+    if (percentage < 50) return 'Low';
+    if (percentage < 75) return 'Medium';
+    return 'High';
+  };
+
+  $: progressStatus = getProgressStatus($notes.metrics.progress);
 </script>
 
 <div class="flex flex-col h-full">
   <!-- Header -->
   <div class="px-4 py-4 border-b border-[#21404a]">
-    <h3 class="text-sm font-semibold text-white">Conversation Notes</h3>
+    <h3 class="text-sm font-semibold text-white">Cockpit</h3>
   </div>
 
   <!-- Content -->
-  <div class="flex-1 overflow-y-auto px-4 py-4 space-y-4">
-    <!-- Metrics -->
-    <div class="space-y-2">
-      <MetricBadge label="Progress" value={`${$notes.metrics.progress}%`} icon="📊" />
-      <MetricBadge label="Estimated Hours" value={$notes.metrics.estimatedHours} icon="⏱️" />
-      <MetricBadge label="Budget" value={$notes.metrics.budget} icon="💰" />
+  <div class="flex-1 overflow-y-auto px-4 py-4 space-y-6">
+    <!-- Progress Bar -->
+    <div>
+      <p class="text-xs text-neutral-500 mb-2">Progress</p>
+      <ProgressBar percentage={$notes.metrics.progress} status={progressStatus} />
     </div>
+
+    <!-- Estimated Hours -->
+    <RangeVisualization
+      label="Estimated Hours"
+      minValue={estimatedHours.min}
+      maxValue={estimatedHours.max}
+      tshirtSize={estimatedHours.tshirtSize}
+      barColor="#8B5CF6"
+    />
+
+    <!-- Budget -->
+    <RangeVisualization
+      label="Budget"
+      minValue={budgetRange.min}
+      maxValue={budgetRange.max}
+      barColor="#EC4899"
+    />
 
     <!-- Tags -->
     {#if $notes.tags.length > 0}
@@ -53,51 +97,6 @@
         </div>
       </div>
     {/if}
-
-    <!-- Notes -->
-    <div>
-      <p class="text-xs text-neutral-500 mb-2">Notes</p>
-      {#if editMode}
-        <textarea
-          bind:value={editContent}
-          class="w-full bg-[#0f1e23] border border-[#21404a] rounded px-3 py-2 text-xs text-neutral-300 resize-none focus:outline-none focus:border-primary-600"
-          rows="6"
-        ></textarea>
-        <div class="flex gap-2 mt-2">
-          <button
-            on:click={handleSave}
-            class="flex-1 py-1 px-2 bg-primary-600 hover:bg-primary-700 text-white text-xs rounded transition-colors"
-          >
-            Save
-          </button>
-          <button
-            on:click={() => (editMode = false)}
-            class="flex-1 py-1 px-2 bg-neutral-700 hover:bg-neutral-600 text-white text-xs rounded transition-colors"
-          >
-            Cancel
-          </button>
-        </div>
-      {:else}
-        <p class="text-xs text-neutral-300 bg-[#0f1e23] p-3 rounded min-h-20 whitespace-pre-wrap">
-          {$notes.content}
-        </p>
-        <button
-          on:click={() => (editMode = true)}
-          class="w-full mt-2 py-1 px-2 bg-neutral-700 hover:bg-neutral-600 text-white text-xs rounded transition-colors"
-        >
-          Edit
-        </button>
-      {/if}
-    </div>
   </div>
 
-  <!-- Footer -->
-  <div class="px-4 py-3 border-t border-[#21404a]">
-    <button
-      on:click={handleExport}
-      class="w-full py-2 px-3 bg-secondary-600 hover:bg-secondary-700 text-white text-sm font-medium rounded transition-colors"
-    >
-      📥 Export Notes
-    </button>
-  </div>
 </div>
