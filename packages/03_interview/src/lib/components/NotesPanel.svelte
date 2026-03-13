@@ -66,13 +66,7 @@
 
 <div class="flex flex-col h-full bg-[#000000]">
   <!-- Header -->
-  <div class="px-6 py-5 border-b border-[#000000] flex items-center justify-between">
-    <div class="flex items-center gap-3">
-      <div class="p-2 bg-primary-500/10 rounded-lg">
-        <span class="material-symbols-outlined text-primary-500 text-xl">rocket_launch</span>
-      </div>
-      <h3 class="text-lg font-bold text-white">Cockpit</h3>
-    </div>
+  <div class="px-6 py-5 border-b border-[#000000] flex items-center justify-end">
     <button class="text-neutral-500 hover:text-neutral-300 transition-colors">
       <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
         <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z" />
@@ -84,9 +78,16 @@
   <div class="flex-1 overflow-y-auto px-6 py-5 space-y-6">
     <!-- Progress Section -->
     <div class="space-y-4">
-      <div class="flex justify-between items-end">
+      <div class="flex justify-between items-start">
         <div>
-          <p class="text-xs font-semibold text-neutral-400 uppercase tracking-wider mb-2">Current Progress</p>
+          <div class="flex items-center gap-2 mb-2">
+            <p class="text-xs font-semibold text-neutral-400 uppercase tracking-wider">Current Progress</p>
+            <button class="text-neutral-500 hover:text-neutral-300 transition-colors">
+              <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z" />
+              </svg>
+            </button>
+          </div>
           <div class="text-4xl font-bold text-primary-500">{$notes.metrics.progress}%</div>
         </div>
         <div class="flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-semibold text-emerald-400 bg-emerald-500/20 border border-emerald-500/30">
