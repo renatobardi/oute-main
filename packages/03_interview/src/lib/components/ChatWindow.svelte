@@ -65,7 +65,7 @@
   <!-- Messages -->
   <div class="flex-1 relative overflow-hidden bg-[#000000]">
     <!-- Scrollable Content -->
-    <div bind:this={scrollContainer} class="absolute inset-0 overflow-y-auto">
+    <div bind:this={scrollContainer} class="absolute inset-0 overflow-y-scroll">
       {#each $messages as message (message.id)}
         <ChatMessage
           sender={message.sender}
