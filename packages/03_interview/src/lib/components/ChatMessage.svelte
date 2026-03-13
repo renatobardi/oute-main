@@ -22,7 +22,9 @@
     : 'justify-start'}"
 >
   <div
-    class="relative px-4 py-2 rounded-lg border border-[#21404a] bg-[#0f1e23] text-white {sender === 'ai'
+    class="relative px-4 py-2 rounded-lg border border-primary-500/20 text-white {sender === 'ai'
+      ? 'bg-primary-500/15'
+      : 'bg-primary-500/10'} {sender === 'ai'
       ? 'max-w-[80%]'
       : 'max-w-[60%]'}"
   >
