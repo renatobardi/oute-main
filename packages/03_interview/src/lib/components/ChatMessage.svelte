@@ -22,9 +22,9 @@
     : 'justify-start'}"
 >
   <div
-    class="relative max-w-xs px-4 py-2 rounded-lg border border-[#21404a] {sender === 'user'
-      ? 'bg-[#0f1e23] text-white'
-      : 'bg-[#0f1e23] text-white'}"
+    class="relative px-4 py-2 rounded-lg border border-[#21404a] bg-[#0f1e23] text-white {sender === 'ai'
+      ? 'max-w-[80%]'
+      : 'max-w-[60%]'}"
   >
     {#if sender === 'ai'}
       <div class="absolute -top-2 -right-2 w-6 h-6 flex items-center justify-center bg-[#000000] rounded-full border border-[#21404a]">
