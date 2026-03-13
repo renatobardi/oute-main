@@ -91,7 +91,7 @@
   <!-- Header Section -->
   <div class="flex flex-col gap-3 p-4">
     <!-- Logo -->
-    <OuteLogo size="sm" showSlogan={false} horizontal />
+    <OuteLogo size="xs" showSlogan={false} horizontal />
 
     <!-- Action Button -->
     <button class="flex w-full items-center justify-center gap-2 rounded-lg bg-primary-500 py-2.5 text-sm font-bold text-[#0f1e23] hover:bg-primary-600 transition-colors">

@@ -1,9 +1,10 @@
 <script lang="ts">
-	export let size: 'sm' | 'md' | 'lg' = 'md';
+	export let size: 'xs' | 'sm' | 'md' | 'lg' = 'md';
 	export let showSlogan = true;
 	export let horizontal = false;
 
 	const sizeMap = {
+		xs: 'w-6 h-6',
 		sm: 'w-8 h-8',
 		md: 'w-12 h-12',
 		lg: 'w-16 h-16'
