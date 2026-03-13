@@ -94,7 +94,7 @@
     <!-- Logo and Icon Row -->
     <div class="flex items-center justify-between">
       <OuteLogo size="xs" showSlogan={false} horizontal />
-      <button class="text-neutral-400 hover:text-neutral-200 transition-colors p-1" title="Menu">
+      <button class="flex items-center justify-center text-neutral-400 hover:text-neutral-200 transition-colors p-1" title="Menu">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
           <rect height="18" rx="5" ry="5" width="18" x="3" y="3"></rect>
           <line x1="12" x2="12" y1="3" y2="21"></line>

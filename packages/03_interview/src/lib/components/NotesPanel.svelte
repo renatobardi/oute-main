@@ -71,14 +71,14 @@
     <!-- Progress Section -->
     <div class="space-y-4">
       <div class="flex items-center">
-        <button class="text-neutral-400 hover:text-neutral-200 transition-colors p-1 flex-shrink-0">
+        <button class="flex items-center justify-center text-neutral-400 hover:text-neutral-200 transition-colors p-1 flex-shrink-0">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
             <rect height="18" rx="5" ry="5" width="18" x="3" y="3"></rect>
             <line x1="12" x2="12" y1="3" y2="21"></line>
           </svg>
         </button>
         <p class="text-xs font-semibold text-neutral-400 uppercase tracking-wider flex-1 text-center">Current Progress</p>
-        <button class="text-neutral-400 hover:text-neutral-200 transition-colors p-1 flex-shrink-0">
+        <button class="flex items-center justify-center text-neutral-400 hover:text-neutral-200 transition-colors p-1 flex-shrink-0">
           <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
             <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z" />
           </svg>
