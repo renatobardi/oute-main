@@ -111,7 +111,7 @@
         on:keydown={handleKeydown}
         on:input={handleInput}
         placeholder="Digite sua resposta aqui..."
-        class="w-full bg-[#0f1e23] border border-[#21404a] rounded-lg pl-12 pr-14 py-2 text-sm text-white placeholder-neutral-500 resize-none focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500 overflow-hidden"
+        class="w-full bg-primary-500/10 border border-primary-500/20 rounded-lg pl-12 pr-14 py-2 text-sm text-white placeholder-neutral-500 resize-none focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500 overflow-hidden"
         rows="1"
       ></textarea>
 

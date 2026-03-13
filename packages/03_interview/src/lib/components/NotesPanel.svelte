@@ -67,22 +67,6 @@
 </script>
 
 <div class="sidebar-transition flex flex-col h-full bg-[#000000]">
-  <!-- Header Section with Toggle -->
-  <div class="flex flex-col gap-3 p-4 border-b border-[#000000]">
-    <!-- Toggle Button -->
-    <div class="flex items-center justify-center">
-      <button
-        on:click={() => notePanelCollapsed.toggle()}
-        class="flex items-center justify-center text-neutral-400 hover:text-neutral-200 transition-colors p-1"
-        title={$notePanelCollapsed ? 'Expand notes panel' : 'Collapse notes panel'}
-      >
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-          <rect height="18" rx="5" ry="5" width="18" x="3" y="3"></rect>
-          <line x1="12" x2="12" y1="3" y2="21"></line>
-        </svg>
-      </button>
-    </div>
-  </div>
 
   <!-- Scrollable Content -->
   {#if !$notePanelCollapsed}
@@ -90,7 +74,7 @@
     <!-- Progress Section -->
     <div class="space-y-4">
       <div class="flex items-center">
-        <button class="flex items-center justify-center text-neutral-400 hover:text-neutral-200 transition-colors p-1 flex-shrink-0" aria-label="Toggle panel">
+        <button on:click={() => notePanelCollapsed.toggle()} class="flex items-center justify-center text-neutral-400 hover:text-neutral-200 transition-colors p-1 flex-shrink-0" title={$notePanelCollapsed ? 'Expand notes panel' : 'Collapse notes panel'} aria-label="Toggle panel">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
             <rect height="18" rx="5" ry="5" width="18" x="3" y="3"></rect>
             <line x1="12" x2="12" y1="3" y2="21"></line>
@@ -200,11 +184,11 @@
   {#if !$notePanelCollapsed}
   <div class="px-6 py-4 border-t border-[#000000] flex flex-col gap-4">
     <!-- Action Buttons -->
-    <div class="flex flex-col gap-2">
-      <button class="flex items-center justify-center rounded-lg bg-primary-500 py-2 text-sm font-bold text-[#0f1e23] hover:bg-primary-600 transition-colors">
+    <div class="flex flex-col gap-2 items-center">
+      <button class="flex w-4/5 items-center justify-center rounded-lg bg-primary-500 py-2 text-sm font-bold text-[#0f1e23] hover:bg-primary-600 transition-colors">
         Dashboard
       </button>
-      <button class="flex items-center justify-center rounded-lg bg-primary-500 py-2 text-sm font-bold text-[#0f1e23] hover:bg-primary-600 transition-colors">
+      <button class="flex w-4/5 items-center justify-center rounded-lg bg-transparent py-2 text-sm font-bold text-primary-500 border-2 border-primary-500 hover:bg-primary-500/10 transition-colors">
         Projects
       </button>
     </div>

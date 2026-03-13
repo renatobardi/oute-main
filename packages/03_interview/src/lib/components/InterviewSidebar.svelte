@@ -116,7 +116,7 @@
   <!-- Toolbar Section (Fixed) -->
   <div class="px-4 py-2">
     <!-- Search with Sort/Filter Buttons Inside -->
-    <div class="relative flex items-center bg-[#0f1e23] border border-[#21404a] rounded">
+    <div class="relative flex items-center bg-primary-500/10 border border-primary-500/20 rounded-lg">
       <input
         type="text"
         bind:value={searchQuery}
@@ -156,7 +156,7 @@
         <button
           on:click={() => selectInterview(interview.id)}
           class="w-full text-left rounded-lg px-3 py-2 hover:bg-white/5 transition-colors {$currentInterview?.id === interview.id
-            ? 'bg-primary-500/10 border border-primary-500/20'
+            ? 'bg-primary-500/10 border border-primary-500/20 border-l-2 border-l-primary-500'
             : 'border border-transparent'}"
         >
           <div class="flex items-center justify-between mb-1">
