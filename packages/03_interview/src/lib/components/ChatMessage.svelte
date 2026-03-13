@@ -1,14 +1,12 @@
 <script lang="ts">
   import { OuteLogo } from '@oute/design-system';
-  import { createEventDispatcher } from 'svelte';
+  import { initialInputValue } from '$lib/stores/conversation';
 
   export let sender: 'user' | 'ai';
   export let content: string;
   export let timestamp: Date;
   export let userName: string = 'U';
   export let avatarColor: string = 'bg-slate-600';
-
-  const dispatch = createEventDispatcher();
 
   let copied = false;
 
@@ -27,7 +25,8 @@
   }
 
   function handleReference() {
-    dispatch('reference', { content });
+    const author = sender === 'ai' ? 'Oute AI' : userName;
+    initialInputValue.set(`(${content}) - ${author}\n`);
   }
 </script>
 

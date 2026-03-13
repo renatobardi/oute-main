@@ -1,7 +1,7 @@
 <script lang="ts">
   import { Button } from '@oute/design-system';
   import { messages, initialInputValue } from '$lib/stores/conversation';
-  import { onMount } from 'svelte';
+  import { onMount, tick } from 'svelte';
 
   let inputValue = '';
   let textareaElement: HTMLTextAreaElement;
@@ -9,18 +9,18 @@
   const maxRows = 7;
   const lineHeight = 20; // Approximate line height in pixels
 
-  // Load initial value from store when component mounts
-  onMount(() => {
-    // Initialize textarea height
-    adjustTextareaHeight();
+  // React to store changes (handles both initial load and reference/reply fills)
+  $: if ($initialInputValue) {
+    inputValue = $initialInputValue;
+    initialInputValue.set('');
+    tick().then(() => {
+      adjustTextareaHeight();
+      textareaElement?.focus();
+    });
+  }
 
-    initialInputValue.subscribe(value => {
-      if (value) {
-        inputValue = value;
-        initialInputValue.set(''); // Clear after using
-        adjustTextareaHeight();
-      }
-    })();
+  onMount(() => {
+    adjustTextareaHeight();
   });
 
   function adjustTextareaHeight() {
