@@ -37,7 +37,7 @@
   {#if showTooltip}
     <div class="absolute -top-9 left-1/2 transform -translate-x-1/2 bg-neutral-900 text-white text-xs px-3 py-1.5 rounded whitespace-nowrap z-10 border border-neutral-700">
       {percentage}%
-      <div class="absolute top-full left-1/2 transform -translate-x-1/2 border-3 border-transparent border-t-neutral-900" />
+      <div class="absolute top-full left-1/2 transform -translate-x-1/2 border-3 border-transparent border-t-neutral-900"></div>
     </div>
   {/if}
 </div>

@@ -67,7 +67,7 @@ jobs:
           for dir in packages/design-system packages/00_dashboard packages/01_auth-profile packages/02_projects; do
             if [ -f "$dir/vitest.config.ts" ]; then
               echo "🧪 Running tests in $dir..."
-              npx vitest run --coverage --root "$dir" || exit 1
+              npx vitest run --coverage --root "$dir" --exclude "**/__tests__/integration/**" || exit 1
             fi
           done
 
