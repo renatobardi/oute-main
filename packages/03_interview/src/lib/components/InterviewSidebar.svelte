@@ -181,7 +181,7 @@
 
   <!-- Bottom Section (Fixed) -->
   {#if users.length > 0}
-    <div class="flex items-center gap-2 border-t border-[#000000] py-6 px-4">
+    <div class="flex items-center gap-2 border-t border-[#000000] py-6 px-6">
       <div class="size-8 rounded-full {users[0].avatarColor} flex items-center justify-center text-white font-semibold flex-shrink-0">{users[0].initials}</div>
       <p class="text-sm font-semibold text-white">{users[0].name}</p>
       <button class="text-neutral-500 hover:text-neutral-300 transition-colors ml-auto" aria-label="User options">
