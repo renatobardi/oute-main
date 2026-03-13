@@ -66,7 +66,7 @@
 
 <div class="flex flex-col h-full bg-[#0f1e23]">
   <!-- Header -->
-  <div class="px-6 py-5 border-b border-[#21404a] flex items-center justify-between bg-gradient-to-r from-[#162a31] to-[#0f1e23]">
+  <div class="px-6 py-5 border-b border-[#21404a] flex items-center justify-between bg-gradient-to-r from-[#1a3a47] to-[#0f1e23]">
     <div class="flex items-center gap-3">
       <span class="text-2xl">🚀</span>
       <h3 class="text-lg font-bold text-white">Cockpit</h3>
@@ -79,7 +79,7 @@
   </div>
 
   <!-- Scrollable Content -->
-  <div class="flex-1 overflow-y-auto px-6 py-5 space-y-7">
+  <div class="flex-1 overflow-y-auto px-6 py-5 space-y-6">
     <!-- Progress Section -->
     <div class="space-y-3">
       <p class="text-xs font-semibold text-neutral-400 uppercase tracking-wider">Current Progress</p>
@@ -88,8 +88,8 @@
         <div class="flex-1">
           <div class="text-4xl font-bold text-primary-600">{$notes.metrics.progress}%</div>
         </div>
-        <div class={`px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1 ${statusDisplay.color} bg-opacity-10 bg-current`}>
-          <span class={`w-2 h-2 rounded-full ${statusDisplay.color.replace('text-', 'bg-')}`}></span>
+        <div class="px-3 py-1.5 rounded-full text-xs font-semibold flex items-center gap-1 text-emerald-400 bg-emerald-500/20 border border-emerald-500/30">
+          <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
           {statusDisplay.text}
         </div>
       </div>
@@ -120,7 +120,7 @@
       <RangeVisualization
         minValue={estimatedHours.min}
         maxValue={estimatedHours.max}
-        barColor="#3B82F6"
+        barColor="#0ea5e9"
       />
     </div>
 
@@ -162,13 +162,13 @@
   <!-- Footer -->
   <div class="px-6 py-4 border-t border-[#21404a] flex items-center justify-between bg-gradient-to-r from-[#0f1e23] to-[#162a31]">
     <div class="flex items-center gap-2">
-      <div class="w-6 h-6 rounded-full bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center text-white text-xs font-bold">
+      <div class="w-6 h-6 rounded-full bg-blue-500 flex items-center justify-center text-white text-xs font-bold">
         A
       </div>
-      <div class="w-6 h-6 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white text-xs font-bold">
+      <div class="w-6 h-6 rounded-full bg-purple-500 flex items-center justify-center text-white text-xs font-bold">
         B
       </div>
-      <button class="w-6 h-6 rounded-full bg-neutral-700 hover:bg-neutral-600 flex items-center justify-center text-white text-xs font-bold transition-colors">
+      <button class="w-6 h-6 rounded-full bg-slate-700 hover:bg-slate-600 flex items-center justify-center text-white text-xs font-bold transition-colors">
         +4
       </button>
     </div>

@@ -6,7 +6,7 @@
     Initial: { bg: '#1f2937', bar: '#6B7280' },      // Dark gray / Gray
     Low: { bg: '#7f1d1d', bar: '#EF4444' },          // Dark red / Red
     Medium: { bg: '#78350f', bar: '#FBBF24' },       // Dark amber / Amber
-    High: { bg: '#064e3b', bar: '#10B981' },         // Dark green / Green
+    High: { bg: '#0a4a7f', bar: '#0ea5e9' },         // Dark blue / Cyan
   };
 
   let showTooltip = false;
