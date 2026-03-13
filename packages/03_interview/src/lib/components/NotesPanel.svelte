@@ -3,6 +3,7 @@
   import RangeVisualization from './RangeVisualization.svelte';
   import { notes } from '$lib/stores/conversation';
   import { users } from '$lib/stores/users';
+  import { notePanelCollapsed } from '$lib/stores/ui';
 
   // Parse estimated hours range
   const parseEstimatedHours = (value: string): { min: number; max: number; tshirtSize?: string } => {
@@ -65,8 +66,26 @@
   $: statusDisplay = getStatusDisplay(progressStatus);
 </script>
 
-<div class="flex flex-col h-full bg-[#000000]">
+<div class="sidebar-transition flex flex-col h-full bg-[#000000]">
+  <!-- Header Section with Toggle -->
+  <div class="flex flex-col gap-3 p-4 border-b border-[#000000]">
+    <!-- Toggle Button -->
+    <div class="flex items-center justify-center">
+      <button
+        on:click={() => notePanelCollapsed.toggle()}
+        class="flex items-center justify-center text-neutral-400 hover:text-neutral-200 transition-colors p-1"
+        title={$notePanelCollapsed ? 'Expand notes panel' : 'Collapse notes panel'}
+      >
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <rect height="18" rx="5" ry="5" width="18" x="3" y="3"></rect>
+          <line x1="12" x2="12" y1="3" y2="21"></line>
+        </svg>
+      </button>
+    </div>
+  </div>
+
   <!-- Scrollable Content -->
+  {#if !$notePanelCollapsed}
   <div class="flex-1 overflow-y-auto px-6 py-5 space-y-6">
     <!-- Progress Section -->
     <div class="space-y-4">
@@ -175,8 +194,10 @@
       </div>
     </div>
   </div>
+  {/if}
 
   <!-- Footer -->
+  {#if !$notePanelCollapsed}
   <div class="px-6 py-4 border-t border-[#000000] flex flex-col gap-4">
     <!-- Action Buttons -->
     <div class="flex flex-col gap-2">
@@ -188,4 +209,5 @@
       </button>
     </div>
   </div>
+  {/if}
 </div>

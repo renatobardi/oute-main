@@ -1,11 +1,11 @@
 import { writable } from 'svelte/store';
 
-// Helper para carregar do localStorage (apenas no browser)
-function createSidebarCollapsedStore() {
+// Helper para criar store com localStorage persistence
+function createCollapsedStore(key: string) {
 	// Valor inicial padrão é false (não colapsado)
 	const initialValue =
 		typeof window !== 'undefined'
-			? JSON.parse(localStorage.getItem('sidebarCollapsed') ?? 'false')
+			? JSON.parse(localStorage.getItem(key) ?? 'false')
 			: false;
 
 	const { subscribe, set, update } = writable<boolean>(initialValue);
@@ -13,7 +13,7 @@ function createSidebarCollapsedStore() {
 	// Subscribe para salvar em localStorage sempre que mudar
 	subscribe((value) => {
 		if (typeof window !== 'undefined') {
-			localStorage.setItem('sidebarCollapsed', JSON.stringify(value));
+			localStorage.setItem(key, JSON.stringify(value));
 		}
 	});
 
@@ -25,4 +25,5 @@ function createSidebarCollapsedStore() {
 	};
 }
 
-export const sidebarCollapsed = createSidebarCollapsedStore();
+export const sidebarCollapsed = createCollapsedStore('sidebarCollapsed');
+export const notePanelCollapsed = createCollapsedStore('notePanelCollapsed');
