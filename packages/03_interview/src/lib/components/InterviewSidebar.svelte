@@ -50,6 +50,9 @@
   <div class="flex flex-col gap-6">
     <!-- Logo -->
     <div class="flex items-center gap-3 px-2">
+      <div class="size-8 bg-primary-500 rounded-lg flex items-center justify-center text-[#0f1e23] flex-shrink-0">
+        <span class="material-symbols-outlined text-lg">rocket_launch</span>
+      </div>
       <h1 class="text-xl font-bold tracking-tight text-white">Oute</h1>
     </div>
 
