@@ -1,6 +1,5 @@
 <script lang="ts">
   import ChatMessage from './ChatMessage.svelte';
-  import ChatInput from './ChatInput.svelte';
   import InterviewHeader from './InterviewHeader.svelte';
   import { messages, currentInterview } from '$lib/stores/conversation';
   import { onMount } from 'svelte';
@@ -42,14 +41,14 @@
   }
 </script>
 
-<div class="flex flex-col h-full relative">
+<div class="flex flex-col h-full">
   <!-- Header -->
   {#if $currentInterview}
     <InterviewHeader interview={$currentInterview} />
   {/if}
 
   <!-- Messages -->
-  <div bind:this={scrollContainer} class="flex-1 overflow-y-auto bg-[#0f1e23] pb-28">
+  <div bind:this={scrollContainer} class="flex-1 overflow-y-auto bg-[#0f1e23]">
     {#each $messages as message (message.id)}
       <ChatMessage
         sender={message.sender}
@@ -59,10 +58,5 @@
     {/each}
     <!-- Ref para Intersection Observer detectar última mensagem -->
     <div bind:this={lastMessageRef} class="h-0" />
-  </div>
-
-  <!-- Input (Fixed Bottom) -->
-  <div class="absolute bottom-0 left-0 right-0 bg-[#0f1e23] border-t border-[#21404a] p-4">
-    <ChatInput />
   </div>
 </div>

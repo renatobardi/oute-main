@@ -67,7 +67,12 @@
 <div class="flex flex-col h-full bg-[#0f1e23]">
   <!-- Header -->
   <div class="px-6 py-5 border-b border-[#21404a] flex items-center justify-between">
-    <h3 class="text-lg font-bold text-white">Cockpit</h3>
+    <div class="flex items-center gap-3">
+      <div class="p-2 bg-primary-500/10 rounded-lg">
+        <span class="material-symbols-outlined text-primary-500 text-xl">rocket_launch</span>
+      </div>
+      <h3 class="text-lg font-bold text-white">Cockpit</h3>
+    </div>
     <button class="text-neutral-500 hover:text-neutral-300 transition-colors">
       <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
         <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z" />
@@ -160,24 +165,39 @@
   </div>
 
   <!-- Footer -->
-  <div class="px-6 py-4 border-t border-[#21404a] flex items-center justify-between">
-    <div class="flex items-center gap-2">
-      <div class="w-6 h-6 rounded-full bg-blue-500 flex items-center justify-center text-white text-xs font-bold">
-        A
+  <div class="px-6 py-4 border-t border-[#21404a] flex flex-col gap-4">
+    <!-- Team Avatars & View Report -->
+    <div class="flex items-center justify-between">
+      <div class="flex items-center gap-2">
+        <div class="w-6 h-6 rounded-full bg-blue-500 flex items-center justify-center text-white text-xs font-bold">
+          A
+        </div>
+        <div class="w-6 h-6 rounded-full bg-purple-500 flex items-center justify-center text-white text-xs font-bold">
+          B
+        </div>
+        <button class="w-6 h-6 rounded-full bg-slate-700 hover:bg-slate-600 flex items-center justify-center text-white text-xs font-bold transition-colors">
+          +4
+        </button>
       </div>
-      <div class="w-6 h-6 rounded-full bg-purple-500 flex items-center justify-center text-white text-xs font-bold">
-        B
-      </div>
-      <button class="w-6 h-6 rounded-full bg-slate-700 hover:bg-slate-600 flex items-center justify-center text-white text-xs font-bold transition-colors">
-        +4
+
+      <button class="flex items-center gap-1 text-primary-400 hover:text-primary-300 transition-colors text-sm font-semibold group">
+        View Detailed Report
+        <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+        </svg>
       </button>
     </div>
 
-    <button class="flex items-center gap-1 text-primary-400 hover:text-primary-300 transition-colors text-sm font-semibold group">
-      View Detailed Report
-      <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-      </svg>
-    </button>
+    <!-- Action Buttons -->
+    <div class="flex gap-2">
+      <button class="flex-1 flex items-center justify-center gap-2 rounded-lg bg-primary-500 py-2 text-sm font-bold text-[#0f1e23] hover:bg-primary-600 transition-colors">
+        <span class="material-symbols-outlined text-[18px]">dashboard</span>
+        Dashboard
+      </button>
+      <button class="flex-1 flex items-center justify-center gap-2 rounded-lg bg-primary-500 py-2 text-sm font-bold text-[#0f1e23] hover:bg-primary-600 transition-colors">
+        <span class="material-symbols-outlined text-[18px]">folder_open</span>
+        Projetos
+      </button>
+    </div>
   </div>
 </div>

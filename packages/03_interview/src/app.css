@@ -8,8 +8,8 @@
   --color-primary-200: #a8ddf4;
   --color-primary-300: #77cbee;
   --color-primary-400: #46b9e9;
-  --color-primary-500: #15a7e4;
-  --color-primary-600: #06bcf9;
+  --color-primary-500: #06bcf9;
+  --color-primary-600: #00d2ff;
   --color-primary-700: #0597c9;
   --color-primary-800: #047a99;
   --color-primary-900: #025d69;
@@ -41,6 +41,7 @@
 
   /* Dark mode */
   --color-dark-bg: #0f1e23;
+  --color-dark-sidebar: #0a1519;
   --color-dark-surface: #162a31;
   --color-dark-border: #21404a;
 
