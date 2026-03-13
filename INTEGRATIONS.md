@@ -36,6 +36,7 @@ Guia detalhado dos fluxos de integração entre os 3 domínios da aplicação.
 ### 1.1 Login Process
 
 **User flow**:
+
 1. User fills login form in 00_dashboard
 2. Form submits to 01_auth-profile `/auth/login`
 3. Auth service validates credentials
@@ -46,6 +47,7 @@ Guia detalhado dos fluxos de integração entre os 3 domínios da aplicação.
 **Endpoint**: `POST /auth/login`
 
 **Request**:
+
 ```json
 {
   "email": "user@example.com",
@@ -54,6 +56,7 @@ Guia detalhado dos fluxos de integração entre os 3 domínios da aplicação.
 ```
 
 **Response**:
+
 ```json
 {
   "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
@@ -66,12 +69,13 @@ Guia detalhado dos fluxos de integração entre os 3 domínios da aplicação.
 ```
 
 **Code example** (00_dashboard):
+
 ```typescript
 async function login(email: string, password: string) {
   const response = await fetch('http://localhost:3001/auth/login', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email, password })
+    body: JSON.stringify({ email, password }),
   });
 
   if (response.ok) {
@@ -88,47 +92,52 @@ async function login(email: string, password: string) {
 ### 1.2 JWT Token Storage & Usage
 
 **Where stored**:
+
 - Browser localStorage: `token` key
 - Expires in 24 hours (configurable)
 
 **Usage in other requests**:
+
 ```typescript
 const token = localStorage.getItem('token');
 
 fetch('http://localhost:3002/projects', {
   headers: {
-    'Authorization': `Bearer ${token}`
-  }
+    Authorization: `Bearer ${token}`,
+  },
 });
 ```
 
 ### 1.3 JWT Validation
 
 **Token structure**:
+
 ```
 Header.Payload.Signature
 ```
 
 **Payload** (decoded):
+
 ```json
 {
-  "sub": "user-uuid",          // user ID
+  "sub": "user-uuid", // user ID
   "email": "user@example.com",
-  "iat": 1694000000,           // issued at
-  "exp": 1694086400            // expires in 24h
+  "iat": 1694000000, // issued at
+  "exp": 1694086400 // expires in 24h
 }
 ```
 
 **Validation** (in 02_projects):
+
 ```typescript
 import jwt from 'jsonwebtoken';
 
 export async function validateJWT(token: string): Promise<string | null> {
   try {
     const payload = jwt.verify(token, process.env.JWT_SECRET);
-    return payload.sub;  // user ID
+    return payload.sub; // user ID
   } catch {
-    return null;  // Invalid token
+    return null; // Invalid token
   }
 }
 ```
@@ -138,12 +147,14 @@ export async function validateJWT(token: string): Promise<string | null> {
 **Endpoint**: `POST /auth/logout`
 
 **Request**:
+
 ```bash
 curl -X POST http://localhost:3001/auth/logout \
   -H "Authorization: Bearer <token>"
 ```
 
 **Response**:
+
 ```json
 {
   "message": "Logged out successfully"
@@ -151,6 +162,7 @@ curl -X POST http://localhost:3001/auth/logout \
 ```
 
 **Client side** (00_dashboard):
+
 ```typescript
 function logout() {
   localStorage.removeItem('token');
@@ -171,11 +183,13 @@ function logout() {
 **Endpoint**: `GET /projects`
 
 **Request headers**:
+
 ```
 Authorization: Bearer eyJhbGc...
 ```
 
 **Flow**:
+
 1. 00_dashboard sends GET request to 02_projects with JWT
 2. 02_projects receives request
 3. Extracts JWT from Authorization header
@@ -185,6 +199,7 @@ Authorization: Bearer eyJhbGc...
 7. Returns projects list
 
 **Code example** (02_projects):
+
 ```typescript
 // routes/projects/+server.ts
 
@@ -204,14 +219,11 @@ export async function GET({ request }) {
   }
 
   // Get user's projects
-  const projects = await db.query(
-    'SELECT * FROM projects WHERE user_id = $1',
-    [userId]
-  );
+  const projects = await db.query('SELECT * FROM projects WHERE user_id = $1', [userId]);
 
   return new Response(JSON.stringify(projects), {
     status: 200,
-    headers: { 'Content-Type': 'application/json' }
+    headers: { 'Content-Type': 'application/json' },
   });
 }
 ```
@@ -221,6 +233,7 @@ export async function GET({ request }) {
 **Endpoint**: `POST /projects`
 
 **Request**:
+
 ```json
 {
   "name": "My Project",
@@ -230,12 +243,14 @@ export async function GET({ request }) {
 ```
 
 **Headers**:
+
 ```
 Authorization: Bearer <token>
 Content-Type: application/json
 ```
 
 **Code example** (02_projects):
+
 ```typescript
 export async function POST({ request }) {
   // Validate JWT
@@ -263,6 +278,7 @@ export async function POST({ request }) {
 **Endpoint**: `PATCH /projects/:id`
 
 **Request**:
+
 ```json
 {
   "name": "Updated name",
@@ -285,12 +301,14 @@ export async function POST({ request }) {
 **Endpoint**: `GET /profile`
 
 **Request**:
+
 ```bash
 curl http://localhost:3001/profile \
   -H "Authorization: Bearer <token>"
 ```
 
 **Response**:
+
 ```json
 {
   "id": "uuid-123",
@@ -305,6 +323,7 @@ curl http://localhost:3001/profile \
 **Endpoint**: `PATCH /profile`
 
 **Request**:
+
 ```json
 {
   "name": "New Name"
@@ -401,6 +420,7 @@ Create Project Form
 ### 5.1 Token Expired
 
 **Flow**:
+
 ```
 Request to 02_projects
     ↓
@@ -416,12 +436,13 @@ Redirect to /login
 ```
 
 **Code** (00_dashboard):
+
 ```typescript
 async function fetchProjects() {
   const token = localStorage.getItem('token');
 
   const response = await fetch('http://localhost:3002/projects', {
-    headers: { 'Authorization': `Bearer ${token}` }
+    headers: { Authorization: `Bearer ${token}` },
   });
 
   if (response.status === 401) {
@@ -439,6 +460,7 @@ async function fetchProjects() {
 ### 5.2 Network Errors
 
 **Fallback**:
+
 ```typescript
 try {
   const response = await fetch(url);
@@ -457,6 +479,7 @@ try {
 ### Local Testing with cURL
 
 **Login**:
+
 ```bash
 curl -X POST http://localhost:3001/auth/login \
   -H "Content-Type: application/json" \
@@ -464,12 +487,14 @@ curl -X POST http://localhost:3001/auth/login \
 ```
 
 **Fetch Projects** (replace TOKEN):
+
 ```bash
 curl http://localhost:3002/projects \
   -H "Authorization: Bearer TOKEN"
 ```
 
 **Create Project**:
+
 ```bash
 curl -X POST http://localhost:3002/projects \
   -H "Authorization: Bearer TOKEN" \
@@ -484,6 +509,7 @@ curl -X POST http://localhost:3002/projects \
 ### URLs in Production
 
 Development:
+
 ```
 Dashboard:      http://localhost:3000
 Auth-Profile:   http://localhost:3001
@@ -491,6 +517,7 @@ Projects:       http://localhost:3002
 ```
 
 Production (GCP Cloud Run):
+
 ```
 Dashboard:      https://oute-dashboard-xxx.run.app
 Auth-Profile:   https://oute-auth-profile-xxx.run.app
@@ -504,11 +531,12 @@ Projects:       https://oute-projects-xxx.run.app
 If services run on different domains, configure CORS:
 
 **02_projects (+server.ts)**:
+
 ```typescript
 const headers = {
   'Access-Control-Allow-Origin': process.env.DASHBOARD_URL,
   'Access-Control-Allow-Methods': 'GET, POST, PATCH, DELETE',
-  'Access-Control-Allow-Headers': 'Content-Type, Authorization'
+  'Access-Control-Allow-Headers': 'Content-Type, Authorization',
 };
 ```
 
@@ -516,11 +544,11 @@ const headers = {
 
 ## 📝 Summary
 
-| Flow | From | To | Auth | Data |
-|------|------|-----|------|------|
-| Login | Dashboard | Auth-Profile | Password | JWT + User |
-| Fetch Projects | Dashboard | Projects | JWT | Projects list |
-| Create Project | Dashboard | Projects | JWT | Project data |
-| Get Profile | Dashboard | Auth-Profile | JWT | User profile |
+| Flow           | From      | To           | Auth     | Data          |
+| -------------- | --------- | ------------ | -------- | ------------- |
+| Login          | Dashboard | Auth-Profile | Password | JWT + User    |
+| Fetch Projects | Dashboard | Projects     | JWT      | Projects list |
+| Create Project | Dashboard | Projects     | JWT      | Project data  |
+| Get Profile    | Dashboard | Auth-Profile | JWT      | User profile  |
 
 All inter-service communication is **HTTP-based**, **JWT-authenticated**, and **stateless**.

@@ -7,9 +7,12 @@ const config = {
       out: 'build',
       precompress: false,
     }),
+    paths: {
+      base: '/dashboard',
+    },
     alias: {
-      '$lib': 'src/lib',
-      '@oute/design-system': '../../packages/design-system/src',
+      $lib: 'src/lib',
+      '@oute/design-system': '../../packages/design-system/src/lib/index.ts',
       '@oute/shared': '../../shared',
     },
   },

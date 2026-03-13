@@ -25,7 +25,7 @@ export class RegisterUseCase {
 
     // Step 2: Check if user already exists
     const existingUser = await this.userRepository.findByEmail(email);
-    if (existingUser) {
+    if (existingUser !== null) {
       throw new Error('User already registered');
     }
 
@@ -36,7 +36,7 @@ export class RegisterUseCase {
     const newUser = User.create({
       email,
       passwordHash,
-      name: request.name
+      name: request.name,
     });
 
     // Step 5: Persist user
@@ -46,7 +46,7 @@ export class RegisterUseCase {
     const token = await this.tokenGenerator.generate({
       userId: newUser.id.getValue(),
       email: newUser.email.getValue(),
-      roles: newUser.roles.map(r => r.getValue())
+      roles: newUser.roles.map((r) => r.getValue()),
     });
 
     // Step 7: Return response with token and user data

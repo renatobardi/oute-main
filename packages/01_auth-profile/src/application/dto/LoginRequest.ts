@@ -7,7 +7,7 @@ export class LoginRequest {
     public readonly email: string,
     public readonly password: string
   ) {
-    if (!email || !password) {
+    if (email.length === 0 || password.length === 0) {
       throw new Error('Email and password are required');
     }
   }

@@ -8,7 +8,7 @@ describe('PostgresUserRepository (Integration)', () => {
   let testEmail: Email;
   const passwordHash = '$2b$10$examplehash';
 
-  beforeEach(async () => {
+  beforeEach(() => {
     repository = new PostgresUserRepository();
     testEmail = Email.fromString('test@example.com');
     const passwordObj = Password.fromHash(passwordHash);
@@ -16,7 +16,7 @@ describe('PostgresUserRepository (Integration)', () => {
     testUser = User.create({
       email: testEmail,
       passwordHash: passwordObj,
-      name: 'Test User'
+      name: 'Test User',
     });
   });
 
@@ -38,9 +38,9 @@ describe('PostgresUserRepository (Integration)', () => {
         email: testUser.email.getValue(),
         passwordHash: passwordHash,
         name: 'Updated Name',
-        roles: testUser.roles.map(r => r.getValue()),
+        roles: testUser.roles.map((r) => r.getValue()),
         createdAt: testUser['createdAt'],
-        lastLogin: new Date()
+        lastLogin: new Date(),
       });
 
       await repository.save(updatedUser);
@@ -133,7 +133,7 @@ describe('PostgresUserRepository (Integration)', () => {
       const user2 = User.create({
         email: Email.fromString('other@example.com'),
         passwordHash: Password.fromHash(passwordHash),
-        name: 'Other User'
+        name: 'Other User',
       });
 
       await repository.save(user1);

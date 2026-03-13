@@ -9,9 +9,17 @@
     ".": "./index.ts",
     "./types": "./types.ts",
     "./constants": "./constants.ts",
-    "./utils": "./utils.ts"
+    "./utils": "./utils.ts",
+    "./database": "./database.ts"
   },
   "private": true,
+  "scripts": {
+    "build": "echo 'Shared package does not require build'",
+    "test": "echo 'No tests configured for shared package'"
+  },
+  "dependencies": {
+    "postgres": "^3.4.0"
+  },
   "devDependencies": {
     "typescript": "^5.3.3"
   }

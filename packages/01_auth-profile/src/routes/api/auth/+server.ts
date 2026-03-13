@@ -12,12 +12,12 @@ export const POST: RequestHandler = async ({ request, url }) => {
   try {
     // Get dependencies from somewhere (DI container or globals)
     // For now, we'll create them here (should come from proper DI setup)
-    const deps = (global as any).__authDeps;
+    const deps = (global as unknown).__authDeps;
 
-    if (!deps) {
+    if (deps === null || deps === undefined) {
       return new Response(JSON.stringify({ error: 'Service not initialized' }), {
         status: 500,
-        headers: { 'Content-Type': 'application/json' }
+        headers: { 'Content-Type': 'application/json' },
       });
     }
 
@@ -25,7 +25,7 @@ export const POST: RequestHandler = async ({ request, url }) => {
     const body = await request.json().catch(() => ({}));
 
     // Determine action from query parameter
-    const action = url.searchParams.get('action') || 'login';
+    const action = url.searchParams.get('action') ?? 'login';
 
     if (action === 'login') {
       // Handle login
@@ -34,7 +34,7 @@ export const POST: RequestHandler = async ({ request, url }) => {
 
       return new Response(JSON.stringify(result.body), {
         status: result.status,
-        headers: { 'Content-Type': 'application/json' }
+        headers: { 'Content-Type': 'application/json' },
       });
     }
 
@@ -45,19 +45,19 @@ export const POST: RequestHandler = async ({ request, url }) => {
 
       return new Response(JSON.stringify(result.body), {
         status: result.status,
-        headers: { 'Content-Type': 'application/json' }
+        headers: { 'Content-Type': 'application/json' },
       });
     }
 
     return new Response(JSON.stringify({ error: 'Invalid action' }), {
       status: 400,
-      headers: { 'Content-Type': 'application/json' }
+      headers: { 'Content-Type': 'application/json' },
     });
   } catch (error) {
     const errorResponse = ErrorMapper.toHttpResponse(error);
     return new Response(JSON.stringify(errorResponse.body), {
       status: errorResponse.status,
-      headers: { 'Content-Type': 'application/json' }
+      headers: { 'Content-Type': 'application/json' },
     });
   }
 };

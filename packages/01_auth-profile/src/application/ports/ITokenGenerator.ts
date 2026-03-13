@@ -6,11 +6,7 @@ export interface ITokenGenerator {
   /**
    * Generate an authentication token
    */
-  generate(payload: {
-    userId: string;
-    email: string;
-    roles: string[];
-  }): Promise<string>;
+  generate(payload: { userId: string; email: string; roles: string[] }): Promise<string>;
 
   /**
    * Verify a token and extract payload

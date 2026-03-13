@@ -4,14 +4,14 @@
   "description": "OUTE Design System - Tailwind 4 + Svelte 5 Components + Storybook",
   "type": "module",
   "exports": {
-    ".": "./dist/index.js",
-    "./colors": "./dist/tokens/colors.js",
-    "./typography": "./dist/tokens/typography.js",
-    "./spacing": "./dist/tokens/spacing.js"
+    ".": "./dist/index.js"
   },
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
-  "files": ["dist", "src"],
+  "files": [
+    "dist",
+    "src"
+  ],
   "publishConfig": {
     "registry": "https://us-central1-npm.pkg.dev/oute-app/npm/"
   },
@@ -22,7 +22,8 @@
     "prepare": "svelte-kit sync",
     "dev:storybook": "storybook dev",
     "build:storybook": "storybook build",
-    "test": "vitest",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "check": "svelte-check --tsconfig ./tsconfig.json",
     "check:watch": "svelte-check --tsconfig ./tsconfig.json --watch",
     "lint": "eslint .",
@@ -37,6 +38,7 @@
     "@storybook/addon-a11y": "^7.6.0",
     "@storybook/svelte": "^7.6.0",
     "@storybook/sveltekit": "^7.6.0",
+    "@sveltejs/kit": "^2.0.0",
     "@sveltejs/package": "^2.3.0",
     "@sveltejs/vite-plugin-svelte": "^3.1.0",
     "@typescript-eslint/eslint-plugin": "^6.13.0",
@@ -48,6 +50,8 @@
     "prettier": "^3.0.0",
     "prettier-plugin-svelte": "^3.1.0",
     "publint": "^0.2.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
     "storybook": "^7.6.0",
     "svelte-check": "^3.6.0",
     "tslib": "^2.6.2",

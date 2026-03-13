@@ -22,14 +22,15 @@ export function initializeAuth(): void {
     const token = localStorage.getItem(TOKEN_KEY);
     const userData = localStorage.getItem(USER_KEY);
 
-    if (token) {
+    if (token !== null) {
       authToken.set(token);
       isAuthenticated.set(true);
 
-      if (userData) {
+      if (userData !== null) {
         try {
           user.set(JSON.parse(userData));
         } catch {
+          // eslint-disable-next-line no-console
           console.error('Failed to parse user data');
         }
       }
@@ -41,7 +42,7 @@ export function initializeAuth(): void {
  * Login user
  */
 export async function login(email: string, password: string): Promise<void> {
-  const authUrl = import.meta.env.VITE_AUTH_SERVICE_URL || 'http://localhost:3001';
+  const authUrl = import.meta.env.VITE_AUTH_SERVICE_URL ?? 'http://localhost:3001';
 
   const response = await fetch(`${authUrl}/auth/login`, {
     method: 'POST',
@@ -51,7 +52,7 @@ export async function login(email: string, password: string): Promise<void> {
 
   if (!response.ok) {
     const error = await response.json();
-    throw new Error(error.message || 'Login failed');
+    throw new Error(typeof error.message === 'string' ? error.message : 'Login failed');
   }
 
   const data = await response.json();
@@ -94,7 +95,7 @@ export function getToken(): string | null {
 export function getCurrentUser(): User | null {
   if (typeof window !== 'undefined') {
     const userData = localStorage.getItem(USER_KEY);
-    if (userData) {
+    if (userData !== null) {
       try {
         return JSON.parse(userData);
       } catch {
@@ -131,7 +132,7 @@ export async function authenticatedFetch(
 ): Promise<Response> {
   const token = getToken();
 
-  if (!token || isTokenExpired(token)) {
+  if (token === null || isTokenExpired(token)) {
     // Token expired or missing
     logout();
     throw new Error('Authentication required');

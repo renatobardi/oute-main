@@ -4,7 +4,6 @@ import { GetProfileRequest } from '../../../../application/dto/GetProfileRequest
 import { User } from '../../../../domain/entities/User';
 import { Email } from '../../../../domain/value-objects/Email';
 import { Password } from '../../../../domain/value-objects/Password';
-import { UserId } from '../../../../domain/value-objects/UserId';
 import { Role } from '../../../../domain/value-objects/Role';
 import { UserNotFoundError } from '../../../../domain/errors/UserNotFoundError';
 import type { IUserRepository } from '../../../../domain/repositories/IUserRepository';
@@ -22,7 +21,7 @@ describe('GetProfileUseCase', () => {
       findByEmail: vi.fn(),
       delete: vi.fn(),
       exists: vi.fn(),
-      count: vi.fn()
+      count: vi.fn(),
     };
 
     // Create test user
@@ -30,7 +29,7 @@ describe('GetProfileUseCase', () => {
     testUser = User.create({
       email: Email.fromString('test@example.com'),
       passwordHash: hashedPassword,
-      name: 'Test User'
+      name: 'Test User',
     });
 
     useCase = new GetProfileUseCase(userRepository);

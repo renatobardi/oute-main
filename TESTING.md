@@ -37,7 +37,7 @@ cp packages/02_projects/.env.example packages/02_projects/.env
 ### 3. (Opcional) Rodar PostgreSQL com Docker
 
 ```bash
-docker-compose up -d postgres
+docker compose up -d postgres
 ```
 
 Aguarde ~5 segundos para o banco estar pronto.
@@ -49,10 +49,11 @@ Aguarde ~5 segundos para o banco estar pronto.
 ### Opção A: Rodar Tudo com Docker Compose
 
 ```bash
-docker-compose up
+docker compose up
 ```
 
 Serviços disponíveis:
+
 - **Dashboard**: http://localhost:3000
 - **Auth Service**: http://localhost:3001
 - **Projects Service**: http://localhost:3002
@@ -61,6 +62,7 @@ Serviços disponíveis:
 ### Opção B: Rodar Manualmente (sem Docker)
 
 #### Terminal 1: PostgreSQL
+
 ```bash
 docker run --name oute-postgres \
   -e POSTGRES_PASSWORD=postgres \
@@ -70,30 +72,35 @@ docker run --name oute-postgres \
 ```
 
 #### Terminal 2: Design System (Storybook)
+
 ```bash
 cd packages/design-system
 npm run dev:storybook
 ```
 
 #### Terminal 3: Auth Service
+
 ```bash
 cd packages/01_auth-profile
 npm run dev
 ```
 
 #### Terminal 4: Projects Service
+
 ```bash
 cd packages/02_projects
 npm run dev
 ```
 
 #### Terminal 5: Dashboard
+
 ```bash
 cd packages/00_dashboard
 npm run dev
 ```
 
 Após alguns segundos:
+
 - Dashboard: http://localhost:3000
 
 ---
@@ -105,6 +112,7 @@ Após alguns segundos:
 Visite http://localhost:3000
 
 **Credenciais de demonstração**:
+
 - Email: `demo@example.com`
 - Senha: `password123`
 
@@ -113,6 +121,7 @@ Visite http://localhost:3000
 ### 2. Verificar Componentes do Design System
 
 Visite http://localhost:6006 para ver o Storybook com:
+
 - Button (primary, secondary, danger)
 - Card
 - Input
@@ -122,6 +131,7 @@ Visite http://localhost:6006 para ver o Storybook com:
 ### 3. Testar APIs Manualmente (cURL)
 
 #### Login
+
 ```bash
 curl -X POST http://localhost:3001/auth/login \
   -H "Content-Type: application/json" \
@@ -132,6 +142,7 @@ curl -X POST http://localhost:3001/auth/login \
 ```
 
 Resposta (salve o token):
+
 ```json
 {
   "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
@@ -144,6 +155,7 @@ Resposta (salve o token):
 ```
 
 #### Buscar Projetos
+
 ```bash
 # Substitua TOKEN pelo token do login acima
 curl http://localhost:3002/projects \
@@ -157,6 +169,7 @@ curl http://localhost:3002/projects \
 ### Erro: "Cannot find module '@oute/design-system'"
 
 **Solução**: Rode `npm install` na raiz do monorepo para instalar workspaces:
+
 ```bash
 npm install
 ```
@@ -164,6 +177,7 @@ npm install
 ### Erro: "Port 3000 already in use"
 
 **Solução**: Mude a porta em vite.config.ts ou mate o processo usando a porta:
+
 ```bash
 # macOS/Linux
 lsof -i :3000
@@ -177,6 +191,7 @@ taskkill /PID <PID> /F
 ### Erro: "Connection refused" ao fazer requests para 01_auth-profile
 
 **Solução**: Certifique-se de que o serviço está rodando:
+
 ```bash
 cd packages/01_auth-profile
 npm run dev
@@ -185,13 +200,15 @@ npm run dev
 ### Erro: "Database connection error"
 
 **Solução**: Verifique se PostgreSQL está rodando:
+
 ```bash
 docker ps | grep postgres
 ```
 
 Se não estiver, inicie:
+
 ```bash
-docker-compose up -d postgres
+docker compose up -d postgres
 ```
 
 ---
@@ -208,9 +225,9 @@ npm run format             # Prettier em todos
 npm run test               # Testes de todos
 
 npm run docker:build       # Build das imagens Docker
-npm run docker:up          # Subir docker-compose
-npm run docker:down        # Descer docker-compose
-npm run docker:logs        # Ver logs do docker-compose
+npm run docker:up          # Subir containers
+npm run docker:down        # Descer containers
+npm run docker:logs        # Ver logs dos containers
 ```
 
 ### Por Package
@@ -241,6 +258,7 @@ Após testar o "Hello World", as próximas implementações são:
 ## Dúvidas?
 
 Ver documentação:
+
 - **DEVELOPMENT.md**: Setup detalhado
 - **ARCHITECTURE.md**: Decisões arquiteturais
 - **INTEGRATIONS.md**: Fluxos de integração entre serviços

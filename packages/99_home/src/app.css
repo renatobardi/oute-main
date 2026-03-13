@@ -1,0 +1,70 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+@import 'tailwindcss';
+
+@theme {
+  /* Primary - Cyan */
+  --color-primary-50: #ecf7fc;
+  --color-primary-100: #d9effa;
+  --color-primary-200: #a8ddf4;
+  --color-primary-300: #77cbee;
+  --color-primary-400: #46b9e9;
+  --color-primary-500: #15a7e4;
+  --color-primary-600: #06bcf9;
+  --color-primary-700: #0597c9;
+  --color-primary-800: #047a99;
+  --color-primary-900: #025d69;
+
+  /* Secondary - Teal */
+  --color-secondary-50: #ecf4f8;
+  --color-secondary-100: #d9eaf1;
+  --color-secondary-200: #a8d5e3;
+  --color-secondary-300: #77c0d5;
+  --color-secondary-400: #46abc7;
+  --color-secondary-500: #1596b9;
+  --color-secondary-600: #0597c9;
+  --color-secondary-700: #046b99;
+  --color-secondary-800: #035169;
+  --color-secondary-900: #024039;
+
+  /* Neutral */
+  --color-neutral-0: #ffffff;
+  --color-neutral-50: #f5f8f8;
+  --color-neutral-100: #f3f4f6;
+  --color-neutral-200: #e5e7eb;
+  --color-neutral-300: #d1d5db;
+  --color-neutral-400: #9ca3af;
+  --color-neutral-500: #6b7280;
+  --color-neutral-600: #4b5563;
+  --color-neutral-700: #374151;
+  --color-neutral-800: #1f2937;
+  --color-neutral-900: #111827;
+
+  /* Dark mode */
+  --color-dark-bg: #0f1e23;
+  --color-dark-surface: #162a31;
+  --color-dark-border: #21404a;
+
+  /* Semantic */
+  --color-success: #10b981;
+  --color-warning: #f59e0b;
+  --color-error: #ef4444;
+  --color-info: #0ea5e9;
+
+  /* Typography */
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+    'Helvetica Neue', Arial, sans-serif;
+  --font-mono: 'Fira Code', 'Cascadia Code', Monaco, Menlo, 'Courier New',
+    monospace;
+}
+
+:global(body) {
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-sans);
+  background-color: #000000;
+  color: #e5e7eb;
+}
+
+:global(html, body) {
+  height: 100%;
+}

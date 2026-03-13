@@ -14,5 +14,5 @@ export {
   InvalidPasswordError,
   UserNotFoundError,
   InvalidCredentialsError,
-  InvalidUserError
+  InvalidUserError,
 } from './errors';

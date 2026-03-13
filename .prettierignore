@@ -1,0 +1,11 @@
+# Ignore workflow files with complex JavaScript that conflicts with YAML parsing
+.github/workflows/4-e2e-tests.yml
+
+# Ignore node_modules
+node_modules
+
+# Ignore generated SvelteKit files
+**/.svelte-kit
+
+# Ignore documentation with code examples that conflict with formatters
+**/*.md

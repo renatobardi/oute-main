@@ -19,10 +19,10 @@ export class ProfileHandler {
   }> {
     try {
       // Step 1: Validate userId parameter
-      if (!userId) {
+      if (userId.length === 0) {
         return {
           status: 400,
-          body: { error: 'User ID is required' }
+          body: { error: 'User ID is required' },
         };
       }
 
@@ -35,14 +35,14 @@ export class ProfileHandler {
       // Step 4: Return success response
       return {
         status: 200,
-        body: response.user
+        body: response.user,
       };
     } catch (error) {
       // Step 5: Map domain errors to HTTP errors
       const errorResponse = ErrorMapper.toHttpResponse(error);
       return {
         status: errorResponse.status,
-        body: errorResponse.body
+        body: errorResponse.body,
       };
     }
   }

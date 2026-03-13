@@ -8,7 +8,7 @@
   let loading = false;
 
   async function handleLogin() {
-    if (!email || !password) {
+    if (email.length === 0 || password.length === 0) {
       error = 'Please fill in all fields';
       return;
     }
@@ -19,7 +19,7 @@
     try {
       await login(email, password);
       // Redirect to dashboard
-      goto('/');
+      await goto('/');
     } catch (err) {
       error = err instanceof Error ? err.message : 'Login failed';
     } finally {
@@ -29,12 +29,14 @@
 
   function handleKeydown(e: KeyboardEvent) {
     if (e.key === 'Enter') {
-      handleLogin();
+      void handleLogin();
     }
   }
 </script>
 
-<div class="min-h-screen bg-gradient-to-br from-primary-50 to-primary-100 flex items-center justify-center p-4">
+<div
+  class="min-h-screen bg-gradient-to-br from-primary-50 to-primary-100 flex items-center justify-center p-4"
+>
   <div class="bg-white rounded-lg shadow-lg p-8 w-full max-w-md">
     <div class="text-center mb-8">
       <h1 class="text-3xl font-bold text-primary-600">OUTE</h1>
@@ -49,9 +51,7 @@
       {/if}
 
       <div>
-        <label for="email" class="block text-sm font-medium text-neutral-700 mb-2">
-          Email
-        </label>
+        <label for="email" class="block text-sm font-medium text-neutral-700 mb-2"> Email </label>
         <input
           id="email"
           type="email"

@@ -7,9 +7,11 @@ OUTE é uma aplicação modular construída com **Svelte 5 + SvelteKit**, organi
 ```
 packages/
 ├── design-system/     ← Tailwind 4 + Componentes reutilizáveis
-├── 00_dashboard/      ← Interface principal
+├── 00_dashboard/      ← Interface principal (estimações, projetos)
 ├── 01_auth-profile/   ← ✅ REFATORADO: Hexagonal Architecture + DDD + TDD
-└── 02_projects/       ← Gerenciamento de projetos
+├── 02_projects/       ← Gerenciamento de projetos
+├── 03_interview/      ← ✅ NEW: Chat interface para entrevistas com IA (3-panel layout)
+└── 99_home/           ← ✅ NEW: Marketing landing page (hero + CTA + stats)
 
 shared/               ← Tipos e utilitários compartilhados
 ```
@@ -33,6 +35,7 @@ Ver: [APPLYING_PATTERN_TO_OTHER_SERVICES.md](./APPLYING_PATTERN_TO_OTHER_SERVICE
 ## 🚀 Quick Start
 
 ### Pré-requisitos
+
 - Node.js 20+ (LTS)
 - npm 10+
 - Docker & Docker Compose (para desenvolvimento local)
@@ -55,15 +58,18 @@ npm run dev
 ```
 
 Serviços rodando:
+
+- **Home (Landing Page)**: http://localhost:3003
 - **Dashboard**: http://localhost:3000
+- **Interview (Chat)**: http://localhost:3002
 - **Auth-Profile**: http://localhost:3001
-- **Projects**: http://localhost:3002
 - **Design System (Storybook)**: http://localhost:6006
 - **PostgreSQL**: localhost:5432
 
 ## 📦 Packages
 
 ### 1. **design-system** (packages/design-system)
+
 Sistema de design modular com Tailwind 4, componentes reutilizáveis e Storybook.
 
 ```bash
@@ -71,17 +77,47 @@ npm run dev:storybook --workspace=design-system
 ```
 
 ### 2. **00_dashboard** (packages/00_dashboard)
+
 Interface web principal. Acessa auth-profile e projects.
 
 ### 3. **01_auth-profile** (packages/01_auth-profile)
+
 Serviço de autenticação que emite JWTs. Todos os outros serviços validam tokens aqui.
 
 ### 4. **02_projects** (packages/02_projects)
+
 API de gerenciamento de projetos com CRUD completo.
+
+### 5. **03_interview** (packages/03_interview)
+
+Interface de chat para entrevistas com IA. 3-panel layout:
+- **Left Panel**: Sidebar com histórico de entrevistas
+- **Center Panel**: Chat conversation window
+- **Right Panel**: Editable notes com métricas e export
+
+Features:
+- Chat com mensagens de usuário e IA
+- Notas editáveis com save/cancel
+- Export de notas como .txt
+- Métricas de progresso (progress %, horas, orçamento)
+- Tema dark idêntico ao dashboard
+
+### 6. **99_home** (packages/99_home)
+
+Landing page de marketing pública. Primeira página que usuários veem.
+
+Features:
+- **Hero Section**: Headline grande "Olá! Sou seu Arquiteto de Software."
+- **Search Input**: Campo para descrever projetos
+- **Call-to-Action**: Botão "Entrar na Oute" + GitHub login
+- **Stats Section**: 3 métricas (57 estimações, 127 arquitetos, ∞ impacto)
+- **Navbar**: Logo, links (Docs, Pricing), signup button
+- Responsive design com tema dark idêntico ao dashboard
 
 ## 📚 Documentação
 
 ### 🎯 Refactoring & Arquitetura
+
 - **[EXECUTIVE_SUMMARY.md](./EXECUTIVE_SUMMARY.md)** - 📊 **LEIA PRIMEIRO**: Resumo executivo da refatoração completa
 - **[REFACTORING_COMPLETION.md](./REFACTORING_COMPLETION.md)** - 🏆 Relatório completo: Hexagonal Architecture + DDD + Clean Code + TDD
 - **[PHASE_1_SUMMARY.md](./packages/01_auth-profile/PHASE_1_SUMMARY.md)** - 📚 Domain Layer (Entities, Value Objects, Errors)
@@ -91,10 +127,12 @@ API de gerenciamento de projetos com CRUD completo.
 - **[PHASE_5_SUMMARY.md](./packages/01_auth-profile/PHASE_5_SUMMARY.md)** - 🧪 E2E Tests (Playwright, Test Suite)
 
 ### 🚀 Implementação & Padrões
+
 - **[APPLYING_PATTERN_TO_OTHER_SERVICES.md](./APPLYING_PATTERN_TO_OTHER_SERVICES.md)** - 📋 Template para aplicar padrão a 00_dashboard e 02_projects
 - **[NEXT_STEPS_CHECKLIST.md](./NEXT_STEPS_CHECKLIST.md)** - ✅ Checklist de próximas ações e verificação
 
 ### 📖 Documentação Técnica
+
 - **[ARCHITECTURE.md](./ARCHITECTURE.md)** - 🏗️ Decisões arquiteturais e fluxos de dados
 - **[DEVELOPMENT.md](./DEVELOPMENT.md)** - 💻 Setup local, debugging, scripts
 - **[DEPLOYMENT.md](./DEPLOYMENT.md)** - ☁️ Deploy em GCP Cloud Run
@@ -103,10 +141,11 @@ API de gerenciamento de projetos com CRUD completo.
 ## 🔄 Workflow
 
 ### Branches
+
 - **main** → Produção
 - **staging** → Pré-produção (homolog)
 - **develop** → Desenvolvimento
-- **feature/*** → Novas features
+- **feature/\*** → Novas features
 
 ### Criar uma feature
 
@@ -120,6 +159,7 @@ git push origin feature/meu-recurso
 ## 🛠️ Scripts Principais
 
 ### Desenvolvimento
+
 ```bash
 npm run dev           # Todos os packages em dev
 npm run build         # Build todos os packages
@@ -128,6 +168,7 @@ npm run format        # Prettier format
 ```
 
 ### Testing (178 tests, 80%+ coverage)
+
 ```bash
 npm run test          # Rodar todos os testes
 npm run test:e2e      # E2E tests (Playwright)
@@ -136,6 +177,7 @@ npm run test -- --coverage  # Coverage report
 ```
 
 ### Docker
+
 ```bash
 npm run docker:up     # Start Docker services
 npm run docker:down   # Stop Docker services
@@ -153,14 +195,54 @@ npm run docker:logs   # Ver logs
 
 ## ☁️ Deployment
 
-Deploy automático em GCP Cloud Run via GitHub Actions:
+### Pipeline CI/CD Automático
 
-1. **PR** → Lint, tests, SonarQube checks
-2. **develop** → Deploy em preview
-3. **staging** → Deploy em homolog
-4. **main** → Deploy em produção
+Deploy totalmente automático em GCP Cloud Run via GitHub Actions:
 
-Ver [DEPLOYMENT.md](./DEPLOYMENT.md) para detalhes.
+```
+Push → Build & Test → Docker Build → Artifact Registry → Cloud Run Deploy → Health Check → Release
+```
+
+**Pipeline por Branch:**
+
+- **PR** → Lint checks, TypeScript validation, Tests
+- **main** → Build completo + Deploy em produção + Release automático
+
+**Features do Pipeline:**
+
+- ✅ Build de imagem Docker multi-estágio
+- ✅ Push automático para Artifact Registry
+- ✅ Deploy em Cloud Run com zero downtime
+- ✅ Health check automático pós-deploy
+- ✅ Rollback automático em caso de falha
+- ✅ Rastreamento de deployments no GitHub
+- ✅ Criação automática de releases
+- ✅ Logs disponíveis em Cloud Run
+
+**Permissões do Workflow:**
+
+```yaml
+permissions:
+  contents: write # Criar releases
+  id-token: write # Autenticar com GCP (Workload Identity)
+  deployments: write # Rastrear deployments
+  statuses: write # Atualizar status
+```
+
+**Acessar Serviço em Produção:**
+
+```bash
+# Ver logs
+gcloud run logs read oute-dashboard --region=us-central1 --follow
+
+# Ver revisions
+gcloud run revisions list --service=oute-dashboard --region=us-central1
+
+# Rollback se necessário
+gcloud run services update-traffic oute-dashboard --region=us-central1 --to-revisions=<REVISION>=100
+```
+
+Ver [DEPLOYMENT.md](./DEPLOYMENT.md) para detalhes completos.
 
 ## 📦 Stack Técnico
 
@@ -171,7 +253,7 @@ Ver [DEPLOYMENT.md](./DEPLOYMENT.md) para detalhes.
 - **Cloud**: GCP Cloud Run, Cloud SQL, Artifact Registry, Secret Manager
 - **CI/CD**: GitHub Actions
 - **Code Quality**: SonarQube, ESLint, TypeScript
-- **Containers**: Docker, docker-compose
+- **Containers**: Docker, Docker Compose
 
 ## 📋 Roadmap
 

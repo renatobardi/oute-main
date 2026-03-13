@@ -23,11 +23,7 @@ export class User {
    * Create a new User (factory method)
    * Called when registering a new user
    */
-  static create(props: {
-    email: Email;
-    passwordHash: Password;
-    name: string;
-  }): User {
+  static create(props: { email: Email; passwordHash: Password; name: string }): User {
     User.validateProps(props);
 
     return new User(
@@ -59,7 +55,7 @@ export class User {
       Email.fromString(props.email),
       Password.fromHash(props.passwordHash),
       props.name,
-      props.roles.map(r => Role.fromString(r)),
+      props.roles.map((r) => Role.fromString(r)),
       props.createdAt,
       props.lastLogin
     );
@@ -73,7 +69,7 @@ export class User {
     passwordHash: Password;
     name: string;
   }): void {
-    if (!props.name || props.name.trim().length === 0) {
+    if (props.name.length === 0 || props.name.trim().length === 0) {
       throw new InvalidUserError('Name cannot be empty');
     }
 
@@ -102,7 +98,7 @@ export class User {
    * Check if user has a specific role
    */
   hasRole(role: Role): boolean {
-    return this.roles.some(r => r.equals(role));
+    return this.roles.some((r) => r.equals(role));
   }
 
   /**
@@ -129,7 +125,7 @@ export class User {
     if (!this.hasRole(role)) {
       throw new InvalidUserError(`User does not have role ${role.getValue()}`);
     }
-    const index = this.roles.findIndex(r => r.equals(role));
+    const index = this.roles.findIndex((r) => r.equals(role));
     if (index >= 0) {
       this.roles.splice(index, 1);
     }
@@ -157,9 +153,9 @@ export class User {
       id: this.id.getValue(),
       email: this.email.getValue(),
       name: this.name,
-      roles: this.roles.map(r => r.getValue()),
+      roles: this.roles.map((r) => r.getValue()),
       createdAt: this.createdAt,
-      lastLogin: this.lastLogin
+      lastLogin: this.lastLogin,
     };
   }
 }

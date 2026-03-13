@@ -18,7 +18,7 @@ export class GetProfileUseCase {
 
     // Step 2: Fetch user from repository
     const user = await this.userRepository.findById(userId);
-    if (!user) {
+    if (user === null) {
       throw new UserNotFoundError('User not found');
     }
 

@@ -1,6 +1,7 @@
 <script lang="ts">
   import type { HTMLAttributes } from 'svelte/elements';
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   interface $$Props extends HTMLAttributes<HTMLButtonElement> {
     variant?: 'primary' | 'secondary' | 'danger' | 'ghost';
     size?: 'sm' | 'md' | 'lg';
@@ -12,10 +13,8 @@
   export let disabled = false;
 
   const variantClasses = {
-    primary:
-      'bg-primary-600 text-white hover:bg-primary-700 active:bg-primary-800',
-    secondary:
-      'bg-secondary-600 text-white hover:bg-secondary-700 active:bg-secondary-800',
+    primary: 'bg-primary-600 text-white hover:bg-primary-700 active:bg-primary-800',
+    secondary: 'bg-secondary-600 text-white hover:bg-secondary-700 active:bg-secondary-800',
     danger: 'bg-error text-white hover:opacity-90 active:opacity-75',
     ghost:
       'bg-transparent text-neutral-700 hover:bg-neutral-100 active:bg-neutral-200 border border-neutral-300',

@@ -31,7 +31,7 @@ export const test = base.extend<{ authenticatedUser: AuthContext }>({
        */
       async login(email: string, password: string) {
         const response = await page.request.post('/api/auth?action=login', {
-          data: { email, password }
+          data: { email, password },
         });
 
         if (response.status() !== 200) {
@@ -49,7 +49,7 @@ export const test = base.extend<{ authenticatedUser: AuthContext }>({
        */
       async register(email: string, password: string, name: string) {
         const response = await page.request.post('/api/auth?action=register', {
-          data: { email, password, name }
+          data: { email, password, name },
         });
 
         if (response.status() !== 201) {
@@ -60,14 +60,14 @@ export const test = base.extend<{ authenticatedUser: AuthContext }>({
         context.token = data.token;
         context.userId = data.user.id;
         context.email = email;
-      }
+      },
     };
 
     // Pre-login for tests that need authenticated user
     await context.login('test@example.com', 'SecurePass123!');
 
     await use(context);
-  }
+  },
 });
 
 export { expect } from '@playwright/test';
@@ -96,7 +96,7 @@ export const testData = {
   validCredentials: {
     email: 'test@example.com',
     password: 'SecurePass123!',
-    name: 'Test User'
+    name: 'Test User',
   },
 
   /**
@@ -107,8 +107,8 @@ export const testData = {
     invalidEmail: 'not-an-email',
     emptyEmail: '',
     emptyPassword: '',
-    emptyName: ''
-  }
+    emptyName: '',
+  },
 };
 
 /**
@@ -118,21 +118,21 @@ export const apiHelpers = {
   /**
    * Make authenticated request with Bearer token
    */
-  async authenticatedRequest(
+  authenticatedRequest(
     page: Page,
     method: 'GET' | 'POST' | 'PUT' | 'DELETE',
     endpoint: string,
     token: string,
     data?: unknown
-  ) {
+  ): Promise<unknown> {
     const options: Parameters<typeof page.request.post>[1] = {
       headers: {
         Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json'
-      }
+        'Content-Type': 'application/json',
+      },
     };
 
-    if (data) {
+    if (data !== undefined) {
       options.data = data;
     }
 
@@ -157,7 +157,7 @@ export const apiHelpers = {
     password: string
   ): Promise<{ token: string; userId: string }> {
     const response = await page.request.post('/api/auth?action=login', {
-      data: { email, password }
+      data: { email, password },
     });
 
     if (response.status() !== 200) {
@@ -167,7 +167,7 @@ export const apiHelpers = {
     const data = await response.json();
     return {
       token: data.token,
-      userId: data.user.id
+      userId: data.user.id,
     };
   },
 
@@ -181,7 +181,7 @@ export const apiHelpers = {
     name: string
   ): Promise<{ token: string; userId: string }> {
     const response = await page.request.post('/api/auth?action=register', {
-      data: { email, password, name }
+      data: { email, password, name },
     });
 
     if (response.status() !== 201) {
@@ -191,18 +191,18 @@ export const apiHelpers = {
     const data = await response.json();
     return {
       token: data.token,
-      userId: data.user.id
+      userId: data.user.id,
     };
   },
 
   /**
    * Get profile with token
    */
-  async getProfile(page: Page, token: string) {
+  async getProfile(page: Page, token: string): Promise<unknown> {
     const response = await page.request.get('/api/profile', {
       headers: {
-        Authorization: `Bearer ${token}`
-      }
+        Authorization: `Bearer ${token}`,
+      },
     });
 
     if (response.status() !== 200) {
@@ -210,7 +210,7 @@ export const apiHelpers = {
     }
 
     return response.json();
-  }
+  },
 };
 
 /**
@@ -226,34 +226,37 @@ export const assertions = {
 
     // Each part should be base64url encoded
     const base64urlRegex = /^[A-Za-z0-9_-]+$/;
-    return parts.every(part => base64urlRegex.test(part));
+    return parts.every((part) => base64urlRegex.test(part));
   },
 
   /**
    * Assert valid login response
    */
-  assertValidLoginResponse(data: unknown) {
-    const loginData = data as any;
+  assertValidLoginResponse(data: unknown): void {
+    const loginData = data as Record<string, unknown>;
 
-    if (!loginData.token) throw new Error('Missing token in login response');
+    if (typeof loginData.token !== 'string') throw new Error('Missing token in login response');
     if (!this.isValidJWT(loginData.token)) throw new Error('Invalid JWT format');
-    if (!loginData.user) throw new Error('Missing user in login response');
-    if (!loginData.user.id) throw new Error('Missing user.id');
-    if (!loginData.user.email) throw new Error('Missing user.email');
-    if (!Array.isArray(loginData.user.roles)) throw new Error('Invalid user.roles');
+    if (typeof loginData.user !== 'object' || loginData.user === null)
+      throw new Error('Missing user in login response');
+    const user = loginData.user as Record<string, unknown>;
+    if (typeof user.id !== 'string' && typeof user.id !== 'number')
+      throw new Error('Missing user.id');
+    if (typeof user.email !== 'string') throw new Error('Missing user.email');
+    if (!Array.isArray(user.roles)) throw new Error('Invalid user.roles');
   },
 
   /**
    * Assert valid profile response
    */
-  assertValidProfileResponse(data: unknown) {
-    const profile = data as any;
+  assertValidProfileResponse(data: unknown): void {
+    const profile = data as Record<string, unknown>;
 
-    if (!profile.id) throw new Error('Missing id in profile');
-    if (!profile.email) throw new Error('Missing email in profile');
-    if (!profile.name) throw new Error('Missing name in profile');
+    if (typeof profile.id !== 'string' && typeof profile.id !== 'number')
+      throw new Error('Missing id in profile');
+    if (typeof profile.email !== 'string') throw new Error('Missing email in profile');
+    if (typeof profile.name !== 'string') throw new Error('Missing name in profile');
     if (!Array.isArray(profile.roles)) throw new Error('Invalid roles in profile');
-    if (!profile.createdAt) throw new Error('Missing createdAt in profile');
-    if (typeof profile.createdAt !== 'string') throw new Error('Invalid createdAt format');
-  }
+    if (typeof profile.createdAt !== 'string') throw new Error('Missing createdAt in profile');
+  },
 };

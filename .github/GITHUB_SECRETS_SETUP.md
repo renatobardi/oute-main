@@ -7,6 +7,7 @@ Configure estes secrets no repositório GitHub para que os workflows funcionem.
 Após executar o script GCP (setup-gcp.sh), adicione em **Settings → Secrets and variables → Actions**:
 
 ### GCP_SA_KEY
+
 - **Valor**: Conteúdo do arquivo `~/oute-github-key.json`
 - **Usar para**: GitHub Actions fazer deploy em Cloud Run
 - **Como obter**:
@@ -16,10 +17,12 @@ Após executar o script GCP (setup-gcp.sh), adicione em **Settings → Secrets a
   ```
 
 ### GCP_PROJECT_ID
+
 - **Valor**: `oute-app` (ou seu project ID)
 - **Usar para**: Identificar projeto GCP nos workflows
 
 ### GCP_REGION
+
 - **Valor**: `us-central1` (ou sua região preferida)
 - **Usar para**: Deploy region no Cloud Run
 
@@ -28,6 +31,7 @@ Após executar o script GCP (setup-gcp.sh), adicione em **Settings → Secrets a
 Após criar repo npm em Artifact Registry:
 
 ### ARTIFACT_REGISTRY_URL
+
 - **Valor**: `us-central1-npm.pkg.dev/oute-app/npm/`
 - **Usar para**: Publicar design-system package
 
@@ -36,6 +40,7 @@ Após criar repo npm em Artifact Registry:
 Para integração com SonarQube Cloud:
 
 ### SONAR_TOKEN
+
 - **Valor**: Token gerado em sonarcloud.io
 - **Usar para**: SonarQube analysis nos workflows
 - **Como obter**:
@@ -50,6 +55,7 @@ Para integração com SonarQube Cloud:
 Para notificações de deploy em Slack:
 
 ### SLACK_WEBHOOK
+
 - **Valor**: Webhook URL do canal Slack
 - **Usar para**: Notificações de deploy
 - **Como obter**:
@@ -63,6 +69,7 @@ Para notificações de deploy em Slack:
 GitHub fornece automaticamente:
 
 ### GITHUB_TOKEN
+
 - **Automático**: Fornecido por GitHub Actions
 - **Permissões**: Configuradas no workflow
 - **Usar para**: Upload SARIF, create releases
@@ -90,6 +97,7 @@ Configure em **Settings → Branches → Protect main**:
 ✅ Include administrators
 
 Status checks required:
+
 - `lint`
 - `typecheck`
 - `test`
@@ -115,14 +123,17 @@ Para testar se os secrets estão corretos:
 ## Troubleshooting
 
 ### "Secret not found"
+
 - Verifique se secret foi adicionado em **Settings → Secrets**
 - Verifique se o nome do secret é exato (case-sensitive)
 
 ### "Invalid GCP credentials"
+
 - Verifique se `GCP_SA_KEY` é o JSON completo do arquivo
 - Crie nova chave se a antiga expirou: `gcloud iam service-accounts keys create`
 
 ### "SonarQube quality gate failed"
+
 - Verifique `SONAR_TOKEN` é válido
 - Verifique se organization em sonarcloud.io corresponde ao workflow
 

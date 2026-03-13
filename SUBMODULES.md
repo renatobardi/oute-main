@@ -2,12 +2,14 @@
 
 ## Overview
 
-OUTE is organized into 4 main packages, each with a specific responsibility.
+OUTE is organized into 6 main packages (5 services + 1 design system), each with a specific responsibility.
 
 ```
 packages/
 ├── design-system/    ← Shared UI components & tokens
+├── 99_home/          ← Landing page pública (marketing)
 ├── 00_dashboard/     ← Web interface (frontend)
+├── 03_interview/     ← Chat interface para entrevistas com IA
 ├── 01_auth-profile/  ← Authentication service (API)
 └── 02_projects/      ← Project management (API)
 ```
@@ -19,12 +21,14 @@ packages/
 **Purpose**: Centralized design tokens and reusable components
 
 **Tech Stack**:
+
 - Svelte 5 components
 - Tailwind 4
 - Storybook for documentation
 - TypeScript
 
 **Key Files**:
+
 ```
 src/
 ├── tokens/           ← Design tokens
@@ -42,10 +46,12 @@ src/
 **Version**: Semantic versioning (v1.0.0, v1.1.0, etc.)
 
 **Publishing**:
+
 - Published to GCP Artifact Registry as `@oute/design-system`
 - Imported by 00_dashboard as dependency
 
 **Example Usage**:
+
 ```typescript
 import { Button, Card } from '@oute/design-system';
 import { colors } from '@oute/design-system/tokens';
@@ -54,6 +60,7 @@ import { colors } from '@oute/design-system/tokens';
 ```
 
 **Storybook**:
+
 ```bash
 npm run dev:storybook --workspace=design-system
 # http://localhost:6006
@@ -61,7 +68,80 @@ npm run dev:storybook --workspace=design-system
 
 ---
 
-## 2. 00 Dashboard (packages/00_dashboard)
+## 2. 99 Home (packages/99_home)
+
+**Purpose**: Public landing page and marketing
+
+**Type**: Frontend (SvelteKit Static)
+
+**Port**: 3003
+
+**Tech Stack**:
+
+- SvelteKit
+- Svelte 5
+- @oute/design-system
+- Tailwind 4
+- TypeScript
+
+**Key Features**:
+
+```
+- Hero section: "Olá! Sou seu Arquiteto de Software."
+- Search input para descrever projetos
+- Call-to-action: "Entrar na Oute" + GitHub OAuth
+- Stats section: 57 estimações, 127 arquitetos, ∞ impacto
+- Navbar com links (Docs, Pricing), signup button
+- Responsive design com tema dark
+```
+
+**Routes**:
+
+```
+/              ← Home/landing page (public)
+/docs          ← Documentação (public)
+/pricing       ← Planos (public)
+```
+
+**Key Files**:
+
+```
+src/
+├── routes/
+│   ├── +page.svelte         ← Home landing
+│   ├── docs/+page.svelte
+│   └── pricing/+page.svelte
+├── lib/
+│   ├── components/
+│   │   ├── Hero.svelte
+│   │   ├── Stats.svelte
+│   │   └── Navbar.svelte
+│   └── config.ts
+└── app.html
+```
+
+**Environment**:
+
+```
+VITE_AUTH_SERVICE_URL=http://localhost:3001
+VITE_API_TIMEOUT=30000
+```
+
+**Example Flow**:
+
+```
+1. User lands on http://localhost:3003
+2. Sees hero section + search input
+3. Clicks "Entrar na Oute"
+   → Redirects to GitHub OAuth flow
+   → Creates user in 01_auth-profile
+   → Redirects to 00_dashboard
+4. User logged in + on dashboard
+```
+
+---
+
+## 3. 00 Dashboard (packages/00_dashboard)
 
 **Purpose**: Main web interface for users
 
@@ -70,12 +150,14 @@ npm run dev:storybook --workspace=design-system
 **Port**: 3000
 
 **Tech Stack**:
+
 - SvelteKit
 - Svelte 5
 - @oute/design-system
 - TypeScript
 
 **Routes**:
+
 ```
 /                ← Dashboard home (protected)
 /login           ← Login page (public)
@@ -85,6 +167,7 @@ npm run dev:storybook --workspace=design-system
 ```
 
 **Key Files**:
+
 ```
 src/
 ├── routes/
@@ -101,6 +184,7 @@ src/
 ```
 
 **Responsibilities**:
+
 1. Render pages
 2. Login integration (calls 01_auth-profile)
 3. Projects listing (calls 02_projects)
@@ -108,12 +192,14 @@ src/
 5. User-facing UI
 
 **Environment**:
+
 ```
 AUTH_SERVICE_URL=http://localhost:3001
 PROJECTS_SERVICE_URL=http://localhost:3002
 ```
 
 **API Calls**:
+
 ```typescript
 // Login
 POST /auth/login { email, password }
@@ -127,7 +213,101 @@ Header: Authorization: Bearer <JWT>
 
 ---
 
-## 3. 01 Auth-Profile (packages/01_auth-profile)
+## 4. 03 Interview (packages/03_interview)
+
+**Purpose**: Chat interface for AI-powered interviews
+
+**Type**: Frontend (SvelteKit SSR)
+
+**Port**: 3002
+
+**Tech Stack**:
+
+- SvelteKit
+- Svelte 5
+- @oute/design-system
+- Tailwind 4
+- TypeScript
+
+**Layout**: 3-Panel Interface
+
+```
+┌─────────────────────────────────────┐
+│            NAVBAR                   │
+├──────────┬────────────┬─────────────┤
+│ Sidebar  │    Chat    │    Notes    │
+│ (Left)   │  (Center)  │   (Right)   │
+│          │            │             │
+│ • Hist 1 │ User:      │ Notes:      │
+│ • Hist 2 │ "Hello"    │ • Point 1   │
+│ • Hist 3 │            │ • Point 2   │
+│          │ AI:        │             │
+│          │ "Hi there" │ [Save]      │
+│          │            │ [Export]    │
+└──────────┴────────────┴─────────────┘
+```
+
+**Key Features**:
+
+- Chat com mensagens de usuário e IA
+- Editable notes com save/cancel
+- Export de notas como .txt
+- Métricas de progresso (%, horas, orçamento)
+- Tema dark idêntico ao dashboard
+- Interview history sidebar
+
+**Routes**:
+
+```
+/interviews         ← List interviews (protected)
+/interviews/:id     ← Interview detail (protected)
+```
+
+**Key Files**:
+
+```
+src/
+├── routes/
+│   ├── interviews/+page.svelte
+│   └── interviews/[id]/+page.svelte
+├── lib/
+│   ├── components/
+│   │   ├── ChatPanel.svelte
+│   │   ├── NotesPanel.svelte
+│   │   ├── Sidebar.svelte
+│   │   └── Metrics.svelte
+│   ├── api.ts
+│   └── types.ts
+└── app.html
+```
+
+**Environment**:
+
+```
+VITE_AUTH_SERVICE_URL=http://localhost:3001
+VITE_API_TIMEOUT=30000
+```
+
+**Example Flow**:
+
+```
+1. User lands on http://localhost:3002/interviews
+2. Sees list of past interviews (from localStorage/DB)
+3. Clicks on interview
+4. 3-panel interface opens:
+   - Left: Interview history
+   - Center: Chat window
+   - Right: Editable notes
+5. User can:
+   - Send messages
+   - Edit notes
+   - Save/export notes
+   - See metrics update
+```
+
+---
+
+## 5. 01 Auth-Profile (packages/01_auth-profile)
 
 **Purpose**: Authentication & user profile service
 
@@ -136,6 +316,7 @@ Header: Authorization: Bearer <JWT>
 **Port**: 3001
 
 **Tech Stack**:
+
 - SvelteKit
 - Node.js
 - PostgreSQL
@@ -144,6 +325,7 @@ Header: Authorization: Bearer <JWT>
 - TypeScript
 
 **Routes**:
+
 ```
 POST   /auth/login          ← Login user
 POST   /auth/logout         ← Logout
@@ -155,6 +337,7 @@ GET    /profile/verify      ← Verify JWT
 ```
 
 **Key Files**:
+
 ```
 src/
 ├── routes/
@@ -174,6 +357,7 @@ src/
 ```
 
 **Responsibilities**:
+
 1. User login (validate credentials, issue JWT)
 2. User registration (hash password, store)
 3. JWT validation
@@ -181,6 +365,7 @@ src/
 5. Token refresh
 
 **Database Tables**:
+
 ```sql
 CREATE TABLE users (
   id UUID PRIMARY KEY,
@@ -198,6 +383,7 @@ CREATE TABLE sessions (
 ```
 
 **Environment**:
+
 ```
 DATABASE_URL=postgresql://...
 JWT_SECRET=your-secret-key
@@ -205,6 +391,7 @@ JWT_EXPIRY=24h
 ```
 
 **Example Flow**:
+
 ```
 1. POST /auth/login { email: "user@example.com", password: "..." }
 2. Hash provided password, compare with stored hash
@@ -214,7 +401,7 @@ JWT_EXPIRY=24h
 
 ---
 
-## 4. 02 Projects (packages/02_projects)
+## 6. 02 Projects (packages/02_projects)
 
 **Purpose**: Project management API (CRUD)
 
@@ -223,6 +410,7 @@ JWT_EXPIRY=24h
 **Port**: 3002
 
 **Tech Stack**:
+
 - SvelteKit
 - Node.js
 - PostgreSQL
@@ -230,6 +418,7 @@ JWT_EXPIRY=24h
 - TypeScript
 
 **Routes**:
+
 ```
 GET    /projects             ← List user's projects (protected)
 POST   /projects             ← Create project (protected)
@@ -239,6 +428,7 @@ DELETE /projects/:id         ← Delete project (protected)
 ```
 
 **Key Files**:
+
 ```
 src/
 ├── routes/
@@ -253,12 +443,14 @@ src/
 ```
 
 **Responsibilities**:
+
 1. Validate JWT (from 01_auth-profile)
 2. Get user_id from JWT
 3. Fetch projects for that user
 4. Create/Update/Delete projects
 
 **Database Tables**:
+
 ```sql
 CREATE TABLE projects (
   id UUID PRIMARY KEY,
@@ -272,6 +464,7 @@ CREATE TABLE projects (
 ```
 
 **Environment**:
+
 ```
 DATABASE_URL=postgresql://...
 AUTH_SERVICE_URL=http://localhost:3001
@@ -279,6 +472,7 @@ JWT_SECRET=your-secret-key
 ```
 
 **Example Flow**:
+
 ```
 1. GET /projects
    Header: Authorization: Bearer <JWT>
@@ -288,6 +482,7 @@ JWT_SECRET=your-secret-key
 ```
 
 **JWT Validation Middleware** (lib/auth.ts):
+
 ```typescript
 export async function validateJWT(token: string) {
   try {
@@ -306,6 +501,7 @@ export async function validateJWT(token: string) {
 **Purpose**: Shared types and utilities
 
 **Files**:
+
 ```
 shared/
 ├── types.ts       ← Common interfaces (User, Project, etc)
@@ -314,6 +510,7 @@ shared/
 ```
 
 **Example** (types.ts):
+
 ```typescript
 export interface User {
   id: string;
@@ -331,7 +528,7 @@ export interface Project {
 }
 
 export interface JWTPayload {
-  sub: string;  // user_id
+  sub: string; // user_id
   email: string;
   iat: number;
   exp: number;
@@ -339,6 +536,7 @@ export interface JWTPayload {
 ```
 
 **Import from shared**:
+
 ```typescript
 import type { User, Project } from '@oute/shared';
 ```
@@ -360,24 +558,51 @@ To add a new package (e.g., `03_notifications`):
 
 ## Version Matrix
 
-| Package | Current | Status |
-|---------|---------|--------|
-| design-system | 1.0.0 | ✅ Production |
-| 00_dashboard | 1.0.0 | ✅ Production |
-| 01_auth-profile | 1.0.0 | ✅ Production |
-| 02_projects | 1.0.0 | ✅ Production |
+| Package         | Port | Current | Status        | Architecture      |
+| --------------- | ---- | ------- | ------------- | ------------------|
+| design-system   | 6006 | 1.0.0   | ✅ Production | Storybook        |
+| 99_home         | 3003 | 1.0.0   | ✅ Production | SvelteKit        |
+| 00_dashboard    | 3000 | 1.0.0   | 🔄 Refactoring| SvelteKit        |
+| 03_interview    | 3002 | 1.0.0   | ✅ Production | SvelteKit        |
+| 01_auth-profile | 3001 | 1.0.0   | ✅ Production | Hexagonal + DDD  |
+| 02_projects     | 3002 | 1.0.0   | 🔄 Refactoring| SvelteKit        |
 
 ---
 
 ## Communication Flow
 
 ```
-00_dashboard
-  ↓
-  ├→ POST /auth/login → 01_auth-profile
+99_home (Port 3003) - PUBLIC LANDING PAGE
+  └─→ CTA "Entrar na Oute"
+      └─→ Redirects to 00_dashboard (with GitHub OAuth)
+
+00_dashboard (Port 3000) - MAIN APP
+  ├─→ POST /auth/login → 01_auth-profile
   │   ← JWT token
   │
-  └→ GET /projects (with JWT) → 02_projects
-      └→ Validates JWT → 01_auth-profile/profile/verify
-      ← Projects data
+  ├─→ GET /projects (with JWT) → 02_projects
+  │   ├─→ Validates JWT → 01_auth-profile/profile/verify
+  │   ← Projects data
+  │
+  └─→ GET /interviews → 03_interview
+      └─→ Interview list + chat interface
+
+03_interview (Port 3002) - CHAT INTERVIEWS
+  ├─→ Chat with AI (via API)
+  ├─→ Save notes (to 02_projects/notes)
+  └─→ Export metrics
+
+01_auth-profile (Port 3001) - AUTH API
+  ├─→ POST /auth/login → Generates JWT
+  ├─→ POST /auth/logout
+  ├─→ GET /profile (protected)
+  └─→ GET /profile/verify (JWT validation)
+
+02_projects (Port 3002) - PROJECTS API
+  ├─→ Validates JWT via 01_auth-profile
+  ├─→ GET /projects
+  ├─→ POST /projects
+  ├─→ GET /projects/:id
+  ├─→ PATCH /projects/:id
+  └─→ DELETE /projects/:id
 ```

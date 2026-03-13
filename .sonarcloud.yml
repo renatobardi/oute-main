@@ -1,0 +1,55 @@
+# SonarCloud Configuration
+# Defines quality gates and analysis settings for oute-main
+
+sonar:
+  projectKey: oute-main
+  projectName: Oute Main - Quality Gates Enforcement
+  projectVersion: 1.0.0
+
+  # Source code configuration
+  sources:
+    - packages
+    - shared
+
+  # Exclude node_modules, tests, and build artifacts
+  exclusions:
+    - '**/node_modules/**'
+    - '**/*.test.ts'
+    - '**/*.spec.ts'
+    - '**/dist/**'
+    - '**/build/**'
+    - '.next/**'
+    - 'coverage/**'
+
+  # Test configuration
+  tests:
+    - 'packages/**/test/**'
+    - 'packages/**/*.test.ts'
+    - 'packages/**/*.spec.ts'
+
+  testInclusions:
+    - '**/*.test.ts'
+    - '**/*.spec.ts'
+
+  coverageExclusions:
+    - '**/node_modules/**'
+    - '**/*.test.ts'
+    - '**/*.spec.ts'
+    - '**/dist/**'
+    - '**/build/**'
+
+  # Coverage reports
+  coverage:
+    lcovReport: coverage/lcov.info
+
+  # Language-specific settings
+  language: typescript
+
+qualityGate:
+  enabled: true
+  minGrade: A-
+  metrics:
+    bugs: 5
+    vulnerabilities: 0
+    coverage: 80
+    duplicatedLinesDensity: 3.0

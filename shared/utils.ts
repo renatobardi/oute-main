@@ -13,7 +13,7 @@ export function formatDate(date: Date): string {
  * Parse JWT payload without verification (for client-side)
  * WARNING: Always verify on server!
  */
-export function parseJWT(token: string): Record<string, any> | null {
+export function parseJWT(token: string): Record<string, unknown> | null {
   try {
     const base64Url = token.split('.')[1];
     const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
@@ -34,9 +34,9 @@ export function parseJWT(token: string): Record<string, any> | null {
  */
 export function isTokenExpired(token: string): boolean {
   const payload = parseJWT(token);
-  if (!payload) return true;
+  if (payload === null) return true;
 
-  const expiryTime = payload.exp * 1000; // convert to milliseconds
+  const expiryTime = (payload.exp as number) * 1000; // convert to milliseconds
   return Date.now() >= expiryTime;
 }
 
@@ -74,7 +74,7 @@ export function isValidPassword(password: string): boolean {
 /**
  * Debounce function
  */
-export function debounce<T extends (...args: any[]) => any>(
+export function debounce<T extends (...args: unknown[]) => unknown>(
   func: T,
   wait: number
 ): (...args: Parameters<T>) => void {
@@ -94,6 +94,6 @@ export function debounce<T extends (...args: any[]) => any>(
 /**
  * Sleep utility
  */
-export async function sleep(ms: number): Promise<void> {
+export function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }

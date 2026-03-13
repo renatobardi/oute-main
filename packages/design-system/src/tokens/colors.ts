@@ -4,38 +4,38 @@
  */
 
 export const colors = {
-  // Primary - Main brand color (Blue)
+  // Primary - Main brand color (Cyan)
   primary: {
-    50: '#f0f9ff',
-    100: '#e0f2fe',
-    200: '#bae6fd',
-    300: '#7dd3fc',
-    400: '#38bdf8',
-    500: '#0ea5e9',
-    600: '#0284c7',
-    700: '#0369a1',
-    800: '#075985',
-    900: '#0c3d66',
+    50: '#ecf7fc',
+    100: '#d9effa',
+    200: '#a8ddf4',
+    300: '#77cbee',
+    400: '#46b9e9',
+    500: '#15a7e4',
+    600: '#06bcf9',
+    700: '#0597c9',
+    800: '#047a99',
+    900: '#025d69',
   },
 
-  // Secondary - Accent color (Purple)
+  // Secondary - Accent color (Teal)
   secondary: {
-    50: '#f5f3ff',
-    100: '#ede9fe',
-    200: '#ddd6fe',
-    300: '#c4b5fd',
-    400: '#a78bfa',
-    500: '#8b5cf6',
-    600: '#7c3aed',
-    700: '#6d28d9',
-    800: '#5b21b6',
-    900: '#4c1d95',
+    50: '#ecf4f8',
+    100: '#d9eaf1',
+    200: '#a8d5e3',
+    300: '#77c0d5',
+    400: '#46abc7',
+    500: '#1596b9',
+    600: '#0597c9',
+    700: '#046b99',
+    800: '#035169',
+    900: '#024039',
   },
 
   // Neutral - Grayscale
   neutral: {
     0: '#ffffff',
-    50: '#f9fafb',
+    50: '#f5f8f8',
     100: '#f3f4f6',
     200: '#e5e7eb',
     300: '#d1d5db',
@@ -55,9 +55,9 @@ export const colors = {
 
   // Dark mode variants
   dark: {
-    bg: '#1a1a1a',
-    surface: '#2d2d2d',
-    border: '#404040',
+    bg: '#0f1e23',
+    surface: '#162a31',
+    border: '#21404a',
   },
 };
 

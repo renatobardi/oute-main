@@ -14,8 +14,8 @@ test.describe('Profile Endpoint', () => {
     const loginResponse = await page.request.post('/api/auth?action=login', {
       data: {
         email: 'test@example.com',
-        password: 'SecurePass123!'
-      }
+        password: 'SecurePass123!',
+      },
     });
 
     expect(loginResponse.status()).toBe(200);
@@ -25,8 +25,8 @@ test.describe('Profile Endpoint', () => {
     // Now fetch profile with token
     const profileResponse = await page.request.get('/api/profile', {
       headers: {
-        Authorization: `Bearer ${token}`
-      }
+        Authorization: `Bearer ${token}`,
+      },
     });
 
     expect(profileResponse.status()).toBe(200);
@@ -58,8 +58,8 @@ test.describe('Profile Endpoint', () => {
   test('should reject profile request with invalid token format', async ({ page }) => {
     const profileResponse = await page.request.get('/api/profile', {
       headers: {
-        Authorization: 'Bearer invalid-token-format'
-      }
+        Authorization: 'Bearer invalid-token-format',
+      },
     });
 
     expect(profileResponse.status()).toBe(401);
@@ -73,8 +73,8 @@ test.describe('Profile Endpoint', () => {
   test('should reject profile request with malformed Authorization header', async ({ page }) => {
     const profileResponse = await page.request.get('/api/profile', {
       headers: {
-        Authorization: 'InvalidFormat token'
-      }
+        Authorization: 'InvalidFormat token',
+      },
     });
 
     expect(profileResponse.status()).toBe(401);
@@ -91,8 +91,8 @@ test.describe('Profile Endpoint', () => {
       data: {
         email: 'newprofileuser@example.com',
         password: 'SecurePass123!',
-        name: 'Profile Test User'
-      }
+        name: 'Profile Test User',
+      },
     });
 
     expect(registerResponse.status()).toBe(201);
@@ -102,8 +102,8 @@ test.describe('Profile Endpoint', () => {
     // Fetch profile
     const profileResponse = await page.request.get('/api/profile', {
       headers: {
-        Authorization: `Bearer ${token}`
-      }
+        Authorization: `Bearer ${token}`,
+      },
     });
 
     expect(profileResponse.status()).toBe(200);
@@ -129,8 +129,8 @@ test.describe('Profile Endpoint', () => {
     const loginResponse = await page.request.post('/api/auth?action=login', {
       data: {
         email: 'test@example.com',
-        password: 'SecurePass123!'
-      }
+        password: 'SecurePass123!',
+      },
     });
 
     const loginData = await loginResponse.json();
@@ -138,13 +138,13 @@ test.describe('Profile Endpoint', () => {
 
     // First request
     const profile1 = await page.request.get('/api/profile', {
-      headers: { Authorization: `Bearer ${token}` }
+      headers: { Authorization: `Bearer ${token}` },
     });
     expect(profile1.status()).toBe(200);
 
     // Second request with same token
     const profile2 = await page.request.get('/api/profile', {
-      headers: { Authorization: `Bearer ${token}` }
+      headers: { Authorization: `Bearer ${token}` },
     });
     expect(profile2.status()).toBe(200);
 
@@ -160,12 +160,13 @@ test.describe('Profile Endpoint', () => {
    */
   test('should reject profile request with expired token', async ({ page }) => {
     // Create a token that's already expired (or use a mock expired token)
-    const expiredToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyLTEyMyIsImV4cCI6MTYwMDAwMDAwMH0.invalid';
+    const expiredToken =
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyLTEyMyIsImV4cCI6MTYwMDAwMDAwMH0.invalid';
 
     const profileResponse = await page.request.get('/api/profile', {
       headers: {
-        Authorization: `Bearer ${expiredToken}`
-      }
+        Authorization: `Bearer ${expiredToken}`,
+      },
     });
 
     // Should return 401 Unauthorized
@@ -182,8 +183,8 @@ test.describe('Profile Endpoint', () => {
     const loginResponse = await page.request.post('/api/auth?action=login', {
       data: {
         email: 'test@example.com',
-        password: 'SecurePass123!'
-      }
+        password: 'SecurePass123!',
+      },
     });
 
     const loginData = await loginResponse.json();
@@ -192,8 +193,8 @@ test.describe('Profile Endpoint', () => {
     // Try with lowercase 'bearer' (should fail)
     const profileResponse = await page.request.get('/api/profile', {
       headers: {
-        Authorization: `bearer ${token}`
-      }
+        Authorization: `bearer ${token}`,
+      },
     });
 
     expect(profileResponse.status()).toBe(401);
@@ -208,7 +209,9 @@ test.describe('Authentication Flow Integration', () => {
   /**
    * Test: Complete flow - Register → Login → Access Profile
    */
-  test('should complete full authentication flow: register -> login -> profile', async ({ page }) => {
+  test('should complete full authentication flow: register -> login -> profile', async ({
+    page,
+  }) => {
     const testEmail = `flow-test-${Date.now()}@example.com`;
     const testPassword = 'FlowTest123!';
     const testName = 'Flow Test User';
@@ -218,8 +221,8 @@ test.describe('Authentication Flow Integration', () => {
       data: {
         email: testEmail,
         password: testPassword,
-        name: testName
-      }
+        name: testName,
+      },
     });
 
     expect(registerResponse.status()).toBe(201);
@@ -230,8 +233,8 @@ test.describe('Authentication Flow Integration', () => {
     // Step 2: Access profile with registration token
     const profileAfterRegister = await page.request.get('/api/profile', {
       headers: {
-        Authorization: `Bearer ${registrationToken}`
-      }
+        Authorization: `Bearer ${registrationToken}`,
+      },
     });
 
     expect(profileAfterRegister.status()).toBe(200);
@@ -243,8 +246,8 @@ test.describe('Authentication Flow Integration', () => {
     const loginResponse = await page.request.post('/api/auth?action=login', {
       data: {
         email: testEmail,
-        password: testPassword
-      }
+        password: testPassword,
+      },
     });
 
     expect(loginResponse.status()).toBe(200);
@@ -255,8 +258,8 @@ test.describe('Authentication Flow Integration', () => {
     // Step 4: Access profile with login token
     const profileAfterLogin = await page.request.get('/api/profile', {
       headers: {
-        Authorization: `Bearer ${loginToken}`
-      }
+        Authorization: `Bearer ${loginToken}`,
+      },
     });
 
     expect(profileAfterLogin.status()).toBe(200);
@@ -273,8 +276,8 @@ test.describe('Authentication Flow Integration', () => {
     const loginResponse = await page.request.post('/api/auth?action=login', {
       data: {
         email: 'test@example.com',
-        password: 'WrongPassword123!'
-      }
+        password: 'WrongPassword123!',
+      },
     });
 
     expect(loginResponse.status()).toBe(401);
@@ -284,8 +287,8 @@ test.describe('Authentication Flow Integration', () => {
     // Try to access profile without valid token
     const profileResponse = await page.request.get('/api/profile', {
       headers: {
-        Authorization: 'Bearer fake-token-from-failed-login'
-      }
+        Authorization: 'Bearer fake-token-from-failed-login',
+      },
     });
 
     expect(profileResponse.status()).toBe(401);
@@ -298,14 +301,14 @@ test.describe('Authentication Flow Integration', () => {
     // Make multiple concurrent login requests
     const results = await Promise.all([
       page.request.post('/api/auth?action=login', {
-        data: { email: 'test@example.com', password: 'SecurePass123!' }
+        data: { email: 'test@example.com', password: 'SecurePass123!' },
       }),
       page.request.post('/api/auth?action=login', {
-        data: { email: 'test@example.com', password: 'SecurePass123!' }
+        data: { email: 'test@example.com', password: 'SecurePass123!' },
       }),
       page.request.post('/api/auth?action=login', {
-        data: { email: 'test@example.com', password: 'SecurePass123!' }
-      })
+        data: { email: 'test@example.com', password: 'SecurePass123!' },
+      }),
     ]);
 
     // All should succeed

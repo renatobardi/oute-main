@@ -7,4 +7,4 @@ export { colors, primary, secondary, neutral } from './colors';
 export { typography, fontFamily, fontSize, fontWeight } from './typography';
 export { spacing, gaps, padding, containerSizes } from './spacing';
 
-export type { } from './colors';
+export type {} from './colors';

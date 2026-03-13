@@ -1,0 +1,47 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "OUTE All Services (npm workspaces)",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev"],
+      "port": 5173
+    },
+    {
+      "name": "OUTE Dashboard",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev", "-w", "00_dashboard"],
+      "port": 5173
+    },
+    {
+      "name": "OUTE Auth Profile API",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev", "-w", "01_auth-profile"],
+      "port": 5174
+    },
+    {
+      "name": "OUTE Projects API",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev", "-w", "02_projects"],
+      "port": 5175
+    },
+    {
+      "name": "OUTE Design System (Storybook)",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev:storybook", "-w", "design-system"],
+      "port": 6006
+    },
+    {
+      "name": "OUTE 99_home (Landing Page)",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev", "-w", "@oute/home"],
+      "port": 3003
+    },
+    {
+      "name": "OUTE 03_interview (Chat)",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev", "-w", "@oute/interview"],
+      "port": 3002
+    }
+  ]
+}

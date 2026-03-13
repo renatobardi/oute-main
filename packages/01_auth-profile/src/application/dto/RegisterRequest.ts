@@ -8,7 +8,7 @@ export class RegisterRequest {
     public readonly password: string,
     public readonly name: string
   ) {
-    if (!email || !password || !name) {
+    if (email.length === 0 || password.length === 0 || name.length === 0) {
       throw new Error('Email, password, and name are required');
     }
   }

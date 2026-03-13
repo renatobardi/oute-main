@@ -1,5 +1,3 @@
-version: '3.9'
-
 services:
   postgres:
     image: postgres:15-alpine
@@ -22,8 +20,8 @@ services:
 
   design-system:
     build:
-      context: ./packages/design-system
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: packages/design-system/Dockerfile
     container_name: oute-design-system
     ports:
       - '6006:6006'
@@ -32,10 +30,24 @@ services:
     networks:
       - oute-network
 
+  99_home:
+    build:
+      context: .
+      dockerfile: packages/99_home/Dockerfile
+    container_name: oute-home
+    ports:
+      - '3003:3003'
+    environment:
+      - NODE_ENV=production
+      - VITE_AUTH_SERVICE_URL=http://localhost:3001
+      - VITE_API_TIMEOUT=30000
+    networks:
+      - oute-network
+
   00_dashboard:
     build:
-      context: ./packages/00_dashboard
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: packages/00_dashboard/Dockerfile
     container_name: oute-dashboard
     ports:
       - '3000:3000'
@@ -52,8 +64,8 @@ services:
 
   01_auth-profile:
     build:
-      context: ./packages/01_auth-profile
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: packages/01_auth-profile/Dockerfile
     container_name: oute-auth-profile
     ports:
       - '3001:3001'
@@ -69,8 +81,8 @@ services:
 
   02_projects:
     build:
-      context: ./packages/02_projects
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: packages/02_projects/Dockerfile
     container_name: oute-projects
     ports:
       - '3002:3002'
@@ -82,6 +94,20 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+    networks:
+      - oute-network
+
+  03_interview:
+    build:
+      context: .
+      dockerfile: packages/03_interview/Dockerfile
+    container_name: oute-interview
+    ports:
+      - '3002:3002'
+    environment:
+      - NODE_ENV=production
+      - VITE_AUTH_SERVICE_URL=http://localhost:3001
+      - VITE_API_TIMEOUT=30000
     networks:
       - oute-network
 

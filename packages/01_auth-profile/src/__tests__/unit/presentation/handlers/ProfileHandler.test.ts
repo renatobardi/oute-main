@@ -15,8 +15,8 @@ describe('ProfileHandler', () => {
   beforeEach(async () => {
     // Mock use case
     getProfileUseCase = {
-      execute: vi.fn()
-    } as any;
+      execute: vi.fn(),
+    } as unknown as GetProfileUseCase;
 
     handler = new ProfileHandler(getProfileUseCase);
 
@@ -25,7 +25,7 @@ describe('ProfileHandler', () => {
     testUser = User.create({
       email: Email.fromString('test@example.com'),
       passwordHash: hashedPassword,
-      name: 'Test User'
+      name: 'Test User',
     });
   });
 
@@ -40,33 +40,35 @@ describe('ProfileHandler', () => {
           name: 'Test User',
           roles: ['USER'],
           createdAt: new Date().toISOString(),
-          lastLogin: null
-        }
+          lastLogin: null,
+        },
       });
 
       const result = await handler.handle(userId);
 
       expect(result.status).toBe(200);
-      expect((result.body as any).id).toBe(userId);
-      expect((result.body as any).email).toBe('test@example.com');
+      expect((result.body as Record<string, unknown>).id).toBe(userId);
+      expect((result.body as Record<string, unknown>).email).toBe('test@example.com');
     });
 
     it('should return 400 when userId is empty', async () => {
       const result = await handler.handle('');
 
       expect(result.status).toBe(400);
-      expect((result.body as any).error).toContain('required');
+      expect((result.body as Record<string, unknown>).error).toContain('required');
     });
 
     it('should return 404 when user not found', async () => {
       const userId = '550e8400-e29b-41d4-a716-446655440000';
 
-      vi.mocked(getProfileUseCase.execute).mockRejectedValue(new UserNotFoundError('User not found'));
+      vi.mocked(getProfileUseCase.execute).mockRejectedValue(
+        new UserNotFoundError('User not found')
+      );
 
       const result = await handler.handle(userId);
 
       expect(result.status).toBe(404);
-      expect((result.body as any).error).toContain('not found');
+      expect((result.body as Record<string, unknown>).error).toContain('not found');
     });
 
     it('should return 400 on invalid userId format', async () => {
@@ -91,8 +93,8 @@ describe('ProfileHandler', () => {
           name: 'Test User',
           roles: ['USER'],
           createdAt: new Date().toISOString(),
-          lastLogin: null
-        }
+          lastLogin: null,
+        },
       });
 
       await handler.handle(userId);
@@ -112,17 +114,17 @@ describe('ProfileHandler', () => {
           name: 'Test User',
           roles: ['USER', 'ADMIN'],
           createdAt,
-          lastLogin
-        }
+          lastLogin,
+        },
       });
 
       const result = await handler.handle(userId);
 
       expect(result.status).toBe(200);
-      expect((result.body as any).name).toBe('Test User');
-      expect((result.body as any).roles).toContain('ADMIN');
-      expect((result.body as any).createdAt).toBe(createdAt);
-      expect((result.body as any).lastLogin).toBe(lastLogin);
+      expect((result.body as Record<string, unknown>).name).toBe('Test User');
+      expect((result.body as Record<string, unknown>).roles).toContain('ADMIN');
+      expect((result.body as Record<string, unknown>).createdAt).toBe(createdAt);
+      expect((result.body as Record<string, unknown>).lastLogin).toBe(lastLogin);
     });
   });
 });

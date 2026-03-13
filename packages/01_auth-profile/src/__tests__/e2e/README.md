@@ -92,6 +92,7 @@ npx playwright test --ui
 ```
 
 This opens an interactive debugger where you can:
+
 - Step through tests
 - Inspect network requests
 - View snapshots
@@ -120,6 +121,7 @@ npx playwright show-report
 ```
 
 This opens an interactive report showing:
+
 - Test results (passed/failed)
 - Screenshot comparisons
 - Video recordings (if enabled)
@@ -130,23 +132,27 @@ This opens an interactive report showing:
 ### Authentication Tests (`auth.spec.ts`)
 
 #### Login Tests
+
 1. ✅ Login with valid credentials → 200 + token
 2. ❌ Login with invalid email format → 400
 3. ❌ Login with incorrect password → 401
 4. ❌ Login with missing email → 400
 
 #### Registration Tests
+
 5. ✅ Register with valid data → 201 + token
 6. ❌ Register with weak password → 400
 7. ❌ Register with invalid email → 400
 8. ❌ Register with missing fields → 400
 
 #### Token Validation
+
 9. ✅ JWT token has valid 3-part structure (header.payload.signature)
 
 ### Profile Tests (`profile.spec.ts`)
 
 #### Protected Route Tests
+
 1. ✅ Get profile with valid JWT → 200 + user data
 2. ❌ Get profile without auth header → 401
 3. ❌ Get profile with invalid token → 401
@@ -157,6 +163,7 @@ This opens an interactive report showing:
 8. ❌ Case-sensitive Bearer prefix check
 
 #### Full Integration Flows
+
 9. ✅ Register → Login → Profile access (complete flow)
 10. ❌ Failed login prevents profile access
 11. ✅ Concurrent authentication requests handled
@@ -220,6 +227,7 @@ This prevents conflicts when running tests multiple times.
 ### 2. Test Isolation
 
 Each test is independent:
+
 - No shared state
 - Register/login within each test
 - No test dependencies
@@ -227,6 +235,7 @@ Each test is independent:
 ### 3. Comprehensive Error Scenarios
 
 Tests cover:
+
 - Happy path (success)
 - Missing required fields
 - Invalid formats
@@ -236,6 +245,7 @@ Tests cover:
 ### 4. Full Integration Testing
 
 `profile.spec.ts` includes complete workflows:
+
 - Register → Login → Profile (validates entire flow)
 - Concurrent requests (validates system stability)
 
@@ -246,6 +256,7 @@ Tests cover:
 **Cause**: Dev server not running or wrong baseURL
 
 **Solution**:
+
 ```bash
 npm run dev  # Start dev server first
 npm run test:e2e  # Then run tests
@@ -256,8 +267,9 @@ npm run test:e2e  # Then run tests
 **Cause**: Requests taking too long or server unresponsive
 
 **Solution**: Increase timeout in `playwright.config.ts`:
+
 ```typescript
-expect.setDefaultTimeout(5000);  // 5 seconds
+expect.setDefaultTimeout(5000); // 5 seconds
 ```
 
 ### Issue: `Navigation to "http://localhost:5173/" failed`
@@ -265,6 +277,7 @@ expect.setDefaultTimeout(5000);  // 5 seconds
 **Cause**: Dev server not reachable
 
 **Solution**:
+
 ```bash
 # Verify dev server is running
 curl http://localhost:5173
@@ -275,6 +288,7 @@ curl http://localhost:5173
 **Cause**: Different environment, different test data
 
 **Solution**:
+
 - Use environment variables for API endpoints
 - Don't hardcode localhost URLs
 - Use test data seeding in CI
@@ -298,7 +312,7 @@ jobs:
           node-version: '20'
 
       - run: npm ci
-      - run: npm run dev &  # Start dev server
+      - run: npm run dev & # Start dev server
       - run: npm run test:e2e
 
       - uses: actions/upload-artifact@v3
@@ -335,6 +349,7 @@ npx playwright test --workers=1
 ### Additional Test Coverage
 
 Consider adding:
+
 - [ ] Token refresh tests
 - [ ] Logout functionality tests
 - [ ] Role-based access control tests
@@ -368,6 +383,7 @@ await expect(page).toHaveScreenshot();
 ## Troubleshooting
 
 For more help, check:
+
 - `playwright.config.ts` - Playwright configuration
 - `.env.example` - Environment variables
 - GitHub Actions logs - CI/CD issues

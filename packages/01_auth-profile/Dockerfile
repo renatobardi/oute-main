@@ -26,7 +26,7 @@ COPY packages/01_auth-profile/package.json ./packages/01_auth-profile/
 COPY shared ./shared
 
 # Install production dependencies only
-RUN npm ci --legacy-peer-deps --production && npm cache clean --force
+RUN npm ci --legacy-peer-deps --omit=dev && npm cache clean --force
 
 # Copy built app
 COPY --from=builder /app/packages/01_auth-profile/build ./packages/01_auth-profile/build
@@ -34,5 +34,6 @@ COPY --from=builder /app/packages/01_auth-profile/build ./packages/01_auth-profi
 EXPOSE 3001
 
 ENV NODE_ENV=production
+ENV PORT=3001
 
 CMD ["node", "packages/01_auth-profile/build/index.js"]

@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.0.0] - 2024-03-07
 
 ### Added
+
 - Initial release of OUTE Design System
 - Tailwind 4 integration
 - Color tokens (primary, secondary, neutral, semantic)
@@ -20,12 +21,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Vitest for unit tests
 
 ### Components Included
+
 - Button
   - Variants: primary, secondary, danger, ghost
   - Sizes: sm, md, lg
   - States: disabled, active, hover
 
 ### Design Tokens
+
 - Colors: 10 shades per primary/secondary/neutral + semantic colors
 - Typography: 8 font sizes + custom heading/body scales
 - Spacing: 32 scale values from 0px to 384px
@@ -33,6 +36,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Upcoming
 
 ### [1.1.0] - Planned
+
 - Card component
 - Input component
 - Modal component
@@ -41,12 +45,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Accessibility improvements (ARIA labels)
 
 ### [1.2.0] - Planned
+
 - Dark mode support
 - Responsive utilities
 - Animation utilities
 - Extended component library
 
 ### [2.0.0] - Planned (Breaking)
+
 - Icon library integration
 - Theming system overhaul
 - New color palette (optional)

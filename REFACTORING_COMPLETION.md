@@ -13,12 +13,14 @@ The OUTE monorepo has been successfully refactored to implement **Hexagonal Arch
 ### Architecture Implementation
 
 #### ✅ Hexagonal Architecture (Ports & Adapters)
+
 - **Domain Layer**: Pure business logic, zero infrastructure dependencies
 - **Application Layer**: Use cases orchestrating domain + infrastructure
 - **Infrastructure Layer**: Adapters implementing port interfaces
 - **Presentation Layer**: SvelteKit routes with dependency injection
 
 #### ✅ Domain-Driven Design
+
 - **Entities**: User aggregate with lifecycle management
 - **Value Objects**: Email, Password, UserId, Role (immutable, validated)
 - **Domain Services**: AuthenticationService with business rules
@@ -26,6 +28,7 @@ The OUTE monorepo has been successfully refactored to implement **Hexagonal Arch
 - **Ubiquitous Language**: Clear, consistent terminology across codebase
 
 #### ✅ Clean Code
+
 - **Single Responsibility**: Each class has one reason to change
 - **Naming**: Clear, intention-revealing names
 - **Small Functions**: Methods avg. 10-15 lines
@@ -33,6 +36,7 @@ The OUTE monorepo has been successfully refactored to implement **Hexagonal Arch
 - **Error Handling**: Specific domain errors, not catch-all strings
 
 #### ✅ Test-Driven Development
+
 - **Red-Green-Refactor**: Tests written before implementations
 - **Unit Tests**: 56 tests for domain layer
 - **Integration Tests**: 28 tests for infrastructure adapters
@@ -42,7 +46,9 @@ The OUTE monorepo has been successfully refactored to implement **Hexagonal Arch
 - **Total**: 178 tests, 80%+ coverage
 
 #### ✅ Definition of Done
+
 Every feature must have:
+
 - [x] Code quality (ESLint, Prettier, strict TypeScript)
 - [x] 100% test coverage (unit + integration + E2E)
 - [x] Proper error handling (domain errors, not strings)
@@ -52,7 +58,9 @@ Every feature must have:
 - [x] Peer review ready
 
 #### ✅ Definition of Ready
+
 Every issue must have:
+
 - [x] Clear acceptance criteria
 - [x] Domain model sketched
 - [x] Use cases identified
@@ -65,15 +73,18 @@ Every issue must have:
 ## Phase-by-Phase Breakdown
 
 ### Phase 1: Domain Layer ✅
+
 **Status**: Complete with 56 tests
 
 **Deliverables**:
+
 - `domain/entities/User.ts` - Aggregate with business logic
 - `domain/value-objects/` - Email, Password, UserId, Role
 - `domain/errors/` - DomainError hierarchy (6 error types)
 - `domain/repositories/IUserRepository.ts` - Port interface
 
 **Key Features**:
+
 - Email validation (RFC 5322)
 - Password strength validation (min 8 chars, mixed case, numbers, symbols)
 - UUID-based user IDs
@@ -81,6 +92,7 @@ Every issue must have:
 - User lifecycle (create, reconstruct, update)
 
 **Test Coverage**:
+
 ```
 ✅ Email validation (valid, invalid, edge cases)
 ✅ Password validation (strong, weak, edge cases)
@@ -90,15 +102,18 @@ Every issue must have:
 ```
 
 ### Phase 2: Infrastructure Layer ✅
+
 **Status**: Complete with 28 tests
 
 **Deliverables**:
+
 - `infrastructure/adapters/repositories/PostgresUserRepository.ts` - Persistence adapter
 - `infrastructure/adapters/password/BcryptPasswordAdapter.ts` - Password hashing
 - `infrastructure/adapters/token/JwtTokenAdapter.ts` - JWT generation
 - `infrastructure/config/database.ts` - Database setup
 
 **Key Features**:
+
 - Mock in-memory database (Map-based, no external DB required)
 - Bcrypt-like password hashing (mock implementation)
 - JWT token generation with claims (userId, email, roles)
@@ -106,6 +121,7 @@ Every issue must have:
 - Mock implementation for testing (easily swappable for production)
 
 **Test Coverage**:
+
 ```
 ✅ User repository CRUD operations
 ✅ Password hashing & verification
@@ -115,9 +131,11 @@ Every issue must have:
 ```
 
 ### Phase 3: Application Layer ✅
+
 **Status**: Complete with 34 tests
 
 **Deliverables**:
+
 - `application/use-cases/login/LoginUseCase.ts` - Login orchestration
 - `application/use-cases/register/RegisterUseCase.ts` - Registration orchestration
 - `application/use-cases/get-profile/GetProfileUseCase.ts` - Profile retrieval
@@ -125,6 +143,7 @@ Every issue must have:
 - `application/dto/mappers/UserMapper.ts` - Entity to DTO conversion
 
 **Key Features**:
+
 - Use case orchestration (email validation → user lookup → password verify → token generation)
 - DTO validation at boundaries
 - Entity-to-DTO mapping (password hash never exposed)
@@ -132,6 +151,7 @@ Every issue must have:
 - Transaction-like behavior (atomic operations)
 
 **Test Coverage**:
+
 ```
 ✅ Login success & failures
 ✅ Registration success & failures
@@ -141,9 +161,11 @@ Every issue must have:
 ```
 
 ### Phase 4: Presentation Layer ✅
+
 **Status**: Complete with 39 tests
 
 **Deliverables**:
+
 - `presentation/handlers/LoginHandler.ts` - HTTP request orchestration
 - `presentation/handlers/RegisterHandler.ts` - Registration HTTP orchestration
 - `presentation/handlers/ProfileHandler.ts` - Profile HTTP orchestration
@@ -154,6 +176,7 @@ Every issue must have:
 - `src/hooks.server.ts` - Dependency injection setup
 
 **Key Features**:
+
 - Request validation (required fields, format)
 - Error mapping to HTTP status codes (400, 401, 404, 500)
 - Bearer token extraction & validation
@@ -161,6 +184,7 @@ Every issue must have:
 - Error response formatting with error codes
 
 **Test Coverage**:
+
 ```
 ✅ HTTP status codes (200, 201, 400, 401, 404, 500)
 ✅ Request validation
@@ -170,9 +194,11 @@ Every issue must have:
 ```
 
 ### Phase 5: E2E Tests ✅
+
 **Status**: Complete with 21 tests
 
 **Deliverables**:
+
 - `playwright.config.ts` - Playwright configuration
 - `src/__tests__/e2e/auth.spec.ts` - Authentication flow tests (8 tests)
 - `src/__tests__/e2e/profile.spec.ts` - Profile endpoint tests (13 tests)
@@ -180,6 +206,7 @@ Every issue must have:
 - `src/__tests__/e2e/README.md` - E2E testing guide
 
 **Key Features**:
+
 - Full authentication flow validation
 - Protected route testing
 - JWT token validation
@@ -188,6 +215,7 @@ Every issue must have:
 - Integration flow testing
 
 **Test Coverage**:
+
 ```
 ✅ Login with valid/invalid credentials
 ✅ Registration with valid/invalid data
@@ -201,6 +229,7 @@ Every issue must have:
 ## Complete Test Summary
 
 ### Test Distribution
+
 ```
 Layer          | Tests | Coverage
 ---------------|-------|----------
@@ -214,12 +243,14 @@ TOTAL          | 178   | 80%+
 ```
 
 ### Coverage by Type
+
 - **Unit Tests**: 157 tests (domain, application, infrastructure)
 - **Integration Tests**: 28 tests (infrastructure adapters)
 - **E2E Tests**: 21 tests (complete workflows)
 - **Presentation Tests**: 39 tests (handlers, middleware)
 
 ### All Tests Passing ✅
+
 ```bash
 npm run test --workspaces
 # Result: 178 tests passed
@@ -230,23 +261,27 @@ npm run test --workspaces
 ## Code Quality Metrics
 
 ### TypeScript
+
 - **Strict Mode**: ✅ Enabled
 - **Type Coverage**: 100% (no `any` without justification)
 - **Unused Variables**: ✅ None
 - **Implicit Any**: ✅ Prevented
 
 ### ESLint & Prettier
+
 - **Formatting**: ✅ All files formatted
 - **Linting**: ✅ No warnings or errors
 - **Code Style**: ✅ Consistent across codebase
 
 ### Architecture
+
 - **Cyclomatic Complexity**: < 10 (all functions)
 - **Function Size**: 10-15 lines average
 - **Code Duplication**: < 5%
 - **SOLID Principles**: ✅ Adhered to
 
 ### Error Handling
+
 - **Domain Errors**: ✅ Proper hierarchy
 - **No Catch-All**: ✅ Specific error handling
 - **Error Messages**: ✅ User-facing and technical
@@ -256,29 +291,34 @@ npm run test --workspaces
 ## Security Implementation
 
 ### ✅ Authentication
+
 - [x] JWT token generation with proper claims
 - [x] Token expiration validation
 - [x] Bearer token extraction and validation
 - [x] Case-sensitive Authorization header checking
 
 ### ✅ Password Security
+
 - [x] Bcrypt hashing (mock implementation)
 - [x] Password strength validation
 - [x] Never exposed in responses or logs
 - [x] No plaintext storage
 
 ### ✅ Input Validation
+
 - [x] Email format validation (RFC 5322)
 - [x] Required field validation
 - [x] Type validation in DTOs
 - [x] Value object construction validation
 
 ### ✅ User Enumeration Prevention
+
 - [x] Generic error messages for login failures
 - [x] No user existence disclosure
 - [x] Same error for invalid email/password
 
 ### ⚠️ Not Yet Implemented (Future Work)
+
 - [ ] CORS configuration
 - [ ] Rate limiting
 - [ ] CSRF protection
@@ -290,16 +330,19 @@ npm run test --workspaces
 ## Performance Characteristics
 
 ### Test Execution
+
 - **Unit Tests**: ~10 seconds (157 tests)
 - **E2E Tests**: ~20-30 seconds (21 tests)
 - **Total Suite**: ~40-50 seconds
 
 ### Response Times (Expected)
+
 - **Login**: < 500ms (password hash + token generation)
 - **Register**: < 500ms (password hash + token generation)
 - **Get Profile**: < 100ms (cached, no DB query overhead)
 
 ### Database
+
 - **Queries per Request**: 1-2 (Login: 1 select + 1 update)
 - **N+1 Prevention**: ✅ No N+1 queries
 
@@ -308,16 +351,19 @@ npm run test --workspaces
 ## Documentation
 
 ### Code Documentation
+
 - **Comments**: Strategic comments on complex logic
 - **Type Definitions**: Full TypeScript types
 - **Error Handling**: Documented error scenarios
 
 ### API Documentation
+
 - **Endpoint Contracts**: Defined in handlers
 - **Request/Response**: Typed DTOs
 - **Error Responses**: Mapped with status codes and error codes
 
 ### User Documentation
+
 - **Setup Guide**: `/packages/01_auth-profile/README.md`
 - **E2E Tests**: `src/__tests__/e2e/README.md`
 - **Phase Summaries**: `PHASE_*.md` files
@@ -328,6 +374,7 @@ npm run test --workspaces
 ## Files Changed/Created
 
 ### Domain Layer
+
 ```
 src/domain/
 ├── entities/User.ts                     (Created)
@@ -347,6 +394,7 @@ src/domain/
 ```
 
 ### Infrastructure Layer
+
 ```
 src/infrastructure/
 ├── adapters/repositories/PostgresUserRepository.ts
@@ -357,6 +405,7 @@ src/infrastructure/
 ```
 
 ### Application Layer
+
 ```
 src/application/
 ├── use-cases/login/LoginUseCase.ts
@@ -375,6 +424,7 @@ src/application/
 ```
 
 ### Presentation Layer
+
 ```
 src/presentation/
 ├── handlers/LoginHandler.ts
@@ -387,6 +437,7 @@ src/presentation/
 ```
 
 ### Configuration
+
 ```
 src/
 ├── app.ts (hooks with DI)
@@ -395,6 +446,7 @@ src/
 ```
 
 ### E2E Tests
+
 ```
 src/__tests__/e2e/
 ├── playwright.config.ts
@@ -405,6 +457,7 @@ src/__tests__/e2e/
 ```
 
 ### Tests
+
 ```
 src/__tests__/
 ├── unit/
@@ -491,6 +544,7 @@ Create a script to scaffold new services with this structure:
 ## Validation Checklist
 
 ### Architecture ✅
+
 - [x] Domain layer isolated (no infrastructure imports)
 - [x] Dependency inversion (domain → application → infrastructure)
 - [x] Ports & adapters clearly defined
@@ -498,6 +552,7 @@ Create a script to scaffold new services with this structure:
 - [x] No circular dependencies
 
 ### Code Quality ✅
+
 - [x] TypeScript strict mode
 - [x] ESLint compliance
 - [x] Prettier formatting
@@ -506,6 +561,7 @@ Create a script to scaffold new services with this structure:
 - [x] SOLID principles adhered
 
 ### Testing ✅
+
 - [x] Unit tests for domain
 - [x] Integration tests for infrastructure
 - [x] Application tests for use cases
@@ -515,6 +571,7 @@ Create a script to scaffold new services with this structure:
 - [x] All 178 tests passing
 
 ### Error Handling ✅
+
 - [x] Domain errors with inheritance
 - [x] Error mapping to HTTP responses
 - [x] Specific error messages (no catch-all)
@@ -522,6 +579,7 @@ Create a script to scaffold new services with this structure:
 - [x] User-facing error messages
 
 ### Security ✅
+
 - [x] Password hashing (bcrypt mock)
 - [x] JWT token generation
 - [x] Token expiration validation
@@ -530,6 +588,7 @@ Create a script to scaffold new services with this structure:
 - [x] User enumeration prevention
 
 ### Documentation ✅
+
 - [x] Phase summaries (PHASE_1-5_SUMMARY.md)
 - [x] E2E testing guide (README.md)
 - [x] Code comments on complex logic
@@ -541,41 +600,46 @@ Create a script to scaffold new services with this structure:
 ## Success Metrics
 
 ### Quantitative
-| Metric | Target | Actual | Status |
-|--------|--------|--------|--------|
-| Test Coverage | 80%+ | 80%+ | ✅ |
-| Tests Passing | 100% | 100% (178/178) | ✅ |
-| Type Safety | 100% | 100% | ✅ |
-| Code Duplication | < 5% | ~2% | ✅ |
-| Avg Function Size | < 20 lines | ~10 lines | ✅ |
+
+| Metric            | Target     | Actual         | Status |
+| ----------------- | ---------- | -------------- | ------ |
+| Test Coverage     | 80%+       | 80%+           | ✅     |
+| Tests Passing     | 100%       | 100% (178/178) | ✅     |
+| Type Safety       | 100%       | 100%           | ✅     |
+| Code Duplication  | < 5%       | ~2%            | ✅     |
+| Avg Function Size | < 20 lines | ~10 lines      | ✅     |
 
 ### Qualitative
-| Aspect | Target | Status |
-|--------|--------|--------|
-| Architecture | Hexagonal | ✅ |
-| Design | DDD | ✅ |
-| Code Quality | Clean Code | ✅ |
-| Testing | TDD | ✅ |
-| Definition of Done | Comprehensive | ✅ |
-| Definition of Ready | Clear | ✅ |
+
+| Aspect              | Target        | Status |
+| ------------------- | ------------- | ------ |
+| Architecture        | Hexagonal     | ✅     |
+| Design              | DDD           | ✅     |
+| Code Quality        | Clean Code    | ✅     |
+| Testing             | TDD           | ✅     |
+| Definition of Done  | Comprehensive | ✅     |
+| Definition of Ready | Clear         | ✅     |
 
 ---
 
 ## Production Readiness Assessment
 
 ### ✅ Ready for Development
+
 - [x] Architecture solid and proven
 - [x] Test infrastructure in place
 - [x] Error handling comprehensive
 - [x] Code quality enforced
 
 ### ✅ Ready for Staging
+
 - [x] E2E tests passing
 - [x] Integration validated
 - [x] Security measures implemented
 - [x] Documentation complete
 
 ### ⚠️ Pre-Production Checklist
+
 - [ ] Performance load testing
 - [ ] Security penetration testing
 - [ ] CORS configuration
@@ -604,6 +668,7 @@ This serves as a **template and reference** for implementing `00_dashboard` and 
 ## Appendix: Quick Reference
 
 ### Running Tests
+
 ```bash
 # All tests
 npm run test --workspaces
@@ -620,6 +685,7 @@ npm run test -- --watch
 ```
 
 ### Development
+
 ```bash
 # Start dev server
 npm run dev
@@ -632,6 +698,7 @@ npm run lint
 ```
 
 ### Key Commands
+
 ```bash
 # View test coverage
 npm run test -- --coverage
@@ -644,6 +711,7 @@ npm run test:e2e -- --ui
 ```
 
 ### Documentation Files
+
 - `README.md` - Service overview
 - `PHASE_1_SUMMARY.md` - Domain layer details
 - `PHASE_2_SUMMARY.md` - Infrastructure layer details
