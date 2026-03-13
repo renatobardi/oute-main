@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
 @import 'tailwindcss';
 
 @theme {
@@ -38,6 +39,11 @@
   --color-neutral-800: #1f2937;
   --color-neutral-900: #111827;
 
+  /* Dark mode */
+  --color-dark-bg: #0f1e23;
+  --color-dark-surface: #162a31;
+  --color-dark-border: #21404a;
+
   /* Semantic */
   --color-success: #10b981;
   --color-warning: #f59e0b;
@@ -49,4 +55,16 @@
     'Helvetica Neue', Arial, sans-serif;
   --font-mono: 'Fira Code', 'Cascadia Code', Monaco, Menlo, 'Courier New',
     monospace;
+}
+
+:global(body) {
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-sans);
+  background-color: var(--color-dark-bg);
+  color: #e5e7eb;
+}
+
+:global(html, body) {
+  height: 100%;
 }

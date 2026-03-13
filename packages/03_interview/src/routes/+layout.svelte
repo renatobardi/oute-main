@@ -4,7 +4,7 @@
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
   import { authToken, user, logout, initializeAuth } from '$lib/auth';
-  import { Button } from '@oute/design-system';
+  import { Button, OuteLogo } from '@oute/design-system';
   import Footer from '$lib/components/Footer.svelte';
 
   // TODO: Re-enable auth redirect when auth service is available
@@ -21,19 +21,12 @@
   }
 </script>
 
-<div class="min-h-screen bg-[#0f1e23] flex flex-col">
+<div class="min-h-screen bg-dark-bg flex flex-col">
   <!-- Navigation Bar -->
-  <nav class="bg-[#162a31] border-b border-[#21404a]">
+  <nav class="bg-dark-surface border-b border-dark-border">
     <div class="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between">
       <div class="flex items-center gap-8">
-        <div class="flex items-center gap-2">
-          <div class="w-8 h-8 bg-primary-600 rounded-lg flex items-center justify-center">
-            <svg class="w-4 h-4 text-white" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12 2L2 19h20L12 2zm0 4l7 11H5l7-11z" />
-            </svg>
-          </div>
-          <span class="text-lg font-bold text-white">Oute</span>
-        </div>
+        <OuteLogo size="sm" showSlogan={false} horizontal />
         <div class="hidden md:flex gap-6">
           <a
             href="/"
@@ -55,7 +48,7 @@
 
       <div class="flex items-center gap-4">
         <div
-          class="hidden sm:flex items-center gap-2 bg-[#0f1e23] border border-[#21404a] rounded-lg px-3 py-1.5"
+          class="hidden sm:flex items-center gap-2 bg-dark-bg border border-dark-border rounded-lg px-3 py-1.5"
         >
           <svg
             class="w-4 h-4 text-neutral-500"
@@ -91,22 +84,9 @@
   </nav>
 
   <!-- Main Content -->
-  <main class="flex-1 overflow-hidden bg-[#162a31]">
+  <main class="flex-1 overflow-hidden bg-dark-surface">
     <slot />
   </main>
 
   <Footer />
 </div>
-
-<style>
-  :global(body) {
-    margin: 0;
-    padding: 0;
-    font-family: 'Inter', system-ui, sans-serif;
-    background-color: #0f1e23;
-  }
-
-  :global(html, body) {
-    height: 100%;
-  }
-</style>

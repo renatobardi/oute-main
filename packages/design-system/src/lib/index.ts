@@ -1,5 +1,6 @@
 // Export components
 export { default as Button } from '../components/Button.svelte';
+export { default as OuteLogo } from '../components/OuteLogo.svelte';
 
 // Export color tokens
 export { colors, primary, secondary, neutral } from '../tokens/colors';
