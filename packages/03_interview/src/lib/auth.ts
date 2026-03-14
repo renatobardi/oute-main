@@ -1,158 +1,68 @@
 /**
- * Client-side authentication utilities for 03_interview
+ * Firebase Authentication — client-side utilities
+ * Supports: Email/Password, Google, GitHub
  */
+import { writable } from 'svelte/store';
+import { auth } from './firebase';
+import {
+  signInWithEmailAndPassword,
+  signInWithPopup,
+  GoogleAuthProvider,
+  GithubAuthProvider,
+  signOut as firebaseSignOut,
+  onIdTokenChanged,
+  type User as FirebaseUser,
+} from 'firebase/auth';
 
-import { writable, type Writable } from 'svelte/store';
-import type { User } from '@oute/shared';
+// ── Stores ─────────────────────────────────────────────────────────────────
+export const firebaseUser = writable<FirebaseUser | null>(null);
+export const isAuthenticated = writable(false);
+export const authLoading = writable(true);
 
-// Auth token storage key
-const TOKEN_KEY = 'oute:auth:token';
-const USER_KEY = 'oute:user';
+// ── Auth state listener ────────────────────────────────────────────────────
+// Runs on client only; refreshes session cookie whenever token rotates
+if (typeof window !== 'undefined') {
+  onIdTokenChanged(auth, async (fbUser) => {
+    firebaseUser.set(fbUser);
+    isAuthenticated.set(fbUser !== null);
+    authLoading.set(false);
 
-// Auth state store
-export const authToken: Writable<string | null> = writable(null);
-export const user: Writable<User | null> = writable(null);
-export const isAuthenticated: Writable<boolean> = writable(false);
-
-/**
- * Initialize auth from localStorage
- */
-export function initializeAuth(): void {
-  if (typeof window !== 'undefined') {
-    const token = localStorage.getItem(TOKEN_KEY);
-    const userData = localStorage.getItem(USER_KEY);
-
-    if (token !== null) {
-      authToken.set(token);
-      isAuthenticated.set(true);
-
-      if (userData !== null) {
-        try {
-          user.set(JSON.parse(userData));
-        } catch {
-          // eslint-disable-next-line no-console
-          console.error('Failed to parse user data');
-        }
-      }
+    if (fbUser) {
+      // Keep server-side session cookie in sync with refreshed token
+      const idToken = await fbUser.getIdToken();
+      await fetch('/chat/api/auth/session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ idToken }),
+      });
     }
-  }
-}
-
-/**
- * Login user
- */
-export async function login(email: string, password: string): Promise<void> {
-  const authUrl = import.meta.env.VITE_AUTH_SERVICE_URL ?? 'http://localhost:3001';
-
-  const response = await fetch(`${authUrl}/auth/login`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email, password }),
   });
-
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(typeof error.message === 'string' ? error.message : 'Login failed');
-  }
-
-  const data = await response.json();
-
-  // Store token and user
-  localStorage.setItem(TOKEN_KEY, data.token);
-  localStorage.setItem(USER_KEY, JSON.stringify(data.user));
-
-  // Update stores
-  authToken.set(data.token);
-  user.set(data.user);
-  isAuthenticated.set(true);
 }
 
-/**
- * Logout user
- */
-export function logout(): void {
-  localStorage.removeItem(TOKEN_KEY);
-  localStorage.removeItem(USER_KEY);
-
-  authToken.set(null);
-  user.set(null);
-  isAuthenticated.set(false);
+// ── Sign in methods ────────────────────────────────────────────────────────
+export async function loginWithEmail(email: string, password: string): Promise<void> {
+  await signInWithEmailAndPassword(auth, email, password);
 }
 
-/**
- * Get current token
- */
-export function getToken(): string | null {
-  if (typeof window !== 'undefined') {
-    return localStorage.getItem(TOKEN_KEY);
-  }
-  return null;
+export async function loginWithGoogle(): Promise<void> {
+  const provider = new GoogleAuthProvider();
+  await signInWithPopup(auth, provider);
 }
 
-/**
- * Get current user
- */
-export function getCurrentUser(): User | null {
-  if (typeof window !== 'undefined') {
-    const userData = localStorage.getItem(USER_KEY);
-    if (userData !== null) {
-      try {
-        return JSON.parse(userData);
-      } catch {
-        return null;
-      }
-    }
-  }
-  return null;
+export async function loginWithGitHub(): Promise<void> {
+  const provider = new GithubAuthProvider();
+  await signInWithPopup(auth, provider);
 }
 
-/**
- * Check if token is expired (client-side only)
- */
-export function isTokenExpired(token: string): boolean {
-  try {
-    const parts = token.split('.');
-    if (parts.length !== 3) return true;
-
-    const payload = JSON.parse(atob(parts[1]));
-    const expiryTime = payload.exp * 1000; // convert to milliseconds
-
-    return Date.now() >= expiryTime;
-  } catch {
-    return true;
-  }
+// ── Sign out ───────────────────────────────────────────────────────────────
+export async function logout(): Promise<void> {
+  await firebaseSignOut(auth);
+  await fetch('/chat/api/auth/session', { method: 'DELETE' });
 }
 
-/**
- * Make authenticated request
- */
-export async function authenticatedFetch(
-  url: string,
-  options: RequestInit = {}
-): Promise<Response> {
-  const token = getToken();
-
-  if (token === null || isTokenExpired(token)) {
-    // Token expired or missing
-    logout();
-    throw new Error('Authentication required');
-  }
-
-  const headers = {
-    ...options.headers,
-    Authorization: `Bearer ${token}`,
-  };
-
-  const response = await fetch(url, {
-    ...options,
-    headers,
-  });
-
-  if (response.status === 401) {
-    // Unauthorized - token might have been revoked
-    logout();
-    throw new Error('Session expired');
-  }
-
-  return response;
+// ── Helpers ────────────────────────────────────────────────────────────────
+export async function getIdToken(): Promise<string | null> {
+  const currentUser = auth.currentUser;
+  if (!currentUser) return null;
+  return currentUser.getIdToken();
 }
