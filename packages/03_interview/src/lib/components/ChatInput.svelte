@@ -1,7 +1,10 @@
 <script lang="ts">
   import { Button } from '@oute/design-system';
-  import { messages, initialInputValue } from '$lib/stores/conversation';
+  import { messages, initialInputValue, currentInterview } from '$lib/stores/conversation';
   import { onMount, tick } from 'svelte';
+  import { sendMessage } from '$lib/api';
+
+  let sending = false;
 
   let inputValue = '';
   let textareaElement: HTMLTextAreaElement;
@@ -39,34 +42,34 @@
     adjustTextareaHeight();
   }
 
-  function handleSend() {
-    if (inputValue.trim()) {
-      messages.update((msgs) => [
-        ...msgs,
-        {
-          id: Date.now().toString(),
-          timestamp: new Date(),
-          sender: 'user',
-          content: inputValue,
-          type: 'text',
-        },
-      ]);
-      inputValue = '';
-      adjustTextareaHeight();
+  async function handleSend() {
+    const text = inputValue.trim();
+    if (!text || sending || !$currentInterview) return;
 
-      // Simulate AI response after a delay
-      setTimeout(() => {
-        messages.update((msgs) => [
-          ...msgs,
-          {
-            id: (Date.now() + 1).toString(),
-            timestamp: new Date(),
-            sender: 'ai',
-            content: 'Entendido. Vou processar essa informação.',
-            type: 'text',
-          },
-        ]);
-      }, 500);
+    sending = true;
+    inputValue = '';
+    adjustTextareaHeight();
+
+    try {
+      // Persist user message
+      const userMsg = await sendMessage($currentInterview.id, {
+        sender: 'user',
+        content: text,
+        type: 'text',
+      });
+      messages.update((msgs) => [...msgs, userMsg]);
+
+      // Placeholder AI response (real AI integration is future work)
+      const aiMsg = await sendMessage($currentInterview.id, {
+        sender: 'ai',
+        content: 'Entendido. Vou processar essa informação.',
+        type: 'text',
+      });
+      messages.update((msgs) => [...msgs, aiMsg]);
+    } catch (err) {
+      console.error('[ChatInput] Failed to send message', err);
+    } finally {
+      sending = false;
     }
   }
 
