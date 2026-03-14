@@ -79,7 +79,7 @@ jobs:
 
                 # Remove old Docker images to force complete rebuild
                 echo \"=== Removing old Docker images ===\"
-                docker compose -f \$OUTE_HOME/oute-mind/docker-compose.yml down -v 00_dashboard 01_auth-profile 02_projects 99_home 03_interview 98_oops 2>/dev/null || true
+                docker compose -f \$OUTE_HOME/oute-mind/docker-compose.yml down -v 2>/dev/null || true
                 docker rmi oute-dashboard oute-auth-profile oute-projects oute-home oute-interview oute-oops 2>/dev/null || true
                 docker system prune -f --all
 
@@ -93,7 +93,7 @@ jobs:
 
                 while [ \$BUILD_RETRY -lt \$BUILD_MAX_RETRIES ] && [ \$BUILD_SUCCESS -eq 0 ]; do
                   echo \"Build attempt \$((BUILD_RETRY+1))/\$BUILD_MAX_RETRIES\"
-                  if docker compose build --no-cache --pull 00_dashboard 01_auth-profile 02_projects 99_home 03_interview 98_oops; then
+                  if docker compose build --no-cache --pull; then
                     BUILD_SUCCESS=1
                     echo \"Docker images built successfully\"
                   else
@@ -110,7 +110,7 @@ jobs:
                   exit 1
                 fi
 
-                docker compose up -d 00_dashboard 01_auth-profile 02_projects 99_home 03_interview 98_oops
+                docker compose up -d
                 docker compose restart caddy
                 echo \"Containers started successfully\"
               "
