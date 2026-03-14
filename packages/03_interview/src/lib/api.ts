@@ -33,6 +33,7 @@ function mapMessage(raw: any): Message {
     type: raw.type ?? 'text',
     userName: raw.metadata?.userName,
     avatarColor: raw.metadata?.avatarColor,
+    avatarUrl: raw.metadata?.avatarUrl,
   };
 }
 
@@ -58,6 +59,16 @@ export async function fetchInterviews(): Promise<Interview[]> {
   if (!res.ok) throw new Error('Failed to fetch interviews');
   const data = await res.json();
   return data.map(mapInterview);
+}
+
+export async function updateInterviewTitle(id: string, title: string): Promise<Interview> {
+  const res = await fetch(`${base}/api/interviews/${id}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ title }),
+  });
+  if (!res.ok) throw new Error('Failed to update interview title');
+  return mapInterview(await res.json());
 }
 
 export async function createInterview(title: string): Promise<Interview> {
