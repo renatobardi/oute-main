@@ -35,13 +35,16 @@ export class PostgresInterviewRepository implements IInterviewRepository {
       RETURNING id
     `;
 
+    const interviewCode = 'INT-' + Math.random().toString(36).slice(2, 8).toUpperCase();
+
     const [row] = await this.sql`
-      INSERT INTO interviews (project_id, conducted_by, title, status)
+      INSERT INTO interviews (project_id, conducted_by, title, status, interview_code)
       VALUES (
         ${project.id},
         ${props.conductedBy},
         ${props.title},
-        'scheduled'
+        'scheduled',
+        ${interviewCode}
       )
       RETURNING
         id, project_id, conducted_by, title, status,
