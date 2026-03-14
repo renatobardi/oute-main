@@ -5,7 +5,8 @@
  * Uses Firebase's public JWKS endpoint to verify RS256 JWT signatures.
  */
 import { createRemoteJWKSet, jwtVerify } from 'jose';
-import { PUBLIC_FIREBASE_PROJECT_ID } from '$env/static/public';
+
+const FIREBASE_PROJECT_ID = 'oute-mind';
 
 const FIREBASE_JWKS_URL =
   'https://www.googleapis.com/service_accounts/v1/jwk/securetoken@system.gserviceaccount.com';
@@ -30,8 +31,8 @@ export async function verifyFirebaseToken(
 ): Promise<FirebaseTokenPayload | null> {
   try {
     const { payload } = await jwtVerify(idToken, JWKS, {
-      issuer: `https://securetoken.google.com/${PUBLIC_FIREBASE_PROJECT_ID}`,
-      audience: PUBLIC_FIREBASE_PROJECT_ID,
+      issuer: `https://securetoken.google.com/${FIREBASE_PROJECT_ID}`,
+      audience: FIREBASE_PROJECT_ID,
     });
 
     return {
