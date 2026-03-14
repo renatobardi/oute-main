@@ -7,7 +7,7 @@ export const load: LayoutServerLoad = ({ locals, url }) => {
   const isPublicPath = PUBLIC_PATHS.some((path) => url.pathname.endsWith(path));
 
   if (!locals.user && !isPublicPath) {
-    throw redirect(302, '/login');
+    throw redirect(302, '/chat/login');
   }
 
   return {
