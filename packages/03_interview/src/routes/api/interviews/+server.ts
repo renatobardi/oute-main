@@ -6,14 +6,12 @@ import { PostgresInterviewNoteRepository } from '../../../infrastructure/reposit
 // Fixed dev user until auth is implemented (FASE 6/7)
 const DEV_USER_ID = '019534a0-0000-7000-8000-000000000001';
 
-const interviewRepo = new PostgresInterviewRepository();
-const noteRepo = new PostgresInterviewNoteRepository();
-
 /**
  * GET /api/interviews
  * Returns all interviews conducted by the current (dev) user.
  */
 export const GET: RequestHandler = async () => {
+  const interviewRepo = new PostgresInterviewRepository();
   try {
     const interviews = await interviewRepo.findByConductedBy(DEV_USER_ID);
 
@@ -32,6 +30,8 @@ export const GET: RequestHandler = async () => {
  * Body: { title: string }
  */
 export const POST: RequestHandler = async ({ request }) => {
+  const interviewRepo = new PostgresInterviewRepository();
+  const noteRepo = new PostgresInterviewNoteRepository();
   try {
     const body = await request.json();
     const title = typeof body?.title === 'string' ? body.title.trim() : '';

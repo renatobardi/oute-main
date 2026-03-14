@@ -7,14 +7,13 @@ import { InterviewNotFoundError } from '../../../../../domain/errors/InterviewNo
 // Fixed dev user until auth is implemented (FASE 6/7)
 const DEV_USER_ID = '019534a0-0000-7000-8000-000000000001';
 
-const interviewRepo = new PostgresInterviewRepository();
-const messageRepo = new PostgresMessageRepository();
-
 /**
  * GET /api/interviews/[id]/messages
  * Returns all messages for an interview ordered by created_at ASC.
  */
 export const GET: RequestHandler = async ({ params }) => {
+  const interviewRepo = new PostgresInterviewRepository();
+  const messageRepo = new PostgresMessageRepository();
   try {
     const interview = await interviewRepo.findById(params.id);
 
@@ -46,6 +45,8 @@ export const GET: RequestHandler = async ({ params }) => {
  * }
  */
 export const POST: RequestHandler = async ({ params, request }) => {
+  const interviewRepo = new PostgresInterviewRepository();
+  const messageRepo = new PostgresMessageRepository();
   try {
     const interview = await interviewRepo.findById(params.id);
 

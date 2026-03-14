@@ -5,15 +5,14 @@ import { PostgresMessageRepository } from '../../../../infrastructure/repositori
 import { PostgresInterviewNoteRepository } from '../../../../infrastructure/repositories/PostgresInterviewNoteRepository';
 import { InterviewNotFoundError } from '../../../../domain/errors/InterviewNotFoundError';
 
-const interviewRepo = new PostgresInterviewRepository();
-const messageRepo = new PostgresMessageRepository();
-const noteRepo = new PostgresInterviewNoteRepository();
-
 /**
  * GET /api/interviews/[id]
  * Returns the interview with its messages and notes in a single response.
  */
 export const GET: RequestHandler = async ({ params }) => {
+  const interviewRepo = new PostgresInterviewRepository();
+  const messageRepo = new PostgresMessageRepository();
+  const noteRepo = new PostgresInterviewNoteRepository();
   try {
     const interview = await interviewRepo.findById(params.id);
 
@@ -45,6 +44,7 @@ export const GET: RequestHandler = async ({ params }) => {
  * Soft-deletes the interview.
  */
 export const DELETE: RequestHandler = async ({ params }) => {
+  const interviewRepo = new PostgresInterviewRepository();
   try {
     const interview = await interviewRepo.findById(params.id);
 
