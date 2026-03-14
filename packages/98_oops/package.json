@@ -1,0 +1,26 @@
+{
+  "name": "@oute/oops",
+  "version": "1.0.0",
+  "description": "OUTE Oops - 404 not found page",
+  "type": "module",
+  "scripts": {
+    "dev": "vite dev",
+    "build": "vite build",
+    "preview": "vite preview",
+    "check": "svelte-check --tsconfig ./tsconfig.json"
+  },
+  "dependencies": {
+    "@oute/design-system": "^1.0.0",
+    "@sveltejs/kit": "^2.0.0",
+    "svelte": "^5.0.0"
+  },
+  "devDependencies": {
+    "@sveltejs/adapter-node": "^5.0.0",
+    "@sveltejs/vite-plugin-svelte": "^3.0.0",
+    "@tailwindcss/vite": "^4.2.1",
+    "tailwindcss": "^4.0.0",
+    "svelte-check": "^3.5.0",
+    "typescript": "^5.3.0",
+    "vite": "^5.0.0"
+  }
+}
