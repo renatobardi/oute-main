@@ -2,6 +2,7 @@
   import ProgressBar from './ProgressBar.svelte';
   import RangeVisualization from './RangeVisualization.svelte';
   import { notes } from '$lib/stores/conversation';
+  import { users } from '$lib/stores/users';
   import { notePanelCollapsed } from '$lib/stores/ui';
 
   // Parse estimated hours range
@@ -165,10 +166,16 @@
       </div>
     {/if}
 
-    <!-- Co-authors Section (placeholder — feature a implementar) -->
+    <!-- Co-authors Section -->
     <div class="space-y-3 pt-2 border-t border-[#000000]">
       <p class="text-xs font-semibold text-neutral-400 uppercase tracking-wider">Co-authors</p>
-      <p class="text-xs text-neutral-600">—</p>
+      <div class="flex items-center gap-2">
+        {#each users as user}
+          <div class="w-6 h-6 rounded-full {user.avatarColor} flex items-center justify-center text-white text-xs font-bold" title={user.name}>
+            {user.initials}
+          </div>
+        {/each}
+      </div>
     </div>
   </div>
   {/if}
@@ -178,11 +185,8 @@
   <div class="px-6 pt-0 pb-8 border-t border-[#000000] flex flex-col gap-4">
     <!-- Action Buttons -->
     <div class="flex flex-col gap-2 items-center">
-      <a href="/dashboard" class="flex w-4/5 items-center justify-center rounded-lg bg-primary-500 py-2 text-sm font-bold text-[#0f1e23] hover:bg-primary-600 transition-colors">
+      <a href="/projects" class="flex w-4/5 items-center justify-center rounded-lg bg-primary-500 py-2 text-sm font-bold text-[#0f1e23] hover:bg-primary-600 transition-colors">
         Dashboard
-      </a>
-      <a href="/projects" class="flex w-4/5 items-center justify-center rounded-lg bg-transparent py-2 text-sm font-bold text-primary-500 border-2 border-primary-500 hover:bg-primary-500/10 transition-colors">
-        Projects
       </a>
     </div>
   </div>
