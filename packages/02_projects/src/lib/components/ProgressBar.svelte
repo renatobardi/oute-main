@@ -18,7 +18,7 @@
 </script>
 
 <div
-  class="relative h-3 rounded-full overflow-hidden cursor-pointer transition-all group bg-[#1f2937]"
+  class="relative h-3 rounded-full overflow-hidden cursor-pointer transition-all group bg-neutral-800"
   on:mouseenter={() => (showTooltip = true)}
   on:mouseleave={() => (showTooltip = false)}
   role="progressbar"
@@ -29,7 +29,7 @@
   <!-- Progress Bar Fill -->
   <div
     class="h-full transition-all duration-500"
-    style="width: {percentage}%; background: linear-gradient(90deg, #06bcf9, #00d2ff);"
+    style="width: {percentage}%; background: linear-gradient(90deg, var(--color-primary-500), var(--color-primary-600));"
   >
   </div>
 

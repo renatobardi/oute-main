@@ -22,7 +22,7 @@
 
   <!-- Right Notes Panel -->
   {#if !$notePanelCollapsed}
-    <div class="w-[280px] flex-shrink-0 border-l border-[#000000]">
+    <div class="w-[280px] flex-shrink-0 border-l border-dark-bg">
       <NotesPanel />
     </div>
   {/if}

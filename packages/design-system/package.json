@@ -4,8 +4,13 @@
   "description": "OUTE Design System - Tailwind 4 + Svelte 5 Components + Storybook",
   "type": "module",
   "exports": {
-    ".": "./dist/index.js"
+    ".": "./dist/index.js",
+    "./theme": {
+      "style": "./src/theme/theme.css",
+      "default": "./src/theme/theme.css"
+    }
   },
+  "style": "./src/theme/theme.css",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "files": [
