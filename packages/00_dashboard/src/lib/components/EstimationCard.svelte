@@ -14,7 +14,7 @@
 </script>
 
 <div
-  class="estimation-card bg-[#162a31] border border-[#21404a] rounded-xl p-5 flex flex-col gap-4 hover:border-[#2d5560] transition-colors cursor-pointer"
+  class="estimation-card bg-dark-surface border border-dark-border rounded-xl p-5 flex flex-col gap-4 hover:border-primary-500/30 transition-colors cursor-pointer"
 >
   <div class="flex items-start justify-between">
     <div class="flex flex-col gap-2">

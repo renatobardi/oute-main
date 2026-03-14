@@ -37,7 +37,7 @@
   }
 </script>
 
-<div class="py-4 bg-[#000000] flex items-center justify-between transition-all duration-300" style="padding-left: {sidebarCollapsed ? '48px' : '24px'}; padding-right: 24px;">
+<div class="py-4 bg-dark-bg flex items-center justify-between transition-all duration-300" style="padding-left: {sidebarCollapsed ? '48px' : '24px'}; padding-right: 24px;">
   <div class="flex items-center gap-3">
     {#if sidebarCollapsed}
       <OuteLogo size="xs" showSlogan={false} />

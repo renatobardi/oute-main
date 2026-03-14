@@ -21,9 +21,9 @@
   }
 </script>
 
-<div class="min-h-screen bg-[#0f1e23] flex flex-col">
+<div class="min-h-screen bg-dark-bg flex flex-col">
   <!-- Navigation Bar -->
-    <nav class="bg-[#162a31] border-b border-[#21404a]">
+    <nav class="bg-dark-surface border-b border-dark-border">
       <div class="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between">
         <div class="flex items-center gap-8">
           <div class="flex items-center gap-2">
@@ -55,7 +55,7 @@
 
         <div class="flex items-center gap-4">
           <div
-            class="hidden sm:flex items-center gap-2 bg-[#0f1e23] border border-[#21404a] rounded-lg px-3 py-1.5"
+            class="hidden sm:flex items-center gap-2 bg-dark-bg border border-dark-border rounded-lg px-3 py-1.5"
           >
             <svg
               class="w-4 h-4 text-neutral-500"
@@ -103,7 +103,7 @@
     margin: 0;
     padding: 0;
     font-family: 'Inter', system-ui, sans-serif;
-    background-color: #0f1e23;
+    background-color: var(--color-dark-bg);
   }
 
   :global(html, body) {

@@ -11,8 +11,8 @@ export const colors = {
     200: '#a8ddf4',
     300: '#77cbee',
     400: '#46b9e9',
-    500: '#15a7e4',
-    600: '#06bcf9',
+    500: '#06bcf9',
+    600: '#00d2ff',
     700: '#0597c9',
     800: '#047a99',
     900: '#025d69',
@@ -52,10 +52,12 @@ export const colors = {
   warning: '#f59e0b',
   error: '#ef4444',
   info: '#0ea5e9',
+  accentPink: '#EC4899',
 
   // Dark mode variants
   dark: {
-    bg: '#0f1e23',
+    bg: '#000000',
+    sidebar: '#0a1519',
     surface: '#162a31',
     border: '#21404a',
   },

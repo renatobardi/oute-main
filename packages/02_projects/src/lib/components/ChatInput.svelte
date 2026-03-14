@@ -74,7 +74,7 @@
   }
 </script>
 
-<div class="px-6 py-4 border-t border-[#000000] bg-[#000000]">
+<div class="px-6 py-4 border-t border-dark-bg bg-dark-bg">
   <div class="relative">
     <div class="flex-1 relative">
       <!-- Icons Container -->
@@ -111,11 +111,11 @@
       <button
         on:click={handleSend}
         disabled={sending}
-        class="absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 rounded-lg bg-primary-500 hover:bg-primary-600 flex items-center justify-center text-[#0f1e23] transition-colors z-10 disabled:opacity-50 disabled:cursor-not-allowed"
+        class="absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 rounded-lg bg-primary-500 hover:bg-primary-600 flex items-center justify-center text-dark-bg transition-colors z-10 disabled:opacity-50 disabled:cursor-not-allowed"
         title="Enviar mensagem"
       >
         {#if sending}
-          <span class="w-4 h-4 border-2 border-[#0f1e23]/40 border-t-transparent rounded-full animate-spin"></span>
+          <span class="w-4 h-4 border-2 border-dark-bg/40 border-t-transparent rounded-full animate-spin"></span>
         {:else}
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
