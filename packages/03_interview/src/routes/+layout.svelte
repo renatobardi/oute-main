@@ -3,20 +3,25 @@
   import { onMount } from 'svelte';
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
-  import { authToken, user, logout, initializeAuth } from '$lib/auth';
-  import { Button, OuteLogo } from '@oute/design-system';
-  import Footer from '$lib/components/Footer.svelte';
+  import { firebaseUser, isAuthenticated, logout } from '$lib/auth';
 
-  // TODO: Re-enable auth redirect when auth service is available
-  // onMount(async () => {
-  //   initializeAuth();
-  //   if ($authToken === null && $page.url.pathname !== '/login') {
-  //     await goto('/login');
-  //   }
-  // });
+  export let data: { user: import('$app/types').App.Locals['user'] };
+
+  // Redirect to login if not authenticated (skip login page itself)
+  onMount(() => {
+    const unsubscribe = isAuthenticated.subscribe((authenticated) => {
+      if (!authenticated && $page.url.pathname !== '/login') {
+        // Only redirect once Firebase has finished initializing
+        setTimeout(() => {
+          if (!authenticated) goto('/login');
+        }, 1000);
+      }
+    });
+    return unsubscribe;
+  });
 
   async function handleLogout() {
-    logout();
+    await logout();
     await goto('/login');
   }
 </script>
