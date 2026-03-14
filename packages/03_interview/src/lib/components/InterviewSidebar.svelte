@@ -93,7 +93,7 @@
   <div class="fixed inset-0 z-40" on:click={() => (showUserMenu = false)}></div>
 {/if}
 
-<aside class="sidebar-transition w-[340px] flex-shrink-0 border-r border-[#000000] bg-[#000000] flex flex-col h-full">
+<aside class="sidebar-transition w-[340px] flex-shrink-0 border-r border-dark-bg bg-dark-bg flex flex-col h-full">
   <!-- Header Section -->
   <div class="flex flex-col gap-5 p-4">
     <!-- Logo and Icon Row -->
@@ -155,7 +155,7 @@
     <!-- Top Gradient Fade -->
     <div
       class="pointer-events-none sticky top-0 left-0 right-0 h-4 transition-opacity duration-200"
-      style="background: linear-gradient(to bottom, #000000, transparent); opacity: {showTopGradient ? 1 : 0}; z-index: 10;"
+      style="background: linear-gradient(to bottom, var(--color-dark-bg), transparent); opacity: {showTopGradient ? 1 : 0}; z-index: 10;"
     ></div>
 
     <!-- Interview Items -->
@@ -182,7 +182,7 @@
     <!-- Bottom Gradient Fade -->
     <div
       class="pointer-events-none sticky bottom-0 left-0 right-0 h-4 transition-opacity duration-200"
-      style="background: linear-gradient(to top, #000000, transparent); opacity: {showBottomGradient ? 1 : 0}; z-index: 10;"
+      style="background: linear-gradient(to top, var(--color-dark-bg), transparent); opacity: {showBottomGradient ? 1 : 0}; z-index: 10;"
     ></div>
   </div>
 
@@ -206,7 +206,7 @@
 
     <!-- User Menu Dropdown (opens upward) -->
     {#if showUserMenu}
-      <div class="absolute bottom-full left-2 right-2 mb-1 z-50 bg-[#1a1d27] border border-white/10 rounded-lg shadow-xl overflow-hidden">
+      <div class="absolute bottom-full left-2 right-2 mb-1 z-50 bg-dark-sidebar border border-white/10 rounded-lg shadow-xl overflow-hidden">
         <a
           href="/auth/profile"
           class="flex items-center gap-2 px-4 py-2.5 text-sm text-neutral-300 hover:bg-white/5 hover:text-white transition-colors"

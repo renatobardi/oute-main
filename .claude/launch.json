@@ -10,20 +10,20 @@
     {
       "name": "OUTE Dashboard",
       "runtimeExecutable": "npm",
-      "runtimeArgs": ["run", "dev", "-w", "00_dashboard"],
-      "port": 5173
+      "runtimeArgs": ["run", "dev", "-w", "oute-dashboard"],
+      "port": 3000
     },
     {
       "name": "OUTE Auth Profile API",
       "runtimeExecutable": "npm",
-      "runtimeArgs": ["run", "dev", "-w", "01_auth-profile"],
+      "runtimeArgs": ["run", "dev", "-w", "oute-auth-profile"],
       "port": 5174
     },
     {
-      "name": "OUTE Projects API",
+      "name": "OUTE 02_projects (Projects App)",
       "runtimeExecutable": "npm",
-      "runtimeArgs": ["run", "dev", "-w", "02_projects"],
-      "port": 5175
+      "runtimeArgs": ["run", "dev", "-w", "@oute/projects"],
+      "port": 3001
     },
     {
       "name": "OUTE Design System (Storybook)",

@@ -46,13 +46,13 @@
 
 <div class="flex flex-col h-full">
   <!-- Header -->
-  <div class="px-4 py-4 border-b border-[#21404a]">
+  <div class="px-4 py-4 border-b border-dark-border">
     <h3 class="text-sm font-semibold text-white mb-3">Project History</h3>
     <input
       type="text"
       bind:value={searchQuery}
       placeholder="Search..."
-      class="w-full bg-[#0f1e23] border border-[#21404a] rounded px-3 py-2 text-xs text-neutral-300 placeholder-neutral-500 focus:outline-none focus:border-primary-600"
+      class="w-full bg-dark-bg border border-dark-border rounded px-3 py-2 text-xs text-neutral-300 placeholder-neutral-500 focus:outline-none focus:border-primary-600"
     />
   </div>
 
@@ -61,9 +61,9 @@
     {#each filteredProjects as project (project.id)}
       <button
         on:click={() => selectProject(project.id)}
-        class="w-full px-4 py-3 text-left border-b border-[#21404a] hover:bg-[#1a3a44] transition-colors {$currentProject?.id ===
+        class="w-full px-4 py-3 text-left border-b border-dark-border hover:bg-dark-surface transition-colors {$currentProject?.id ===
         project.id
-          ? 'bg-[#21404a]'
+          ? 'bg-dark-border'
           : ''}"
       >
         <p class="text-xs font-mono text-primary-400">{project.id}</p>
@@ -75,7 +75,7 @@
   </div>
 
   <!-- New Project Button -->
-  <div class="px-4 py-3 border-t border-[#21404a]">
+  <div class="px-4 py-3 border-t border-dark-border">
     <button
       class="w-full py-2 px-3 bg-primary-600 hover:bg-primary-700 text-white text-sm font-medium rounded transition-colors"
     >

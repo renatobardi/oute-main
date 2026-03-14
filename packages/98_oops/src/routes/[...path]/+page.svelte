@@ -29,7 +29,7 @@
     </div>
     <a
       href="/"
-      class="hidden md:flex items-center gap-2 px-4 py-2 text-sm font-medium text-slate-400 hover:text-[#06bcf9] transition-colors"
+      class="hidden md:flex items-center gap-2 px-4 py-2 text-sm font-medium text-slate-400 hover:text-primary-500 transition-colors"
     >
       <span class="material-symbols-outlined text-sm">help_outline</span>
       Docs
@@ -43,9 +43,9 @@
     <div class="mb-8 relative group">
       <div class="absolute -inset-1 rounded-2xl blur opacity-25 group-hover:opacity-50 transition duration-1000" style="background: linear-gradient(to right, rgba(6,188,249,0.5), rgba(37,99,235,0.5));"></div>
       <div class="relative px-8 py-6 border border-slate-800 backdrop-blur-xl rounded-2xl glow-effect" style="background: rgba(15,23,42,0.5);">
-        <span class="text-xs font-mono font-semibold tracking-widest uppercase mb-2 block" style="color: #06bcf9;">Status Code: 404</span>
+        <span class="text-xs font-mono font-semibold tracking-widest uppercase mb-2 block" style="color: var(--color-primary-500);">Status Code: 404</span>
         <h1 class="text-5xl md:text-7xl font-bold tracking-tighter text-white mb-4">
-          Arquiteto não <span style="color: #06bcf9;">encontrado</span>
+          Arquiteto não <span style="color: var(--color-primary-500);">encontrado</span>
         </h1>
       </div>
     </div>
@@ -64,7 +64,7 @@
           // Erro: O endpoint sofreu um refactoring inesperado ou simplesmente desistiu de existir.
         </div>
         <div class="flex items-center gap-2">
-          <span style="color: #06bcf9;">suggestion:</span>
+          <span style="color: var(--color-primary-500);">suggestion:</span>
           <span class="text-slate-300">Volte para a base segura.</span>
         </div>
       </div>
@@ -75,7 +75,7 @@
       <a
         href="/"
         class="inline-flex items-center justify-center gap-2 px-8 py-4 font-bold rounded-lg transition-all shadow-lg hover:brightness-110"
-        style="background: #06bcf9; color: #0a0a0f; box-shadow: 0 10px 30px rgba(6,188,249,0.2);"
+        style="background: var(--color-primary-500); color: #0a0a0f; box-shadow: 0 10px 30px rgba(6,188,249,0.2);"
       >
         <span class="material-symbols-outlined">dashboard</span>
         Voltar ao Dashboard

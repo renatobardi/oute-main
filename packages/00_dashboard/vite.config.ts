@@ -4,11 +4,13 @@ import { defineConfig } from 'vite';
 import path from 'path';
 
 const designSystemSrc = path.resolve(__dirname, '../design-system/src/lib/index.ts');
+const designSystemTheme = path.resolve(__dirname, '../design-system/src/theme/theme.css');
 
 export default defineConfig({
   plugins: [tailwindcss(), sveltekit()],
   resolve: {
     alias: {
+      '@oute/design-system/theme': designSystemTheme,
       '@oute/design-system': designSystemSrc,
     },
   },

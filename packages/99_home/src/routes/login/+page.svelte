@@ -43,7 +43,7 @@
 
 <div class="flex items-center justify-center min-h-[calc(100vh-120px)]">
   <div class="w-full max-w-md">
-    <div class="bg-[#162a31] border border-[#21404a] rounded-lg p-8">
+    <div class="bg-dark-surface border border-dark-border rounded-lg p-8">
       <h1 class="text-2xl font-bold text-white mb-6 text-center">Login</h1>
 
       {#if errorMessage !== ''}
@@ -64,7 +64,7 @@
             on:keydown={handleKeydown}
             placeholder="seu@email.com"
             disabled={isLoading}
-            class="w-full bg-[#0f1e23] border border-[#21404a] rounded px-3 py-2 text-sm text-neutral-300 placeholder-neutral-500 focus:outline-none focus:border-primary-600 disabled:opacity-50"
+            class="w-full bg-dark-bg border border-dark-border rounded px-3 py-2 text-sm text-neutral-300 placeholder-neutral-500 focus:outline-none focus:border-primary-600 disabled:opacity-50"
           />
         </div>
 
@@ -79,7 +79,7 @@
             on:keydown={handleKeydown}
             placeholder="••••••••"
             disabled={isLoading}
-            class="w-full bg-[#0f1e23] border border-[#21404a] rounded px-3 py-2 text-sm text-neutral-300 placeholder-neutral-500 focus:outline-none focus:border-primary-600 disabled:opacity-50"
+            class="w-full bg-dark-bg border border-dark-border rounded px-3 py-2 text-sm text-neutral-300 placeholder-neutral-500 focus:outline-none focus:border-primary-600 disabled:opacity-50"
           />
         </div>
 
