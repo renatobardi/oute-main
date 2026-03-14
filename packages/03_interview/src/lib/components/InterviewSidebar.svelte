@@ -1,91 +1,63 @@
 <script lang="ts">
-  import { currentInterview } from '$lib/stores/conversation';
+  import { onMount } from 'svelte';
+  import { currentInterview, messages, notes } from '$lib/stores/conversation';
   import { sidebarCollapsed } from '$lib/stores/ui';
   import { OuteLogo } from '@oute/design-system';
   import { users } from '$lib/stores/users';
+  import { fetchInterviews, createInterview, fetchInterviewDetail } from '$lib/api';
+  import type { Interview } from '$lib/types/index';
 
   let searchQuery = '';
   let contentEl: HTMLDivElement;
   let showTopGradient = false;
   let showBottomGradient = false;
+  let interviewList: Interview[] = [];
+  let creating = false;
+
+  onMount(async () => {
+    interviewList = await fetchInterviews();
+  });
 
   function handleScroll() {
     if (!contentEl) return;
-
     const { scrollTop, scrollHeight, clientHeight } = contentEl;
     showTopGradient = scrollTop > 0;
     showBottomGradient = scrollTop < scrollHeight - clientHeight - 1;
   }
 
-  let interviews = [
-    {
-      id: 'INT-2024-WHAT',
-      title: 'Web Platform Architecture',
-      preview: 'Olá, gostaria de estimar um projeto...',
-      timestamp: '2 hours ago',
-      confidence: '85%',
-    },
-    {
-      id: 'INT-2024-APP',
-      title: 'Mobile App Development',
-      preview: 'E2E testing é importante...',
-      timestamp: '5 hours ago',
-      confidence: '92%',
-    },
-    {
-      id: 'INT-2024-API',
-      title: 'API Gateway Design',
-      preview: 'Qual é a melhor arquitetura...',
-      timestamp: '1 day ago',
-      confidence: '45%',
-    },
-    {
-      id: 'INT-2024-APJ',
-      title: 'Database Optimization',
-      preview: 'Performance issues com queries...',
-      timestamp: '2 days ago',
-      confidence: '78%',
-    },
-    {
-      id: 'INT-2024-APK',
-      title: 'Frontend Framework',
-      preview: 'React vs Vue comparison...',
-      timestamp: '3 days ago',
-      confidence: '88%',
-    },
-    {
-      id: 'INT-2024-APU',
-      title: 'Cloud Infrastructure',
-      preview: 'AWS vs Azure deployment...',
-      timestamp: '4 days ago',
-      confidence: '72%',
-    },
-    {
-      id: 'INT-2024-APO',
-      title: 'Security Audit',
-      preview: 'Vulnerabilities assessment...',
-      timestamp: '5 days ago',
-      confidence: '91%',
-    },
-  ];
+  async function selectInterview(id: string) {
+    const { interview, messages: msgs, note } = await fetchInterviewDetail(id);
+    currentInterview.set(interview);
+    messages.set(msgs);
+    if (note) notes.set(note);
+  }
 
-  function selectInterview(id: string) {
-    const interview = interviews.find((i) => i.id === id);
-    if (interview) {
-      currentInterview.set({
-        id: interview.id,
-        title: interview.title,
-        status: 'in_progress',
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      });
+  async function handleNewInterview() {
+    if (creating) return;
+    creating = true;
+    try {
+      await createInterview('Nova Entrevista');
+      interviewList = await fetchInterviews();
+      // Auto-select the new interview (first in list — sorted DESC)
+      await selectInterview(interviewList[0].id);
+    } catch (err) {
+      console.error('[Sidebar] Failed to create interview', err);
+    } finally {
+      creating = false;
     }
   }
 
-  $: filteredInterviews = interviews.filter(
+  function formatDate(date: Date): string {
+    return new Intl.RelativeTimeFormat('pt-BR', { numeric: 'auto' }).format(
+      Math.round((new Date(date).getTime() - Date.now()) / 86400000),
+      'day'
+    );
+  }
+
+  $: filteredInterviews = interviewList.filter(
     (i) =>
       i.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      i.id.toLowerCase().includes(searchQuery.toLowerCase())
+      i.interviewCode.toLowerCase().includes(searchQuery.toLowerCase())
   );
 </script>
 
@@ -108,8 +80,12 @@
     </div>
 
     <!-- Action Button -->
-    <button class="flex w-4/5 mx-auto items-center justify-center gap-2 rounded-lg bg-transparent py-2.5 text-sm font-bold text-primary-500 border-2 border-primary-500 hover:bg-primary-500/10 transition-colors">
-      New Interview
+    <button
+      on:click={handleNewInterview}
+      disabled={creating}
+      class="flex w-4/5 mx-auto items-center justify-center gap-2 rounded-lg bg-transparent py-2.5 text-sm font-bold text-primary-500 border-2 border-primary-500 hover:bg-primary-500/10 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+    >
+      {creating ? 'Criando...' : 'New Interview'}
     </button>
   </div>
 
@@ -160,14 +136,13 @@
             : 'border border-transparent'}"
         >
           <div class="flex items-center justify-between mb-1">
-            <span class="text-xs font-medium text-primary-500">{interview.id}</span>
-            <span class="text-[10px] font-bold text-primary-500 bg-primary-500/20 px-1.5 py-0.5 rounded">
-              {interview.confidence}
+            <span class="text-xs font-medium text-primary-500">{interview.interviewCode}</span>
+            <span class="text-[10px] font-bold text-primary-500 bg-primary-500/20 px-1.5 py-0.5 rounded uppercase">
+              {interview.status}
             </span>
           </div>
           <p class="text-sm font-medium text-white truncate">{interview.title}</p>
-          <p class="text-xs text-slate-500 truncate">{interview.preview}</p>
-          <p class="text-xs text-slate-600 mt-1">{interview.timestamp}</p>
+          <p class="text-xs text-slate-600 mt-1">{formatDate(interview.createdAt)}</p>
         </button>
       {/each}
     </div>

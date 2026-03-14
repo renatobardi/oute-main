@@ -1,5 +1,6 @@
 export interface Interview {
   id: string;
+  interviewCode: string;
   title: string;
   status: 'scheduled' | 'in_progress' | 'completed' | 'cancelled';
   createdAt: Date;
@@ -9,9 +10,11 @@ export interface Interview {
 export interface Message {
   id: string;
   timestamp: Date;
-  sender: 'user' | 'ai';
+  sender: 'user' | 'ai' | 'system';
   content: string;
   type: 'text' | 'code' | 'image';
+  userName?: string;
+  avatarColor?: string;
 }
 
 export interface Metrics {
