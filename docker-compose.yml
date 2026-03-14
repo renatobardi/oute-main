@@ -111,6 +111,18 @@ services:
     networks:
       - oute-network
 
+  98_oops:
+    build:
+      context: .
+      dockerfile: packages/98_oops/Dockerfile
+    container_name: oute-oops
+    ports:
+      - '3004:3004'
+    environment:
+      - NODE_ENV=production
+    networks:
+      - oute-network
+
 volumes:
   postgres-data:
     driver: local
