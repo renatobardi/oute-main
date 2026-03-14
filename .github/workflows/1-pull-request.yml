@@ -41,7 +41,7 @@ jobs:
 
       - name: TypeScript check per workspace
         run: |
-          for dir in packages/design-system packages/00_dashboard packages/01_auth-profile packages/02_projects; do
+          for dir in packages/design-system packages/00_dashboard packages/01_auth-profile packages/02_projects packages/03_interview packages/98_oops packages/99_home; do
             if [ -f "$dir/tsconfig.json" ]; then
               echo "Checking $dir..."
               npx tsc --noEmit --project "$dir/tsconfig.json" || true
@@ -64,7 +64,7 @@ jobs:
 
       - name: Run tests with coverage per package
         run: |
-          for dir in packages/design-system packages/00_dashboard packages/01_auth-profile packages/02_projects; do
+          for dir in packages/design-system packages/00_dashboard packages/01_auth-profile packages/02_projects packages/03_interview packages/98_oops packages/99_home; do
             if [ -f "$dir/vitest.config.ts" ]; then
               echo "🧪 Running tests in $dir..."
               npx vitest run --coverage --root "$dir" || exit 1
@@ -74,7 +74,7 @@ jobs:
       - name: Merge coverage reports
         run: |
           mkdir -p coverage
-          for dir in packages/design-system packages/00_dashboard packages/01_auth-profile packages/02_projects; do
+          for dir in packages/design-system packages/00_dashboard packages/01_auth-profile packages/02_projects packages/03_interview packages/98_oops packages/99_home; do
             if [ -f "$dir/coverage/lcov.info" ]; then
               echo "📊 Found coverage in $dir"
               cat "$dir/coverage/lcov.info" >> coverage/lcov.info
@@ -100,6 +100,61 @@ jobs:
             packages/*/coverage/
           retention-days: 30
 
+  design-system-check:
+    name: Design System Compliance
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check all SvelteKit packages use the design system
+        run: |
+          SVELTE_PACKAGES="packages/00_dashboard packages/01_auth-profile packages/02_projects packages/03_interview packages/98_oops packages/99_home"
+          FAILED=0
+
+          for pkg in $SVELTE_PACKAGES; do
+            name=$(basename "$pkg")
+
+            # Must have src/app.css
+            if [ ! -f "$pkg/src/app.css" ]; then
+              echo "❌ $name: missing src/app.css"
+              FAILED=1
+              continue
+            fi
+
+            # src/app.css must import the design system
+            if ! grep -q "design-system/src/theme/theme.css" "$pkg/src/app.css"; then
+              echo "❌ $name: src/app.css does not import design-system theme"
+              echo "   Expected: @import '../../design-system/src/theme/theme.css';"
+              echo "   Found:"
+              cat "$pkg/src/app.css"
+              FAILED=1
+              continue
+            fi
+
+            # Dockerfile must COPY the design-system in builder stage
+            if [ -f "$pkg/Dockerfile" ]; then
+              if ! grep -q "design-system" "$pkg/Dockerfile"; then
+                echo "❌ $name: Dockerfile does not COPY packages/design-system"
+                FAILED=1
+                continue
+              fi
+            fi
+
+            echo "✅ $name: compliant"
+          done
+
+          if [ "$FAILED" -eq 1 ]; then
+            echo ""
+            echo "💡 To fix: ensure each SvelteKit package has:"
+            echo "   1. src/app.css with: @import '../../design-system/src/theme/theme.css';"
+            echo "   2. src/routes/+layout.svelte importing ../app.css"
+            echo "   3. Dockerfile with: COPY packages/design-system ./packages/design-system"
+            exit 1
+          fi
+
+          echo ""
+          echo "✅ All SvelteKit packages are using the design system"
+
   docker-build:
     name: Docker Build Check
     runs-on: ubuntu-latest
@@ -110,6 +165,9 @@ jobs:
           - 00_dashboard
           - 01_auth-profile
           - 02_projects
+          - 03_interview
+          - 98_oops
+          - 99_home
     steps:
       - uses: actions/checkout@v4
 
@@ -130,7 +188,7 @@ jobs:
   summary:
     name: PR Status Summary
     runs-on: ubuntu-latest
-    needs: [lint, typecheck, test, docker-build]
+    needs: [lint, typecheck, test, docker-build, design-system-check]
     if: always()
     steps:
       - name: Check job statuses
@@ -138,7 +196,8 @@ jobs:
           if [ "${{ needs.lint.result }}" != "success" ] || \
              [ "${{ needs.typecheck.result }}" != "success" ] || \
              [ "${{ needs.test.result }}" != "success" ] || \
-             [ "${{ needs.docker-build.result }}" != "success" ]; then
+             [ "${{ needs.docker-build.result }}" != "success" ] || \
+             [ "${{ needs.design-system-check.result }}" != "success" ]; then
             echo "❌ Some checks failed"
             exit 1
           fi

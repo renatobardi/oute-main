@@ -6,6 +6,7 @@ WORKDIR /app
 # Copy root files
 COPY package.json package-lock.json tsconfig.json ./
 COPY packages/98_oops ./packages/98_oops
+COPY packages/design-system ./packages/design-system
 
 # Install dependencies
 RUN npm install --legacy-peer-deps
