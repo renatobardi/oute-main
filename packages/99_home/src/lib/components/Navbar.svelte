@@ -2,7 +2,7 @@
 	import OuteLogo from './OuteLogo.svelte';
 </script>
 
-<nav class="bg-black border-b border-neutral-800">
+<nav class="bg-black">
   <div class="max-w-7xl mx-auto px-6 py-3 flex items-center">
     <!-- Logo (Left) -->
     <OuteLogo size="md" showSlogan={true} horizontal={true} />
