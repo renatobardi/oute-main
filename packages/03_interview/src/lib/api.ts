@@ -1,8 +1,9 @@
 /**
  * API client for the interview service endpoints.
- * All routes are relative (same-origin SvelteKit server routes).
+ * Usa `base` do SvelteKit para respeitar o paths.base = '/chat'.
  */
 
+import { base } from '$app/paths';
 import type { Interview, Message, Note } from '$lib/types/index';
 
 // ── Mappers ────────────────────────────────────────────────────────────────
@@ -53,14 +54,14 @@ function mapNote(raw: any): Note {
 // ── Interviews ─────────────────────────────────────────────────────────────
 
 export async function fetchInterviews(): Promise<Interview[]> {
-  const res = await fetch('/api/interviews');
+  const res = await fetch(`${base}/api/interviews`);
   if (!res.ok) throw new Error('Failed to fetch interviews');
   const data = await res.json();
   return data.map(mapInterview);
 }
 
 export async function createInterview(title: string): Promise<Interview> {
-  const res = await fetch('/api/interviews', {
+  const res = await fetch(`${base}/api/interviews`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ title }),
@@ -76,7 +77,7 @@ export async function fetchInterviewDetail(id: string): Promise<{
   messages: Message[];
   note: Note | null;
 }> {
-  const res = await fetch(`/api/interviews/${id}`);
+  const res = await fetch(`${base}/api/interviews/${id}`);
   if (!res.ok) throw new Error(`Failed to fetch interview ${id}`);
   const data = await res.json();
   return {
@@ -97,7 +98,7 @@ export async function sendMessage(
     metadata?: { userName?: string; avatarColor?: string };
   }
 ): Promise<Message> {
-  const res = await fetch(`/api/interviews/${interviewId}/messages`, {
+  const res = await fetch(`${base}/api/interviews/${interviewId}/messages`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload),
@@ -112,7 +113,7 @@ export async function saveNote(
   interviewId: string,
   note: Partial<Note>
 ): Promise<Note> {
-  const res = await fetch(`/api/interviews/${interviewId}/notes`, {
+  const res = await fetch(`${base}/api/interviews/${interviewId}/notes`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
