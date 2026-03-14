@@ -108,6 +108,7 @@
           timestamp={message.timestamp}
           userName={message.userName || 'User'}
           avatarColor={message.avatarColor || 'bg-slate-600'}
+          avatarUrl={message.avatarUrl}
         />
       {/each}
 

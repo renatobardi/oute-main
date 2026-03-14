@@ -7,7 +7,7 @@ import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { verifyFirebaseToken } from '$lib/server/verifyToken';
 
-const SESSION_MAX_AGE = 60 * 60 * 24 * 5; // 5 days in seconds
+const SESSION_MAX_AGE = 60 * 60; // 1 hour — alinhado com expiração do Firebase ID Token
 
 export const POST: RequestHandler = async ({ request, cookies }) => {
   let idToken: string;
