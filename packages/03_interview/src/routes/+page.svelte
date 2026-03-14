@@ -10,6 +10,8 @@
   import { fetchInterviews, createInterview, fetchInterviewDetail, getEstimationStatus } from '$lib/api';
   import { startEstimationStream } from '$lib/estimation';
 
+  export let data: { user: App.Locals['user'] };
+
   // Pass initial message from URL param to chat input
   $: if ($page?.url) {
     const param = $page.url.searchParams.get('initial');
@@ -61,7 +63,7 @@
 <div class="flex h-full w-full">
   <!-- Left Sidebar -->
   <div class="sidebar-transition hidden lg:flex {$sidebarCollapsed ? 'lg:w-0' : 'lg:w-[340px]'} flex-col h-full overflow-hidden">
-    <InterviewSidebar />
+    <InterviewSidebar user={data.user} />
   </div>
 
   <!-- Center Chat Window -->

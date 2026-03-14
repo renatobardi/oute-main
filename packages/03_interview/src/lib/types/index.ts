@@ -15,6 +15,7 @@ export interface Message {
   type: 'text' | 'code' | 'image';
   userName?: string;
   avatarColor?: string;
+  avatarUrl?: string;
 }
 
 export interface Metrics {
