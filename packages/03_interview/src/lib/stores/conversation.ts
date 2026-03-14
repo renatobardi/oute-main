@@ -1,5 +1,5 @@
 import { writable } from 'svelte/store';
-import type { Interview, Message, Note } from '$lib/types/index';
+import type { Interview, Message, Note, EstimationStatus } from '$lib/types/index';
 
 export const currentInterview = writable<Interview | null>(null);
 export const messages = writable<Message[]>([]);
@@ -15,6 +15,9 @@ export const notes = writable<Note>({
   tags: [],
   content: '',
 });
+
+export const estimationId = writable<string | null>(null);
+export const estimationStatus = writable<EstimationStatus | null>(null);
 
 export function addMessage(message: Message) {
   messages.update((msgs) => [...msgs, message]);
