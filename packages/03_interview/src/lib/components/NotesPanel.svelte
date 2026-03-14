@@ -2,7 +2,6 @@
   import ProgressBar from './ProgressBar.svelte';
   import RangeVisualization from './RangeVisualization.svelte';
   import { notes } from '$lib/stores/conversation';
-  import { users } from '$lib/stores/users';
   import { notePanelCollapsed } from '$lib/stores/ui';
 
   // Parse estimated hours range
@@ -166,16 +165,10 @@
       </div>
     {/if}
 
-    <!-- Co-authors Section -->
+    <!-- Co-authors Section (placeholder — feature a implementar) -->
     <div class="space-y-3 pt-2 border-t border-[#000000]">
       <p class="text-xs font-semibold text-neutral-400 uppercase tracking-wider">Co-authors</p>
-      <div class="flex items-center gap-2">
-        {#each users as user}
-          <div class="w-6 h-6 rounded-full {user.avatarColor} flex items-center justify-center text-white text-xs font-bold" title={user.name}>
-            {user.initials}
-          </div>
-        {/each}
-      </div>
+      <p class="text-xs text-neutral-600">—</p>
     </div>
   </div>
   {/if}

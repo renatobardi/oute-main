@@ -33,6 +33,7 @@ function mapMessage(raw: any): Message {
     type: raw.type ?? 'text',
     userName: raw.metadata?.userName,
     avatarColor: raw.metadata?.avatarColor,
+    avatarUrl: raw.metadata?.avatarUrl,
   };
 }
 
