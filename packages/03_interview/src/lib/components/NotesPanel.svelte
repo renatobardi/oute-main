@@ -178,12 +178,12 @@
   <div class="px-6 pt-0 pb-8 border-t border-[#000000] flex flex-col gap-4">
     <!-- Action Buttons -->
     <div class="flex flex-col gap-2 items-center">
-      <button class="flex w-4/5 items-center justify-center rounded-lg bg-primary-500 py-2 text-sm font-bold text-[#0f1e23] hover:bg-primary-600 transition-colors">
+      <a href="/dashboard" class="flex w-4/5 items-center justify-center rounded-lg bg-primary-500 py-2 text-sm font-bold text-[#0f1e23] hover:bg-primary-600 transition-colors">
         Dashboard
-      </button>
-      <button class="flex w-4/5 items-center justify-center rounded-lg bg-transparent py-2 text-sm font-bold text-primary-500 border-2 border-primary-500 hover:bg-primary-500/10 transition-colors">
+      </a>
+      <a href="/api/projects" class="flex w-4/5 items-center justify-center rounded-lg bg-transparent py-2 text-sm font-bold text-primary-500 border-2 border-primary-500 hover:bg-primary-500/10 transition-colors">
         Projects
-      </button>
+      </a>
     </div>
   </div>
   {/if}
