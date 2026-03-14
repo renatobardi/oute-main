@@ -1,14 +1,12 @@
 <script lang="ts">
-  export let githubHref = 'https://github.com/renatobardi/oute';
-  export let googleHref = 'https://accounts.google.com/';
+  export let githubHref = '/chat/login';
+  export let googleHref = '/chat/login';
 </script>
 
 <div class="flex flex-col gap-3 items-center w-full max-w-xs mx-auto" data-version="branding-v2">
   <!-- GitHub Sign-In Button (per GitHub guidelines: simple, clean, no effects) -->
   <a
     href={githubHref}
-    target="_blank"
-    rel="noopener noreferrer"
     class="w-full bg-neutral-800 hover:bg-neutral-700 text-white px-4 py-3 rounded-lg font-medium transition-colors flex items-center gap-3 justify-center border border-neutral-700"
   >
     <!-- GitHub Invertocat Logo (White) -->
@@ -21,8 +19,6 @@
   <!-- Google Sign-In Button (matching GitHub style) -->
   <a
     href={googleHref}
-    target="_blank"
-    rel="noopener noreferrer"
     class="w-full bg-neutral-800 hover:bg-neutral-700 text-white px-4 py-3 rounded-lg font-medium transition-colors flex items-center gap-3 justify-center border border-neutral-700"
   >
     <!-- Google Official G Logo (Blue) -->

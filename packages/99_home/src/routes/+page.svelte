@@ -8,7 +8,7 @@
   import StatsSection from '$lib/components/StatsSection.svelte';
   import { getToken, initializeAuth } from '$lib/auth';
 
-  let ctaHref = '/login';
+  let ctaHref = '/chat/login';
   let ctaText = 'Continuar com E-mail';
 
   onMount(() => {
