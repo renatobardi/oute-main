@@ -166,7 +166,6 @@
 
 <style>
   :global(*, *::before, *::after) { box-sizing: border-box; margin: 0; padding: 0; }
-  :global(body) { background: #0f1117; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
 
   .page {
     min-height: 100vh;
@@ -174,12 +173,12 @@
     align-items: center;
     justify-content: center;
     padding: 1rem;
-    background: #0f1117;
+    background: var(--color-dark-bg);
   }
 
   .card {
-    background: #1a1d27;
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: var(--color-dark-surface);
+    border: 1px solid var(--color-dark-border);
     border-radius: 1rem;
     padding: 2rem;
     width: 100%;
@@ -200,15 +199,15 @@
   }
 
   .logo-sub {
-    color: #6b7280;
+    color: var(--color-neutral-500);
     font-size: 0.875rem;
     margin-top: 0.25rem;
   }
 
   .error-box {
-    background: rgba(239, 68, 68, 0.1);
-    border: 1px solid rgba(239, 68, 68, 0.3);
-    color: #f87171;
+    background: color-mix(in srgb, var(--color-error) 10%, transparent);
+    border: 1px solid color-mix(in srgb, var(--color-error) 30%, transparent);
+    color: var(--color-error);
     padding: 0.75rem 1rem;
     border-radius: 0.5rem;
     font-size: 0.875rem;
@@ -261,13 +260,13 @@
   }
 
   .btn-primary {
-    background: #6366f1;
-    color: #fff;
+    background: var(--color-primary-500);
+    color: var(--color-dark-bg);
     margin-top: 0.5rem;
   }
 
   .btn-primary:hover:not(:disabled) {
-    background: #4f46e5;
+    background: var(--color-primary-600);
   }
 
   .icon {
@@ -309,7 +308,7 @@
   }
 
   .divider-text {
-    color: #6b7280;
+    color: var(--color-neutral-500);
     font-size: 0.75rem;
     white-space: nowrap;
   }
@@ -329,7 +328,7 @@
   .label {
     font-size: 0.875rem;
     font-weight: 500;
-    color: #d1d5db;
+    color: var(--color-neutral-300);
   }
 
   .input {
@@ -344,11 +343,11 @@
   }
 
   .input::placeholder {
-    color: #6b7280;
+    color: var(--color-neutral-500);
   }
 
   .input:focus {
-    border-color: #6366f1;
+    border-color: var(--color-primary-500);
   }
 
   .input:disabled {

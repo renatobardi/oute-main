@@ -6,6 +6,7 @@ WORKDIR /app
 # Copy root files
 COPY package.json package-lock.json tsconfig.json .eslintrc.json .prettierrc ./
 COPY packages/01_auth-profile ./packages/01_auth-profile
+COPY packages/design-system ./packages/design-system
 COPY shared ./shared
 
 # Install dependencies
