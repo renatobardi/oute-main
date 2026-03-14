@@ -41,7 +41,7 @@ jobs:
 
       - name: TypeScript check per workspace
         run: |
-          for dir in packages/design-system packages/00_dashboard packages/01_auth-profile packages/02_projects packages/03_interview packages/98_oops packages/99_home; do
+          for dir in packages/design-system $(find packages -maxdepth 1 -type d -regextype posix-extended -regex 'packages/[0-9]+_.*' | sort); do
             if [ -f "$dir/tsconfig.json" ]; then
               echo "Checking $dir..."
               npx tsc --noEmit --project "$dir/tsconfig.json" || true
@@ -64,7 +64,7 @@ jobs:
 
       - name: Run tests with coverage per package
         run: |
-          for dir in packages/design-system packages/00_dashboard packages/01_auth-profile packages/02_projects packages/03_interview packages/98_oops packages/99_home; do
+          for dir in packages/design-system $(find packages -maxdepth 1 -type d -regextype posix-extended -regex 'packages/[0-9]+_.*' | sort); do
             if [ -f "$dir/vitest.config.ts" ]; then
               echo "🧪 Running tests in $dir..."
               npx vitest run --coverage --root "$dir" || exit 1
@@ -74,7 +74,7 @@ jobs:
       - name: Merge coverage reports
         run: |
           mkdir -p coverage
-          for dir in packages/design-system packages/00_dashboard packages/01_auth-profile packages/02_projects packages/03_interview packages/98_oops packages/99_home; do
+          for dir in packages/design-system $(find packages -maxdepth 1 -type d -regextype posix-extended -regex 'packages/[0-9]+_.*' | sort); do
             if [ -f "$dir/coverage/lcov.info" ]; then
               echo "📊 Found coverage in $dir"
               cat "$dir/coverage/lcov.info" >> coverage/lcov.info
@@ -108,7 +108,9 @@ jobs:
 
       - name: Check all SvelteKit packages use the design system
         run: |
-          SVELTE_PACKAGES="packages/00_dashboard packages/01_auth-profile packages/02_projects packages/03_interview packages/98_oops packages/99_home"
+          # Auto-discover: any packages/NN_* directory (NN = one or more digits)
+          SVELTE_PACKAGES=$(find packages -maxdepth 1 -type d -regextype posix-extended -regex 'packages/[0-9]+_.*' | sort)
+          echo "Packages found: $(echo $SVELTE_PACKAGES | tr ' ' '\n' | xargs -I{} basename {})"
           FAILED=0
 
           for pkg in $SVELTE_PACKAGES; do
@@ -166,6 +168,7 @@ jobs:
           - 01_auth-profile
           - 02_projects
           - 03_interview
+          - 97_admin
           - 98_oops
           - 99_home
     steps:
