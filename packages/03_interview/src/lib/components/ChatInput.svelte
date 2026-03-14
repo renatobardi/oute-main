@@ -50,6 +50,9 @@
     adjustTextareaHeight();
 
     try {
+      // Captura contagem antes de enviar para detectar 1ª mensagem
+      const prevCount = $messages.length;
+
       // Persiste mensagem do usuário
       const userMsg = await sendMessage($currentInterview.id, {
         sender: 'user',
@@ -59,7 +62,7 @@
       messages.update((msgs) => [...msgs, userMsg]);
 
       // 1ª mensagem → inicia pipeline oute-mind
-      if ($messages.length === 1) {
+      if (prevCount === 0 && !$estimationId) {
         estimationStatus.set('queued');
 
         const { estimation_id } = await startEstimation(text);
