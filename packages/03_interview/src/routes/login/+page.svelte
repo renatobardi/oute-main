@@ -49,8 +49,12 @@
     try {
       await loginWithGitHub();
       await goto('/');
-    } catch (err) {
-      error = err instanceof Error ? err.message : 'Falha no login com GitHub';
+    } catch (err: any) {
+      if (err?.code === 'auth/account-exists-with-different-credential') {
+        error = 'Este email já está cadastrado com outro método de login. Tente com Google ou Email.';
+      } else {
+        error = err instanceof Error ? err.message : 'Falha no login com GitHub';
+      }
     } finally {
       loading = false;
       activeProvider = '';

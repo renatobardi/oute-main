@@ -1,85 +1,85 @@
 /**
- * SvelteKit Server Hooks
- * Sets up Dependency Injection container at startup
+ * SvelteKit Server Hooks — 01_auth-profile
+ *
+ * 1. Verifica o cookie de sessão Firebase em cada request
+ * 2. Popula event.locals.user com os dados do token
+ * 3. Inicializa o container de DI (legacy — mantido para compatibilidade)
+ * 4. Configura CORS
  */
 
 import type { Handle } from '@sveltejs/kit';
+import { verifyFirebaseToken } from '$lib/server/verifyToken';
+
+// ── Legacy DI (mantido para os endpoints antigos /api/auth, /api/profile) ──
 import { LoginUseCase } from './application/use-cases/login/LoginUseCase';
 import { RegisterUseCase } from './application/use-cases/register/RegisterUseCase';
 import { GetProfileUseCase } from './application/use-cases/get-profile/GetProfileUseCase';
-
-// Infrastructure adapters
 import { PostgresUserRepository } from './infrastructure/adapters/repositories/PostgresUserRepository';
 import { BcryptPasswordAdapter } from './infrastructure/adapters/password/BcryptPasswordAdapter';
 import { JwtTokenAdapter } from './infrastructure/adapters/token/JwtTokenAdapter';
 
-/**
- * Initialize Dependency Injection Container
- * This runs once when the server starts
- */
 function initializeDependencies() {
-  // Get configuration from environment
   const jwtSecret = process.env.JWT_SECRET ?? 'test-secret-key';
-
-  // Create infrastructure adapters
   const userRepository = new PostgresUserRepository();
   const passwordHasher = new BcryptPasswordAdapter();
   const tokenGenerator = new JwtTokenAdapter(jwtSecret);
-
-  // Create application use cases
   const loginUseCase = new LoginUseCase(userRepository, passwordHasher, tokenGenerator);
   const registerUseCase = new RegisterUseCase(userRepository, passwordHasher, tokenGenerator);
   const getProfileUseCase = new GetProfileUseCase(userRepository);
-
-  return {
-    userRepository,
-    passwordHasher,
-    tokenGenerator,
-    loginUseCase,
-    registerUseCase,
-    getProfileUseCase,
-  };
+  return { userRepository, passwordHasher, tokenGenerator, loginUseCase, registerUseCase, getProfileUseCase };
 }
 
-// Initialize dependencies at server startup
 const deps = initializeDependencies();
-
-// Export to global for use in route handlers
 if (typeof global !== 'undefined') {
-  (global as unknown).__authDeps = deps;
+  (global as unknown as Record<string, unknown>).__authDeps = deps;
 }
 
+// ── CORS ────────────────────────────────────────────────────────────────────
+const ALLOWED_ORIGINS = [
+  'http://localhost:3000',
+  'http://localhost:3001',
+  'http://localhost:3003',
+  'https://oute.pro',
+  'http://34.132.93.171',
+  'https://34.132.93.171',
+];
+
+// ── Handle ──────────────────────────────────────────────────────────────────
 export const handle: Handle = async ({ event, resolve }) => {
-  // CORS configuration for production (34.132.93.171) and development
-  const allowedOrigins = [
-    'http://localhost:3000',    // Local development
-    'http://localhost:3003',    // 99_home local
-    'http://34.132.93.171',     // Production
-    'https://34.132.93.171',    // Production HTTPS
-  ];
+  // 1. Firebase session verification
+  event.locals.user = null;
+  const sessionToken = event.cookies.get('session');
+  if (sessionToken) {
+    const payload = await verifyFirebaseToken(sessionToken);
+    if (payload) {
+      event.locals.user = payload;
+    } else {
+      event.cookies.delete('session', { path: '/' });
+    }
+  }
 
+  // 2. Legacy DI injection
+  event.locals.deps = deps;
+
+  // 3. CORS preflight
   const origin = event.request.headers.get('origin');
-  const isAllowedOrigin = allowedOrigins.includes(origin || '');
+  const isAllowedOrigin = ALLOWED_ORIGINS.includes(origin ?? '');
 
-  // Handle CORS preflight requests
   if (event.request.method === 'OPTIONS') {
     return new Response(null, {
       headers: {
-        'Access-Control-Allow-Origin': isAllowedOrigin ? origin! : 'http://localhost:3003',
+        'Access-Control-Allow-Origin': isAllowedOrigin ? origin! : 'https://oute.pro',
         'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
         'Access-Control-Allow-Headers': 'Content-Type, Authorization',
         'Access-Control-Allow-Credentials': 'true',
-        'Access-Control-Max-Age': '86400', // 24 hours
+        'Access-Control-Max-Age': '86400',
       },
     });
   }
 
-  // Inject dependencies into event.locals
-  event.locals.deps = deps;
-
   const response = await resolve(event);
 
-  // Add CORS headers to response
+  // 4. CORS headers na response
   if (isAllowedOrigin) {
     response.headers.set('Access-Control-Allow-Origin', origin!);
     response.headers.set('Access-Control-Allow-Credentials', 'true');

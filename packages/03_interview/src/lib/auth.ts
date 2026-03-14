@@ -9,6 +9,8 @@ import {
   signInWithPopup,
   GoogleAuthProvider,
   GithubAuthProvider,
+  fetchSignInMethodsForEmail,
+  linkWithCredential,
   signOut as firebaseSignOut,
   onIdTokenChanged,
   type User as FirebaseUser,
@@ -54,7 +56,25 @@ export async function loginWithGoogle(): Promise<void> {
 
 export async function loginWithGitHub(): Promise<void> {
   const provider = new GithubAuthProvider();
-  await signInWithPopup(auth, provider);
+  try {
+    await signInWithPopup(auth, provider);
+  } catch (err: any) {
+    if (err.code === 'auth/account-exists-with-different-credential') {
+      const email = err.customData?.email;
+      const pendingCred = GithubAuthProvider.credentialFromError(err);
+      if (email && pendingCred) {
+        const methods = await fetchSignInMethodsForEmail(auth, email);
+        if (methods.includes('google.com')) {
+          const googleProvider = new GoogleAuthProvider();
+          googleProvider.setCustomParameters({ login_hint: email });
+          const result = await signInWithPopup(auth, googleProvider);
+          await linkWithCredential(result.user, pendingCred);
+          return;
+        }
+      }
+    }
+    throw err;
+  }
 }
 
 // ── Sign out ───────────────────────────────────────────────────────────────
