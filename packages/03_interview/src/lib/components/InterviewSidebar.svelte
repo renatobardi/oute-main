@@ -71,6 +71,12 @@
     );
   }
 
+  $: if ($currentInterview) {
+    interviewList = interviewList.map((i) =>
+      i.id === $currentInterview!.id ? { ...i, title: $currentInterview!.title } : i
+    );
+  }
+
   $: filteredInterviews = interviewList.filter(
     (i) =>
       i.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
