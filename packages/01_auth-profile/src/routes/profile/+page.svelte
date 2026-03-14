@@ -55,7 +55,6 @@
 
 <style>
   :global(*, *::before, *::after) { box-sizing: border-box; margin: 0; padding: 0; }
-  :global(body) { background: #0f1117; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
 
   .page {
     min-height: 100vh;
@@ -63,12 +62,12 @@
     align-items: center;
     justify-content: center;
     padding: 1rem;
-    background: #0f1117;
+    background: var(--color-dark-bg);
   }
 
   .card {
-    background: #1a1d27;
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: var(--color-dark-surface);
+    border: 1px solid var(--color-dark-border);
     border-radius: 1rem;
     padding: 2rem;
     width: 100%;
@@ -95,7 +94,7 @@
     width: 5rem;
     height: 5rem;
     border-radius: 50%;
-    background: #6366f1;
+    background: var(--color-primary-500);
     color: #fff;
     display: flex;
     align-items: center;
@@ -117,7 +116,7 @@
   }
 
   .email {
-    color: #6b7280;
+    color: var(--color-neutral-500);
     font-size: 0.875rem;
   }
 
@@ -143,12 +142,12 @@
   }
 
   .btn-logout {
-    background: rgba(239, 68, 68, 0.1);
-    color: #f87171;
-    border: 1px solid rgba(239, 68, 68, 0.3);
+    background: color-mix(in srgb, var(--color-error) 10%, transparent);
+    color: var(--color-error);
+    border: 1px solid color-mix(in srgb, var(--color-error) 30%, transparent);
   }
 
   .btn-logout:hover:not(:disabled) {
-    background: rgba(239, 68, 68, 0.2);
+    background: color-mix(in srgb, var(--color-error) 20%, transparent);
   }
 </style>
