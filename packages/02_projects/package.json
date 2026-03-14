@@ -16,8 +16,8 @@
     "test:e2e": "playwright test"
   },
   "dependencies": {
-    "@oute/design-system": "workspace:*",
-    "@oute/shared": "workspace:*",
+    "@oute/design-system": "^1.0.0",
+    "@oute/shared": "^1.0.0",
     "@sveltejs/adapter-node": "^5.0.0",
     "@sveltejs/kit": "^2.0.0",
     "firebase": "^11.0.0",
