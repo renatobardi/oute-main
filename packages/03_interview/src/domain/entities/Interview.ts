@@ -65,6 +65,14 @@ export class Interview {
     this.props.updatedAt = new Date();
   }
 
+  rename(title: string): void {
+    if (!title.trim()) {
+      throw new InvalidInterviewError('Title cannot be empty');
+    }
+    this.props.title = title.trim();
+    this.props.updatedAt = new Date();
+  }
+
   // ── Getters ───────────────────────────────────────────────────────────────
 
   get id(): string { return this.props.id; }
