@@ -4,7 +4,7 @@
  */
 
 import { base } from '$app/paths';
-import type { Interview, Message, Note } from '$lib/types/index';
+import type { Interview, Message, Note, EstimationStatus } from '$lib/types/index';
 
 // ── Mappers ────────────────────────────────────────────────────────────────
 
@@ -105,6 +105,110 @@ export async function sendMessage(
   });
   if (!res.ok) throw new Error('Failed to send message');
   return mapMessage(await res.json());
+}
+
+// ── Estimation (oute-mind) ─────────────────────────────────────────────────
+
+/**
+ * Inicia um pipeline de estimativa no oute-mind via proxy server-side.
+ * Retorna o estimation_id gerado pelo oute-mind.
+ */
+export async function startEstimation(
+  projectDetails: string,
+  estimationId?: string
+): Promise<{ estimation_id: string; status: string }> {
+  const res = await fetch(`${base}/api/estimation`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ project_details: projectDetails, estimation_id: estimationId }),
+  });
+  if (!res.ok) throw new Error('Failed to start estimation');
+  return res.json();
+}
+
+export interface EstimationStreamHandlers {
+  onPhase?: (phase: number, phaseName: string | null) => void;
+  onAwaitingApproval?: (output: string) => void;
+  onCompleted?: (result: string) => void;
+  onFailed?: (error: string) => void;
+}
+
+/**
+ * Abre um SSE stream para acompanhar o progresso da estimativa.
+ * Retorna o EventSource para que o caller possa fechá-lo se necessário.
+ */
+export function openEstimationStream(
+  estimationId: string,
+  handlers: EstimationStreamHandlers
+): EventSource {
+  const es = new EventSource(`${base}/api/estimation/${estimationId}`);
+
+  es.onmessage = (event) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let data: any;
+    try {
+      data = JSON.parse(event.data);
+    } catch {
+      return;
+    }
+
+    switch (data.type) {
+      case 'phase':
+        handlers.onPhase?.(data.phase, data.phaseName ?? null);
+        break;
+      case 'awaiting_approval':
+        handlers.onAwaitingApproval?.(data.output ?? '');
+        break;
+      case 'completed':
+        handlers.onCompleted?.(data.result ?? '');
+        es.close();
+        break;
+      case 'failed':
+        handlers.onFailed?.(data.error ?? 'Erro desconhecido');
+        es.close();
+        break;
+    }
+  };
+
+  es.onerror = () => {
+    handlers.onFailed?.('Conexão SSE perdida');
+    es.close();
+  };
+
+  return es;
+}
+
+/**
+ * Aprova ou rejeita a fase 1 do pipeline.
+ */
+export async function approveEstimation(
+  estimationId: string,
+  approved: boolean,
+  feedback?: string
+): Promise<void> {
+  const res = await fetch(`${base}/api/estimation/${estimationId}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ approved, ...(feedback ? { feedback } : {}) }),
+  });
+  if (!res.ok) throw new Error('Failed to approve estimation');
+}
+
+/**
+ * Consulta o status atual de uma estimativa (para recovery de sessão).
+ * Retorna null se não encontrada ou oute-mind indisponível.
+ */
+export async function getEstimationStatus(
+  estimationId: string
+): Promise<EstimationStatus | null> {
+  try {
+    const res = await fetch(`${base}/api/estimation/${estimationId}/status`);
+    if (!res.ok) return null;
+    const data = await res.json();
+    return (data.status as EstimationStatus) ?? null;
+  } catch {
+    return null;
+  }
 }
 
 // ── Notes ──────────────────────────────────────────────────────────────────

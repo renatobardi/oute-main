@@ -29,3 +29,20 @@ export interface Note {
   tags: string[];
   content: string;
 }
+
+export type EstimationStatus =
+  | 'queued'
+  | 'running'
+  | 'awaiting_approval'
+  | 'completed'
+  | 'failed'
+  | 'rejected';
+
+export interface EstimationState {
+  id: string;
+  status: EstimationStatus;
+  currentPhase: number;
+  phaseName: string | null;
+  result: string | null;
+  error: string | null;
+}

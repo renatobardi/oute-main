@@ -5,9 +5,10 @@
   import ChatWindow from '$lib/components/ChatWindow.svelte';
   import ChatInput from '$lib/components/ChatInput.svelte';
   import NotesPanel from '$lib/components/NotesPanel.svelte';
-  import { currentInterview, messages, notes, initialInputValue } from '$lib/stores/conversation';
+  import { currentInterview, messages, notes, initialInputValue, estimationId, estimationStatus } from '$lib/stores/conversation';
   import { sidebarCollapsed, notePanelCollapsed } from '$lib/stores/ui';
-  import { fetchInterviews, createInterview, fetchInterviewDetail } from '$lib/api';
+  import { fetchInterviews, createInterview, fetchInterviewDetail, getEstimationStatus } from '$lib/api';
+  import { startEstimationStream } from '$lib/estimation';
 
   // Pass initial message from URL param to chat input
   $: if ($page?.url) {
@@ -33,6 +34,23 @@
 
       if (note) {
         notes.set(note);
+      }
+
+      // Recovery de sessão: religa SSE se estimativa estava em andamento
+      const savedEstimationId =
+        typeof sessionStorage !== 'undefined'
+          ? sessionStorage.getItem(`estimation_${interview.id}`)
+          : null;
+
+      if (savedEstimationId) {
+        const status = await getEstimationStatus(savedEstimationId);
+        if (status === 'queued' || status === 'running' || status === 'awaiting_approval') {
+          estimationId.set(savedEstimationId);
+          estimationStatus.set(status);
+          startEstimationStream(savedEstimationId, interview.id);
+        } else {
+          sessionStorage.removeItem(`estimation_${interview.id}`);
+        }
       }
     } catch (err) {
       console.error('[page] Failed to load interview data', err);
