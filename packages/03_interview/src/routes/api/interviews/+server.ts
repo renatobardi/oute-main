@@ -2,19 +2,22 @@ import { json } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 import { PostgresInterviewRepository } from '../../../infrastructure/repositories/PostgresInterviewRepository';
 import { PostgresInterviewNoteRepository } from '../../../infrastructure/repositories/PostgresInterviewNoteRepository';
-
-// Fixed dev user until auth is implemented (FASE 6/7)
-const DEV_USER_ID = '019534a0-0000-7000-8000-000000000001';
+import { getDbUserId } from '$lib/server/getUserId';
 
 /**
  * GET /api/interviews
- * Returns all interviews conducted by the current (dev) user.
+ * Retorna todas as entrevistas do usuário logado.
  */
-export const GET: RequestHandler = async () => {
+export const GET: RequestHandler = async ({ locals }) => {
+  const firebaseUser = locals.user;
+  if (!firebaseUser) return json({ error: 'Não autorizado' }, { status: 401 });
+
+  const dbUserId = await getDbUserId(firebaseUser.uid);
+  if (!dbUserId) return json({ error: 'Usuário não encontrado no banco' }, { status: 404 });
+
   const interviewRepo = new PostgresInterviewRepository();
   try {
-    const interviews = await interviewRepo.findByConductedBy(DEV_USER_ID);
-
+    const interviews = await interviewRepo.findByConductedBy(dbUserId);
     return json(interviews.map((i) => i.toPlainObject()));
   } catch (err) {
     console.error('[GET /api/interviews]', err);
@@ -24,12 +27,17 @@ export const GET: RequestHandler = async () => {
 
 /**
  * POST /api/interviews
- * Creates a new interview (and an auto draft project behind the scenes).
- * Also creates the initial empty note for the interview.
+ * Cria uma nova entrevista para o usuário logado.
  *
  * Body: { title: string }
  */
-export const POST: RequestHandler = async ({ request }) => {
+export const POST: RequestHandler = async ({ request, locals }) => {
+  const firebaseUser = locals.user;
+  if (!firebaseUser) return json({ error: 'Não autorizado' }, { status: 401 });
+
+  const dbUserId = await getDbUserId(firebaseUser.uid);
+  if (!dbUserId) return json({ error: 'Usuário não encontrado no banco' }, { status: 404 });
+
   const interviewRepo = new PostgresInterviewRepository();
   const noteRepo = new PostgresInterviewNoteRepository();
   try {
@@ -41,15 +49,14 @@ export const POST: RequestHandler = async ({ request }) => {
     }
 
     const interview = await interviewRepo.create({
-      projectId: '', // auto-created inside repository
-      conductedBy: DEV_USER_ID,
+      projectId: '',
+      conductedBy: dbUserId,
       title,
     });
 
-    // Create the initial empty note for this interview
     await noteRepo.upsert({
       interviewId: interview.id,
-      lastEditedBy: DEV_USER_ID,
+      lastEditedBy: dbUserId,
     });
 
     return json(interview.toPlainObject(), { status: 201 });
