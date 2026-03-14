@@ -3,9 +3,13 @@
   import { currentInterview, messages, notes } from '$lib/stores/conversation';
   import { sidebarCollapsed } from '$lib/stores/ui';
   import { OuteLogo } from '@oute/design-system';
-  import { users } from '$lib/stores/users';
+  import { logout } from '$lib/auth';
   import { fetchInterviews, createInterview, fetchInterviewDetail } from '$lib/api';
+  import { goto } from '$app/navigation';
+  import UserAvatar from './UserAvatar.svelte';
   import type { Interview } from '$lib/types/index';
+
+  export let user: { name?: string; email?: string; picture?: string } | null = null;
 
   let searchQuery = '';
   let contentEl: HTMLDivElement;
@@ -13,6 +17,8 @@
   let showBottomGradient = false;
   let interviewList: Interview[] = [];
   let creating = false;
+  let showUserMenu = false;
+  let loggingOut = false;
 
   onMount(async () => {
     interviewList = await fetchInterviews();
@@ -47,6 +53,17 @@
     }
   }
 
+  async function handleLogout() {
+    loggingOut = true;
+    try {
+      await logout();
+      await goto('/login');
+    } finally {
+      loggingOut = false;
+      showUserMenu = false;
+    }
+  }
+
   function formatDate(date: Date): string {
     return new Intl.RelativeTimeFormat('pt-BR', { numeric: 'auto' }).format(
       Math.round((new Date(date).getTime() - Date.now()) / 86400000),
@@ -59,7 +76,16 @@
       i.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       i.interviewCode.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  $: displayName = user?.name ?? user?.email ?? 'Usuário';
+  $: displayEmail = user?.email ?? '';
 </script>
+
+<!-- svelte-ignore a11y-no-static-element-interactions -->
+{#if showUserMenu}
+  <!-- svelte-ignore a11y-click-events-have-key-events -->
+  <div class="fixed inset-0 z-40" on:click={() => (showUserMenu = false)}></div>
+{/if}
 
 <aside class="sidebar-transition w-[340px] flex-shrink-0 border-r border-[#000000] bg-[#000000] flex flex-col h-full">
   <!-- Header Section -->
@@ -154,16 +180,49 @@
     ></div>
   </div>
 
-  <!-- Bottom Section (Fixed) -->
-  {#if users.length > 0}
-    <div class="flex items-center gap-2 border-t border-[#000000] py-6 px-6">
-      <div class="size-8 rounded-full {users[0].avatarColor} flex items-center justify-center text-white font-semibold flex-shrink-0">{users[0].initials}</div>
-      <p class="text-sm font-semibold text-white">{users[0].name}</p>
-      <button class="text-neutral-500 hover:text-neutral-300 transition-colors ml-auto" aria-label="User options">
-        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-          <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z" />
-        </svg>
-      </button>
-    </div>
-  {/if}
+  <!-- Bottom Section — User Profile (Fixed) -->
+  <div class="relative border-t border-white/5">
+    <button
+      on:click={() => (showUserMenu = !showUserMenu)}
+      class="w-full flex items-center gap-3 py-4 px-4 hover:bg-white/5 transition-colors"
+    >
+      <UserAvatar picture={user?.picture} name={displayName} size="md" color="bg-primary-700" />
+      <div class="flex-1 min-w-0 text-left">
+        <p class="text-sm font-semibold text-white truncate">{displayName}</p>
+        {#if displayEmail}
+          <p class="text-xs text-neutral-500 truncate">{displayEmail}</p>
+        {/if}
+      </div>
+      <svg class="w-4 h-4 text-neutral-500 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
+        <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z" />
+      </svg>
+    </button>
+
+    <!-- User Menu Dropdown (opens upward) -->
+    {#if showUserMenu}
+      <div class="absolute bottom-full left-2 right-2 mb-1 z-50 bg-[#1a1d27] border border-white/10 rounded-lg shadow-xl overflow-hidden">
+        <a
+          href="/auth/profile"
+          class="flex items-center gap-2 px-4 py-2.5 text-sm text-neutral-300 hover:bg-white/5 hover:text-white transition-colors"
+          on:click={() => (showUserMenu = false)}
+        >
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+          </svg>
+          Perfil
+        </a>
+        <div class="border-t border-white/5"></div>
+        <button
+          on:click={handleLogout}
+          disabled={loggingOut}
+          class="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-red-400 hover:bg-red-500/10 hover:text-red-300 transition-colors disabled:opacity-50"
+        >
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75" />
+          </svg>
+          {loggingOut ? 'Saindo...' : 'Sair'}
+        </button>
+      </div>
+    {/if}
+  </div>
 </aside>

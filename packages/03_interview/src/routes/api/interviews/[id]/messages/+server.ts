@@ -37,13 +37,25 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
       return json({ error: 'sender must be user, ai or system' }, { status: 400 });
 
     const isUserMessage = body.sender === 'user';
+
+    // Enriquecer metadata do usuário com dados reais do Firebase (name, picture)
+    const baseMetadata = body.metadata ?? {};
+    const userMetadata =
+      isUserMessage && firebaseUser
+        ? {
+            userName: firebaseUser.name ?? baseMetadata.userName,
+            avatarUrl: firebaseUser.picture ?? baseMetadata.avatarUrl,
+            ...baseMetadata,
+          }
+        : baseMetadata;
+
     const message = await messageRepo.create({
       interviewId: interview.id,
       userId: isUserMessage ? dbUserId : null,
       sender: body.sender,
       type: body.type ?? 'text',
       content: body.content.trim(),
-      metadata: body.metadata ?? {},
+      metadata: userMetadata,
     });
 
     interview.incrementMessageCount();

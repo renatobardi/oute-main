@@ -1,5 +1,6 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
+  import { page } from '$app/stores';
   import { loginWithEmail, loginWithGoogle, loginWithGitHub } from '$lib/auth';
 
   let email = '';
@@ -7,6 +8,8 @@
   let error = '';
   let loading = false;
   let activeProvider = '';
+
+  $: redirectTo = $page.url.searchParams.get('redirect') ?? '/';
 
   async function handleEmail() {
     if (!email || !password) {
@@ -18,7 +21,7 @@
     error = '';
     try {
       await loginWithEmail(email, password);
-      await goto('/');
+      await goto(redirectTo);
     } catch (err) {
       error = err instanceof Error ? err.message : 'Falha no login';
     } finally {
@@ -33,7 +36,7 @@
     error = '';
     try {
       await loginWithGoogle();
-      await goto('/');
+      await goto(redirectTo);
     } catch (err) {
       error = err instanceof Error ? err.message : 'Falha no login com Google';
     } finally {
@@ -48,7 +51,7 @@
     error = '';
     try {
       await loginWithGitHub();
-      await goto('/');
+      await goto(redirectTo);
     } catch (err: any) {
       if (err?.code === 'auth/account-exists-with-different-credential') {
         error = 'Este email já está cadastrado com outro método de login. Tente com Google ou Email.';
