@@ -186,7 +186,7 @@
     <!-- Action Buttons -->
     <div class="flex flex-col gap-2 items-center">
       <a href="/projects" class="flex w-4/5 items-center justify-center rounded-lg bg-primary-500 py-2 text-sm font-bold text-[#0f1e23] hover:bg-primary-600 transition-colors">
-        Projects
+        Dashboard
       </a>
     </div>
   </div>
