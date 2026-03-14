@@ -122,6 +122,7 @@ services:
       - NODE_ENV=production
     networks:
       - oute-network
+      - oute-mind-network
 
 volumes:
   postgres-data:
@@ -130,3 +131,6 @@ volumes:
 networks:
   oute-network:
     driver: bridge
+  oute-mind-network:
+    external: true
+    name: oute-mind_oute-network
