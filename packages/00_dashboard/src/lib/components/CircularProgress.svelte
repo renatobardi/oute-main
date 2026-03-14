@@ -8,10 +8,10 @@
   const offset = circumference - (percentage / 100) * circumference;
 
   function getColor(pct: number): string {
-    if (pct >= 80) return '#10b981';
-    if (pct >= 50) return '#06bcf9';
-    if (pct >= 30) return '#f59e0b';
-    return '#ef4444';
+    if (pct >= 80) return 'var(--color-success)';
+    if (pct >= 50) return 'var(--color-primary-500)';
+    if (pct >= 30) return 'var(--color-warning)';
+    return 'var(--color-error)';
   }
 </script>
 
@@ -22,7 +22,7 @@
       cy={size / 2}
       r={radius}
       fill="none"
-      stroke="#21404a"
+      stroke="var(--color-dark-border)"
       stroke-width={strokeWidth}
     />
     <circle

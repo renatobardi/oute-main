@@ -10,7 +10,7 @@
 <div class="flex items-center -space-x-2">
   {#each visible as avatar, i}
     <div
-      class="w-7 h-7 rounded-full border-2 border-[#162a31] flex items-center justify-center text-[10px] font-bold text-white"
+      class="w-7 h-7 rounded-full border-2 border-dark-surface flex items-center justify-center text-[10px] font-bold text-white"
       style="background-color: {visibleColors[i % visibleColors.length]}; z-index: {max - i};"
       title={avatar}
     >
@@ -19,7 +19,7 @@
   {/each}
   {#if remaining > 0}
     <div
-      class="w-7 h-7 rounded-full border-2 border-[#162a31] flex items-center justify-center text-[10px] font-medium text-neutral-300 bg-[#21404a]"
+      class="w-7 h-7 rounded-full border-2 border-dark-surface flex items-center justify-center text-[10px] font-medium text-neutral-300 bg-dark-border"
       style="z-index: 0;"
     >
       +{remaining}

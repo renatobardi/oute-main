@@ -64,7 +64,7 @@
   {/if}
 
   <!-- Messages -->
-  <div class="flex-1 relative overflow-hidden bg-[#000000]">
+  <div class="flex-1 relative overflow-hidden bg-dark-bg">
     <!-- Scrollable Content -->
     <div bind:this={scrollContainer} class="absolute inset-0 overflow-y-scroll">
       {#each $messages as message (message.id)}

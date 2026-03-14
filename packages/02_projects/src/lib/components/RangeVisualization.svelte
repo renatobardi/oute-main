@@ -35,13 +35,13 @@
     <!-- Left Dot (Min) -->
     <div
       class="absolute w-4 h-4 top-1/2 -translate-y-1/2 left-[10%] rounded-full border-2 transition-all"
-      style="background: {barColor}; border-color: #0f1e23; box-shadow: 0 0 10px {barColor}66;"
+      style="background: {barColor}; border-color: var(--color-dark-bg); box-shadow: 0 0 10px {barColor}66;"
     />
 
     <!-- Right Dot (Max) -->
     <div
       class="absolute w-4 h-4 top-1/2 -translate-y-1/2 right-[30%] rounded-full border-2 transition-all"
-      style="background: {barColor}; border-color: #0f1e23; box-shadow: 0 0 10px {barColor}66;"
+      style="background: {barColor}; border-color: var(--color-dark-bg); box-shadow: 0 0 10px {barColor}66;"
     />
   </div>
 

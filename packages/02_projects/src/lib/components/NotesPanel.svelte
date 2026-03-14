@@ -1,5 +1,5 @@
 <script lang="ts">
-  import ProgressBar from './ProgressBar.svelte';
+  import { ProgressBar, SectionHeader, StatusBadge, Tag } from '@oute/design-system';
   import RangeVisualization from './RangeVisualization.svelte';
   import { notes } from '$lib/stores/conversation';
   import { users } from '$lib/stores/users';
@@ -52,21 +52,21 @@
 
   $: progressStatus = getProgressStatus($notes.metrics.progress);
 
-  // Map status to human readable text and color
-  const getStatusDisplay = (status: string): { text: string; color: string } => {
-    const statusMap: Record<string, { text: string; color: string }> = {
-      Initial: { text: 'Planning', color: 'text-neutral-400' },
-      Low: { text: 'At Risk', color: 'text-red-400' },
-      Medium: { text: 'In Progress', color: 'text-yellow-400' },
-      High: { text: 'On Track', color: 'text-green-400' },
+  // Map status to human readable text and StatusBadge status
+  const getStatusDisplay = (status: string): { text: string; badge: 'success' | 'warning' | 'error' | 'neutral' } => {
+    const statusMap: Record<string, { text: string; badge: 'success' | 'warning' | 'error' | 'neutral' }> = {
+      Initial: { text: 'Planning', badge: 'neutral' },
+      Low: { text: 'At Risk', badge: 'error' },
+      Medium: { text: 'In Progress', badge: 'warning' },
+      High: { text: 'On Track', badge: 'success' },
     };
-    return statusMap[status] || { text: 'Unknown', color: 'text-neutral-400' };
+    return statusMap[status] || { text: 'Unknown', badge: 'neutral' };
   };
 
   $: statusDisplay = getStatusDisplay(progressStatus);
 </script>
 
-<div class="sidebar-transition flex flex-col h-full bg-[#000000]">
+<div class="sidebar-transition flex flex-col h-full bg-dark-bg">
 
   <!-- Scrollable Content -->
   {#if !$notePanelCollapsed}
@@ -89,20 +89,17 @@
       </div>
       <div class="flex justify-between items-center">
         <div class="text-4xl font-bold text-primary-500">{$notes.metrics.progress}%</div>
-        <div class="flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-semibold text-emerald-400 bg-emerald-500/20 border border-emerald-500/30">
-          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-          <span>{statusDisplay.text}</span>
-        </div>
+        <StatusBadge status={statusDisplay.badge} label={statusDisplay.text} pulse={progressStatus === 'High'} />
       </div>
 
-      <ProgressBar percentage={$notes.metrics.progress} status={progressStatus} />
+      <ProgressBar percentage={$notes.metrics.progress} />
 
       <p class="text-sm text-neutral-400">Targeting Phase 1 completion by Oct 24th</p>
     </div>
 
     <!-- Estimated Hours Section -->
     <div class="space-y-3">
-      <p class="text-xs font-semibold text-neutral-400 uppercase tracking-wider">Estimated Hours</p>
+      <SectionHeader label="Estimated Hours" />
 
       <div class="flex items-center justify-between mb-2">
         <div class="text-sm">
@@ -124,13 +121,13 @@
       <RangeVisualization
         minValue={estimatedHours.min}
         maxValue={estimatedHours.max}
-        barColor="#0ea5e9"
+        barColor="var(--color-info)"
       />
     </div>
 
     <!-- Budget Section -->
     <div class="space-y-3">
-      <p class="text-xs font-semibold text-neutral-400 uppercase tracking-wider">Project Budget</p>
+      <SectionHeader label="Project Budget" />
 
       <div class="flex items-center justify-between mb-2">
         <div class="text-sm">
@@ -148,27 +145,25 @@
       <RangeVisualization
         minValue={budgetRange.min}
         maxValue={budgetRange.max}
-        barColor="#EC4899"
+        barColor="var(--color-accent-pink)"
       />
     </div>
 
     <!-- Tags Section -->
     {#if $notes.tags.length > 0}
-      <div class="space-y-3 pt-2 border-t border-[#000000]">
-        <p class="text-xs font-semibold text-neutral-400 uppercase tracking-wider">Project Tags</p>
+      <div class="space-y-3 pt-2 border-t border-dark-bg">
+        <SectionHeader label="Project Tags" />
         <div class="flex flex-wrap gap-2">
           {#each $notes.tags as tag}
-            <span class="px-3 py-1.5 bg-primary-500/10 border border-primary-600/30 text-primary-400 text-xs font-semibold rounded-full hover:bg-primary-500/20 transition-all cursor-default">
-              {tag}
-            </span>
+            <Tag label={tag} />
           {/each}
         </div>
       </div>
     {/if}
 
     <!-- Co-authors Section -->
-    <div class="space-y-3 pt-2 border-t border-[#000000]">
-      <p class="text-xs font-semibold text-neutral-400 uppercase tracking-wider">Co-authors</p>
+    <div class="space-y-3 pt-2 border-t border-dark-bg">
+      <SectionHeader label="Co-authors" />
       <div class="flex items-center gap-2">
         {#each users as user}
           <div class="w-6 h-6 rounded-full {user.avatarColor} flex items-center justify-center text-white text-xs font-bold" title={user.name}>
@@ -182,10 +177,10 @@
 
   <!-- Footer -->
   {#if !$notePanelCollapsed}
-  <div class="px-6 pt-0 pb-8 border-t border-[#000000] flex flex-col gap-4">
+  <div class="px-6 pt-0 pb-8 border-t border-dark-bg flex flex-col gap-4">
     <!-- Action Buttons -->
     <div class="flex flex-col gap-2 items-center">
-      <a href="/projects" class="flex w-4/5 items-center justify-center rounded-lg bg-primary-500 py-2 text-sm font-bold text-[#0f1e23] hover:bg-primary-600 transition-colors">
+      <a href="/projects" class="flex w-4/5 items-center justify-center rounded-lg bg-primary-500 py-2 text-sm font-bold text-dark-bg hover:bg-primary-600 transition-colors">
         Dashboard
       </a>
     </div>

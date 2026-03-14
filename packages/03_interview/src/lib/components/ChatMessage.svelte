@@ -41,13 +41,13 @@
       : 'max-w-[60%]'}"
   >
     {#if sender === 'ai'}
-      <div class="absolute -top-2 -right-2 w-6 h-6 flex items-center justify-center bg-[#000000] rounded-full border border-[#21404a]">
+      <div class="absolute -top-2 -right-2 w-6 h-6 flex items-center justify-center bg-dark-bg rounded-full border border-dark-border">
         <div class="w-3 h-3 flex items-center justify-center">
           <OuteLogo size="xs" showSlogan={false} horizontal={false} />
         </div>
       </div>
     {:else}
-      <div class="absolute -top-2 -right-2 border border-[#21404a] rounded-full">
+      <div class="absolute -top-2 -right-2 border border-dark-border rounded-full">
         <UserAvatar picture={avatarUrl} name={userName} size="xs" color={avatarColor} />
       </div>
     {/if}
@@ -63,7 +63,7 @@
       <!-- Copy button -->
       <button
         on:click={handleCopy}
-        class="flex items-center justify-center w-6 h-6 rounded bg-[#0f1e23] border border-primary-500/20 text-neutral-400 hover:text-primary-400 hover:border-primary-500/50 transition-colors"
+        class="flex items-center justify-center w-6 h-6 rounded bg-dark-bg border border-primary-500/20 text-neutral-400 hover:text-primary-400 hover:border-primary-500/50 transition-colors"
         title={copied ? 'Copiado!' : 'Copiar mensagem'}
         aria-label="Copiar mensagem"
       >
@@ -84,7 +84,7 @@
       <!-- Reference/reply button -->
       <button
         on:click={handleReference}
-        class="flex items-center justify-center w-6 h-6 rounded bg-[#0f1e23] border border-primary-500/20 text-neutral-400 hover:text-primary-400 hover:border-primary-500/50 transition-colors"
+        class="flex items-center justify-center w-6 h-6 rounded bg-dark-bg border border-primary-500/20 text-neutral-400 hover:text-primary-400 hover:border-primary-500/50 transition-colors"
         title="Referenciar como resposta"
         aria-label="Referenciar mensagem"
       >

@@ -2,10 +2,10 @@
   export let active: 'grid' | 'list' = 'grid';
 </script>
 
-<div class="inline-flex rounded-lg border border-[#21404a] overflow-hidden">
+<div class="inline-flex rounded-lg border border-dark-border overflow-hidden">
   <button
     class="px-3 py-1.5 text-sm font-medium transition-colors {active === 'grid'
-      ? 'bg-[#21404a] text-white'
+      ? 'bg-dark-border text-white'
       : 'bg-transparent text-neutral-400 hover:text-neutral-200'}"
     on:click={() => (active = 'grid')}
   >
@@ -13,7 +13,7 @@
   </button>
   <button
     class="px-3 py-1.5 text-sm font-medium transition-colors {active === 'list'
-      ? 'bg-[#21404a] text-white'
+      ? 'bg-dark-border text-white'
       : 'bg-transparent text-neutral-400 hover:text-neutral-200'}"
     on:click={() => (active = 'list')}
   >

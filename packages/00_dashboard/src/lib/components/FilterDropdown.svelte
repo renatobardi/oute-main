@@ -18,7 +18,7 @@
 
 <div class="relative">
   <button
-    class="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-neutral-300 border border-[#21404a] rounded-lg hover:border-[#2d5560] transition-colors"
+    class="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-neutral-300 border border-dark-border rounded-lg hover:border-primary-500/30 transition-colors"
     on:click={toggle}
   >
     {#if icon !== ''}
@@ -32,11 +32,11 @@
 
   {#if open}
     <div
-      class="absolute right-0 mt-1 w-40 bg-[#162a31] border border-[#21404a] rounded-lg shadow-lg z-10"
+      class="absolute right-0 mt-1 w-40 bg-dark-surface border border-dark-border rounded-lg shadow-lg z-10"
     >
       {#each options as option}
         <button
-          class="block w-full text-left px-3 py-2 text-sm text-neutral-300 hover:bg-[#21404a] transition-colors first:rounded-t-lg last:rounded-b-lg"
+          class="block w-full text-left px-3 py-2 text-sm text-neutral-300 hover:bg-dark-border transition-colors first:rounded-t-lg last:rounded-b-lg"
           on:click={() => select(option)}
         >
           {option}

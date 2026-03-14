@@ -98,7 +98,7 @@
   {/if}
 
   <!-- Messages -->
-  <div class="flex-1 relative overflow-hidden bg-[#000000]">
+  <div class="flex-1 relative overflow-hidden bg-dark-bg">
     <!-- Scrollable Content -->
     <div bind:this={scrollContainer} class="absolute inset-0 overflow-y-scroll">
       {#each $messages as message (message.id)}
@@ -122,10 +122,10 @@
                 <button
                   on:click={handleApprove}
                   disabled={approving}
-                  class="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg bg-primary-500 hover:bg-primary-600 text-[#0f1e23] text-sm font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  class="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg bg-primary-500 hover:bg-primary-600 text-dark-bg text-sm font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {#if approving}
-                    <span class="w-4 h-4 border-2 border-[#0f1e23]/40 border-t-transparent rounded-full animate-spin"></span>
+                    <span class="w-4 h-4 border-2 border-dark-bg/40 border-t-transparent rounded-full animate-spin"></span>
                   {:else}
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
@@ -158,7 +158,7 @@
                 <button
                   on:click={handleApproveWithFeedback}
                   disabled={approving || !feedbackText.trim()}
-                  class="flex-1 py-2 rounded-lg bg-primary-500 hover:bg-primary-600 text-[#0f1e23] text-sm font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  class="flex-1 py-2 rounded-lg bg-primary-500 hover:bg-primary-600 text-dark-bg text-sm font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {approving ? 'Enviando...' : 'Aprovar com feedback'}
                 </button>
