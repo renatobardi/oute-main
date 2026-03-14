@@ -7,6 +7,10 @@ const config = {
       out: 'build',
       precompress: false,
     }),
+    // Servido em /auth/* pelo Caddy (oute.pro/auth/...)
+    paths: {
+      base: '/auth',
+    },
     alias: {
       $lib: 'src/lib',
       '@oute/design-system': '../../packages/design-system/src',
