@@ -42,6 +42,12 @@
       "runtimeExecutable": "npm",
       "runtimeArgs": ["run", "dev", "-w", "@oute/interview"],
       "port": 3002
+    },
+    {
+      "name": "OUTE 98_oops (404 Page)",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev", "-w", "@oute/oops"],
+      "port": 3004
     }
   ]
 }

@@ -4,13 +4,14 @@ This document describes how Caddy should be configured to route traffic for the 
 
 ## Overview
 
-The OUTE application consists of 5 main services running on the VM at `34.132.93.171`:
+The OUTE application consists of 6 main services running on the VM at `34.132.93.171`:
 
 | Service | Internal Port | Purpose |
 |---------|---------------|---------|
 | **99_home** | 3003 | Landing page (root `/`) |
 | **03_interview** | 3002 | Chat interface (`/chat`) |
-| **00_dashboard** | 3000 | Main dashboard (default fallback) |
+| **98_oops** | 3004 | 404 not found page (default fallback) |
+| **00_dashboard** | 3000 | Main dashboard |
 | **01_auth-profile** | 3001 | Authentication API (`/api/auth/*`) |
 | **02_projects** | 3002 | Projects API (`/api/projects/*`) |
 
@@ -49,9 +50,9 @@ The Caddy reverse proxy (located in `~/oute-mind/Caddyfile`) should be configure
     reverse_proxy http://02_projects:3002
   }
 
-  # Default fallback to Dashboard
+  # Default fallback to 404 Oops page
   handle {
-    reverse_proxy http://00_dashboard:3000
+    reverse_proxy http://oute-oops:3004
   }
 
   # CORS headers for cross-origin requests
@@ -83,7 +84,7 @@ Caddy Reverse Proxy (Port 80 on host)
     ├─→ /chat              → http://oute-interview:3002 (03_interview - Chat)
     ├─→ /api/auth/*        → http://01_auth-profile:3001 (Auth API)
     ├─→ /api/projects/*    → http://02_projects:3002 (Projects API)
-    └─→ /* (default)       → http://00_dashboard:3000 (Main App)
+    └─→ /* (default)       → http://oute-oops:3004 (404 Oops Page)
 ```
 
 ## User Journey
