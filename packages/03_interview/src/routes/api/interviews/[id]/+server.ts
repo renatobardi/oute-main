@@ -40,6 +40,36 @@ export const GET: RequestHandler = async ({ params }) => {
 };
 
 /**
+ * PATCH /api/interviews/[id]
+ * Updates the interview title.
+ */
+export const PATCH: RequestHandler = async ({ params, request }) => {
+  const interviewRepo = new PostgresInterviewRepository();
+  try {
+    const { title } = await request.json();
+    if (!title?.trim()) {
+      return json({ error: 'Title is required' }, { status: 400 });
+    }
+
+    const interview = await interviewRepo.findById(params.id);
+    if (!interview) {
+      throw new InterviewNotFoundError(params.id);
+    }
+
+    interview.rename(title);
+    await interviewRepo.update(interview);
+
+    return json(interview.toPlainObject());
+  } catch (err) {
+    if (err instanceof InterviewNotFoundError) {
+      return json({ error: err.message }, { status: 404 });
+    }
+    console.error('[PATCH /api/interviews/[id]]', err);
+    return json({ error: 'Failed to update interview' }, { status: 500 });
+  }
+};
+
+/**
  * DELETE /api/interviews/[id]
  * Soft-deletes the interview.
  */

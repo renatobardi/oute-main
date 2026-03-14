@@ -113,6 +113,7 @@ export class PostgresInterviewRepository implements IInterviewRepository {
     const p = interview.toPlainObject();
     await this.sql`
       UPDATE interviews SET
+        title          = ${p.title},
         status         = ${p.status},
         total_messages = ${p.totalMessages},
         started_at     = ${p.startedAt},
