@@ -1,0 +1,2 @@
+ALTER TABLE users DROP COLUMN IF EXISTS firebase_uid;
+ALTER TABLE users ALTER COLUMN password_hash SET NOT NULL;

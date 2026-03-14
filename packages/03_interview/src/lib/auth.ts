@@ -35,6 +35,9 @@ if (typeof window !== 'undefined') {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ idToken }),
       });
+
+      // FASE 7: sync Firebase user to PostgreSQL (upsert)
+      await fetch('/chat/api/auth/sync-user', { method: 'POST' });
     }
   });
 }
