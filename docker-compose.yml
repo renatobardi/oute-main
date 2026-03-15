@@ -55,7 +55,7 @@ services:
       - NODE_ENV=development
       - DATABASE_URL=postgresql://app-user:dev-password@postgres:5432/oute_db
       - AUTH_SERVICE_URL=http://01_auth-profile:3001
-      - PROJECTS_SERVICE_URL=http://02_projects:3002
+      - PROJECTS_SERVICE_URL=http://02_projects:3005
     depends_on:
       postgres:
         condition: service_healthy
@@ -85,7 +85,7 @@ services:
       dockerfile: packages/02_projects/Dockerfile
     container_name: oute-projects
     ports:
-      - '3002:3002'
+      - '3005:3005'
     environment:
       - NODE_ENV=development
       - DATABASE_URL=postgresql://app-user:dev-password@postgres:5432/oute_db

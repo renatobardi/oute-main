@@ -127,7 +127,7 @@ jobs:
               sudo bash -c "
                 FAILED=0
                 # Format: name:container:port:path
-                for svc in \"Dashboard:oute-dashboard:3000:/dashboard/health\" \"Auth:oute-auth-profile:3001:/auth/health\" \"Projects:oute-projects:3002:/projects/health\" \"Home:oute-home:3003:/health\" \"Interview:oute-interview:3002:/chat/health\" \"Oops:oute-oops:3004:/health\"; do
+                for svc in \"Dashboard:oute-dashboard:3000:/dashboard/health\" \"Auth:oute-auth-profile:3001:/auth/health\" \"Projects:oute-projects:3005:/projects/health\" \"Home:oute-home:3003:/health\" \"Interview:oute-interview:3002:/chat/health\" \"Oops:oute-oops:3004:/health\"; do
                   name=\$(echo \"\$svc\" | cut -d: -f1)
                   container=\$(echo \"\$svc\" | cut -d: -f2)
                   port=\$(echo \"\$svc\" | cut -d: -f3)
