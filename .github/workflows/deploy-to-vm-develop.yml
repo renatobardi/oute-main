@@ -1,0 +1,139 @@
+name: Deploy oute-main to VM — Develop
+
+on:
+  push:
+    branches: [develop]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    steps:
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+          project_id: oute-mind
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: oute-mind
+
+      - name: Deploy develop stack to VM
+        run: |
+          ZONE=$(gcloud compute instances list --filter="name:oute-mind" --format="value(zone)" --project=oute-mind | head -1)
+          echo "Deploying develop to zone: $ZONE"
+          gcloud compute ssh oute-mind \
+            --zone=$ZONE \
+            --project=oute-mind \
+            --tunnel-through-iap \
+            --command='
+              set -e
+              sudo bash -c "
+                if ! docker compose version &>/dev/null; then
+                  mkdir -p /usr/local/lib/docker/cli-plugins
+                  ARCH=\$(uname -m)
+                  curl -fsSL \"https://github.com/docker/compose/releases/latest/download/docker-compose-linux-\$ARCH\" -o /usr/local/lib/docker/cli-plugins/docker-compose
+                  chmod +x /usr/local/lib/docker/cli-plugins/docker-compose
+                fi
+
+                OUTE_MAIN=\$(find /home -maxdepth 2 -name oute-main -type d 2>/dev/null | head -1)
+                echo \"Found oute-main at: \$OUTE_MAIN\"
+
+                git config --global --add safe.directory \$OUTE_MAIN
+
+                cd \$OUTE_MAIN
+                git fetch origin develop
+                git checkout develop
+                git pull origin develop
+                ln -sf .env.develop .env
+
+                # Criar rede se não existir
+                docker network inspect oute-dev-network &>/dev/null || docker network create oute-dev-network
+                echo \"oute-dev-network OK\"
+
+                # Remover apenas imagens do stack de develop
+                echo \"=== Removendo imagens dev antigas ===\"
+                docker compose -f docker-compose.develop.yml down 2>/dev/null || true
+                docker rmi oute-dev-dashboard oute-dev-auth oute-dev-projects oute-dev-home oute-dev-interview oute-dev-oops 2>/dev/null || true
+
+                # Build e start
+                echo \"=== Build das imagens de develop ===\"
+                docker compose -f docker-compose.develop.yml build --no-cache --pull
+                docker compose -f docker-compose.develop.yml up -d
+                echo \"Develop stack iniciada\"
+              "
+            '
+
+      - name: Health checks — develop
+        run: |
+          ZONE=$(gcloud compute instances list --filter="name:oute-mind" --format="value(zone)" --project=oute-mind | head -1)
+          gcloud compute ssh oute-mind \
+            --zone=$ZONE \
+            --project=oute-mind \
+            --tunnel-through-iap \
+            --command='
+              sudo bash -c "
+                FAILED=0
+                for svc in \"Dashboard:oute-dev-dashboard:3000:/dashboard/health\" \"Auth:oute-dev-auth:3001:/health\" \"Projects:oute-dev-projects:3002:/health\" \"Home:oute-dev-home:3003:/health\" \"Interview:oute-dev-interview:3002:/chat/health\" \"Oops:oute-dev-oops:3004:/health\"; do
+                  name=\$(echo \"\$svc\" | cut -d: -f1)
+                  container=\$(echo \"\$svc\" | cut -d: -f2)
+                  port=\$(echo \"\$svc\" | cut -d: -f3)
+                  path=\$(echo \"\$svc\" | cut -d: -f4)
+                  OK=0
+                  for i in \$(seq 1 10); do
+                    if docker exec \"\$container\" sh -c \"wget -qO- http://127.0.0.1:\${port}\${path} || curl -s http://127.0.0.1:\${port}\${path}\" > /dev/null 2>&1; then
+                      echo \"\${name} PASSED\"
+                      OK=1
+                      break
+                    fi
+                    echo \"  \${name} tentativa \${i}/10...\"
+                    sleep 3
+                  done
+                  [ \"\$OK\" -eq 0 ] && echo \"\${name} FAILED\" && FAILED=\$((FAILED+1))
+                done
+                [ \"\$FAILED\" -gt 2 ] && echo \"Muitas falhas (\$FAILED/6)\" && exit 1
+                echo \"Health checks: \$((6-FAILED))/6 OK\"
+              "
+            '
+
+      - name: Deployment success
+        if: success()
+        run: |
+          VM_IP=$(gcloud compute addresses describe oute-mind-ip \
+            --region=us-central1 --project=oute-mind --format="get(address)")
+          echo "oute-main develop deployed!"
+          echo "  Landing:   http://${VM_IP}:8888/"
+          echo "  Dashboard: http://${VM_IP}:8888/dashboard"
+          echo "  Chat:      http://${VM_IP}:8888/chat"
+          echo "  Auth API:  http://${VM_IP}:8888/api/auth"
+          echo "  Projects:  http://${VM_IP}:8888/api/projects"
+
+      - name: Capture logs on failure
+        if: failure()
+        run: |
+          ZONE=$(gcloud compute instances list --filter="name:oute-mind" --format="value(zone)" --project=oute-mind | head -1)
+          gcloud compute ssh oute-mind \
+            --zone=$ZONE \
+            --project=oute-mind \
+            --tunnel-through-iap \
+            --command='
+              sudo bash -c "
+                OUTE_MAIN=\$(find /home -maxdepth 2 -name oute-main -type d 2>/dev/null | head -1)
+                cd \$OUTE_MAIN 2>/dev/null || true
+                echo === Container Status ===
+                docker compose -f docker-compose.develop.yml ps
+                for svc in 00_dashboard 01_auth-profile 02_projects 03_interview 99_home 98_oops caddy-dev; do
+                  echo === \$svc Logs ===
+                  docker compose -f docker-compose.develop.yml logs --tail=20 \$svc 2>&1 || true
+                done
+              "
+            ' || echo "Não foi possível conectar à VM para capturar logs"
