@@ -8,14 +8,17 @@
   # Cada serviço tem hashes únicos; tenta cada um até encontrar o arquivo
   @app_assets path /_app/*
   handle @app_assets {
-    @err404 status 4xx
     reverse_proxy oute-dev-home:3003 {
+      @err404 status 4xx
       handle_response @err404 {
         reverse_proxy oute-dev-auth:3001 {
+          @err404 status 4xx
           handle_response @err404 {
             reverse_proxy oute-dev-dashboard:3000 {
+              @err404 status 4xx
               handle_response @err404 {
                 reverse_proxy oute-dev-projects:3005 {
+                  @err404 status 4xx
                   handle_response @err404 {
                     reverse_proxy oute-dev-interview:3002
                   }
