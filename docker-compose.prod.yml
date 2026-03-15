@@ -21,7 +21,7 @@ services:
       timeout: 5s
       retries: 5
     networks:
-      - oute-mind-network
+      - oute-prd-network
     restart: unless-stopped
 
   00_dashboard:
@@ -40,7 +40,7 @@ services:
       oute-main-postgres:
         condition: service_healthy
     networks:
-      - oute-mind-network
+      - oute-prd-network
     restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:3000/dashboard/health || exit 1"]
@@ -64,7 +64,7 @@ services:
       oute-main-postgres:
         condition: service_healthy
     networks:
-      - oute-mind-network
+      - oute-prd-network
     restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:3001/auth/health || exit 1"]
@@ -89,7 +89,7 @@ services:
       oute-main-postgres:
         condition: service_healthy
     networks:
-      - oute-mind-network
+      - oute-prd-network
     restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:3005/projects/health || exit 1"]
@@ -110,11 +110,12 @@ services:
       - DATABASE_URL=postgresql://${POSTGRES_USER:-app-user}:${POSTGRES_PASSWORD}@oute-main-postgres:5432/oute_main
       - VITE_AUTH_SERVICE_URL=${VITE_AUTH_SERVICE_URL:-http://34.132.93.171}
       - VITE_API_TIMEOUT=30000
+      - OUTE_MIND_URL=http://oute-prd-app:8000
     depends_on:
       oute-main-postgres:
         condition: service_healthy
     networks:
-      - oute-mind-network
+      - oute-prd-network
     restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:3002/chat/health || exit 1"]
@@ -135,7 +136,7 @@ services:
       - VITE_AUTH_SERVICE_URL=${VITE_AUTH_SERVICE_URL:-http://34.132.93.171}
       - VITE_API_TIMEOUT=30000
     networks:
-      - oute-mind-network
+      - oute-prd-network
     restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:3003/health || exit 1"]
@@ -154,7 +155,7 @@ services:
     environment:
       - NODE_ENV=production
     networks:
-      - oute-mind-network
+      - oute-prd-network
     restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:3004/health || exit 1"]
@@ -168,6 +169,6 @@ volumes:
     driver: local
 
 networks:
-  oute-mind-network:
+  oute-prd-network:
     external: true
-    name: oute-mind_oute-network
+    name: oute-prd-network
