@@ -84,7 +84,7 @@ jobs:
             --command='
               sudo bash -c "
                 FAILED=0
-                for svc in \"Dashboard:oute-dev-dashboard:3000:/dashboard/health\" \"Auth:oute-dev-auth:3001:/health\" \"Projects:oute-dev-projects:3002:/health\" \"Home:oute-dev-home:3003:/health\" \"Interview:oute-dev-interview:3002:/chat/health\" \"Oops:oute-dev-oops:3004:/health\"; do
+                for svc in \"Dashboard:oute-dev-dashboard:3000:/dashboard/health\" \"Auth:oute-dev-auth:3001:/auth/health\" \"Projects:oute-dev-projects:3005:/projects/health\" \"Home:oute-dev-home:3003:/health\" \"Interview:oute-dev-interview:3002:/chat/health\" \"Oops:oute-dev-oops:3004:/health\"; do
                   name=\$(echo \"\$svc\" | cut -d: -f1)
                   container=\$(echo \"\$svc\" | cut -d: -f2)
                   port=\$(echo \"\$svc\" | cut -d: -f3)
