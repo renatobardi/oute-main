@@ -1,4 +1,4 @@
-name: Deploy oute-main to oute-mind VM
+name: Deploy oute-main to VM
 
 on:
   push:
@@ -50,68 +50,31 @@ jobs:
                 fi
                 echo \"Using: \$(docker compose version)\"
 
-                OUTE_HOME=\$(find /home -maxdepth 2 -name oute-mind -type d 2>/dev/null | head -1 | xargs dirname)
-                echo \"Found oute home at: \$OUTE_HOME\"
+                OUTE_MAIN=\$(find /home -maxdepth 2 -name oute-main -type d 2>/dev/null | head -1)
+                echo \"Found oute-main at: \$OUTE_MAIN\"
 
-                # Fix git dubious ownership issue
-                git config --global --add safe.directory \$OUTE_HOME/oute-main
-                git config --global --add safe.directory \$OUTE_HOME/oute-mind
+                git config --global --add safe.directory \$OUTE_MAIN
 
-                cd \$OUTE_HOME/oute-main && git pull origin main
-                cd \$OUTE_HOME/oute-mind && git pull origin main
+                cd \$OUTE_MAIN
+                git pull origin main
                 ln -sf .env.production .env
 
-                # Verify new code is present before building
-                echo \"=== Verifying source code ===\"
-                echo \"Git status (oute-main):\"
-                cd \$OUTE_HOME/oute-main && git log -1 --oneline
-                echo \"SearchInput.svelte content (first 10 lines):\"
-                head -10 packages/99_home/src/lib/components/SearchInput.svelte
-
-                # Aggressive cache cleanup
-                echo \"=== Cleaning all caches ===\"
-                cd \$OUTE_HOME/oute-main
+                # Clean package caches to force fresh build
+                echo \"=== Cleaning build caches ===\"
                 for pkg in packages/*/; do
                   rm -rf \"\${pkg}node_modules\" \"\${pkg}build\" \"\${pkg}.svelte-kit\" 2>/dev/null || true
                 done
-                rm -rf \$OUTE_HOME/oute-main/.npm 2>/dev/null || true
-                echo \"Cache cleanup completed\"
 
-                # Remove old Docker images to force complete rebuild
-                echo \"=== Removing old Docker images ===\"
-                docker compose -f \$OUTE_HOME/oute-mind/docker-compose.yml down -v 2>/dev/null || true
+                # Remove old oute-main images
+                echo \"=== Removing old images ===\"
+                docker compose -f docker-compose.prod.yml down 2>/dev/null || true
                 docker rmi oute-dashboard oute-auth-profile oute-projects oute-home oute-interview oute-oops 2>/dev/null || true
-                docker system prune -f --all
+                docker image prune -f
 
-                # Build with explicit no-cache and fresh layers (with retry logic)
-                echo \"=== Building Docker images ===\"
-                cd \$OUTE_HOME/oute-mind
-
-                BUILD_RETRY=0
-                BUILD_MAX_RETRIES=3
-                BUILD_SUCCESS=0
-
-                while [ \$BUILD_RETRY -lt \$BUILD_MAX_RETRIES ] && [ \$BUILD_SUCCESS -eq 0 ]; do
-                  echo \"Build attempt \$((BUILD_RETRY+1))/\$BUILD_MAX_RETRIES\"
-                  if docker compose build --no-cache --pull; then
-                    BUILD_SUCCESS=1
-                    echo \"Docker images built successfully\"
-                  else
-                    BUILD_RETRY=\$((BUILD_RETRY+1))
-                    if [ \$BUILD_RETRY -lt \$BUILD_MAX_RETRIES ]; then
-                      echo \"Build failed, waiting 30s before retry...\"
-                      sleep 30
-                    fi
-                  fi
-                done
-
-                if [ \$BUILD_SUCCESS -eq 0 ]; then
-                  echo \"Failed to build Docker images after \$BUILD_MAX_RETRIES attempts\"
-                  exit 1
-                fi
-
-                docker compose up -d
-                docker compose restart caddy
+                # Build and start
+                echo \"=== Building images ===\"
+                docker compose -f docker-compose.prod.yml build --no-cache --pull
+                docker compose -f docker-compose.prod.yml up -d
                 echo \"Containers started successfully\"
               "
             '
@@ -149,29 +112,28 @@ jobs:
                   fi
                 done
                 if [ \"\$FAILED\" -gt 2 ]; then
-                  echo \"Too many health checks failed (\$FAILED/6) - aborting deployment\"
+                  echo \"Too many health checks failed (\$FAILED/6) — aborting\"
                   exit 1
                 fi
-                echo \"Health checks completed: \$((6-FAILED))/6 passed\"
+                echo \"Health checks: \$((6-FAILED))/6 passed\"
               "
             '
 
       - name: Deployment success
         if: success()
         run: |
-          echo "Deployment to VM successful!"
-          echo "Services deployed:"
-          echo "  Landing Page: http://34.132.93.171/"
-          echo "  Dashboard:    http://34.132.93.171/dashboard"
-          echo "  Chat:         http://34.132.93.171/chat"
-          echo "  Auth API:     http://34.132.93.171/api/auth"
-          echo "  Projects:     http://34.132.93.171/api/projects"
-          echo "  404 Oops:     http://34.132.93.171/<rota-invalida>"
+          VM_IP=$(gcloud compute addresses describe oute-mind-ip \
+            --region=us-central1 --project=oute-mind --format="get(address)")
+          echo "oute-main deployed successfully!"
+          echo "  Landing:   http://${VM_IP}/"
+          echo "  Dashboard: http://${VM_IP}/dashboard"
+          echo "  Chat:      http://${VM_IP}/chat"
+          echo "  Auth API:  http://${VM_IP}/api/auth"
+          echo "  Projects:  http://${VM_IP}/api/projects"
 
       - name: Capture logs on failure
         if: failure()
         run: |
-          echo "Deployment FAILED - capturing container logs..."
           ZONE=$(gcloud compute instances list --filter="name:oute-mind" --format="value(zone)" --project=oute-mind | head -1)
           gcloud compute ssh oute-mind \
             --zone=$ZONE \
@@ -179,13 +141,13 @@ jobs:
             --tunnel-through-iap \
             --command='
               sudo bash -c "
-                OUTE_HOME=\$(find /home -maxdepth 2 -name oute-mind -type d 2>/dev/null | head -1 | xargs dirname)
-                cd \$OUTE_HOME/oute-mind 2>/dev/null || true
+                OUTE_MAIN=\$(find /home -maxdepth 2 -name oute-main -type d 2>/dev/null | head -1)
+                cd \$OUTE_MAIN 2>/dev/null || true
                 echo === Container Status ===
-                docker compose ps
-                for svc in 00_dashboard 01_auth-profile 02_projects 99_home 03_interview 98_oops; do
+                docker compose -f docker-compose.prod.yml ps
+                for svc in 00_dashboard 01_auth-profile 02_projects 03_interview 99_home 98_oops; do
                   echo === \$svc Logs ===
-                  docker compose logs --tail=30 \$svc 2>&1 || true
+                  docker compose -f docker-compose.prod.yml logs --tail=30 \$svc 2>&1 || true
                 done
               "
             ' || echo "Could not connect to VM for log capture"
