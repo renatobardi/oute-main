@@ -54,17 +54,17 @@ jobs:
                 git fetch origin develop
                 git checkout develop 2>/dev/null || git checkout -b develop origin/develop
                 git reset --hard origin/develop
-                git clean -fd --exclude='.env*'
+                git clean -fd --exclude='"'"'.env*'"'"'
                 ln -sf .env.develop .env
 
-                # Criar rede se não existir
-                docker network inspect oute-dev-network &>/dev/null || docker network create oute-dev-network
-                echo \"oute-dev-network OK\"
+                # Criar rede isolada do oute-main develop (sem conflito com oute-mind)
+                docker network inspect oute-main-dev-network &>/dev/null || docker network create oute-main-dev-network
+                echo \"oute-main-dev-network OK\"
 
-                # Remover apenas imagens do stack de develop
+                # Remover apenas imagens do stack de develop do oute-main
                 echo \"=== Removendo imagens dev antigas ===\"
                 docker compose -f docker-compose.develop.yml down 2>/dev/null || true
-                docker rmi oute-dev-dashboard oute-dev-auth oute-dev-projects oute-dev-home oute-dev-interview oute-dev-oops 2>/dev/null || true
+                docker rmi oute-main-dev-dashboard oute-main-dev-auth oute-main-dev-projects oute-main-dev-home oute-main-dev-interview oute-main-dev-oops 2>/dev/null || true
 
                 # Build e start
                 echo \"=== Build das imagens de develop ===\"
@@ -84,7 +84,7 @@ jobs:
             --command='
               sudo bash -c "
                 FAILED=0
-                for svc in \"Dashboard:oute-dev-dashboard:3000:/dashboard/health\" \"Auth:oute-dev-auth:3001:/auth/health\" \"Projects:oute-dev-projects:3005:/projects/health\" \"Home:oute-dev-home:3003:/health\" \"Interview:oute-dev-interview:3002:/chat/health\" \"Oops:oute-dev-oops:3004:/health\"; do
+                for svc in \"Dashboard:oute-main-dev-dashboard:3000:/dashboard/health\" \"Auth:oute-main-dev-auth:3001:/auth/health\" \"Projects:oute-main-dev-projects:3005:/projects/health\" \"Home:oute-main-dev-home:3003:/health\" \"Interview:oute-main-dev-interview:3002:/chat/health\" \"Oops:oute-main-dev-oops:3004:/health\"; do
                   name=\$(echo \"\$svc\" | cut -d: -f1)
                   container=\$(echo \"\$svc\" | cut -d: -f2)
                   port=\$(echo \"\$svc\" | cut -d: -f3)
@@ -112,11 +112,11 @@ jobs:
           VM_IP=$(gcloud compute addresses describe oute-mind-ip \
             --region=us-central1 --project=oute-mind --format="get(address)")
           echo "oute-main develop deployed!"
-          echo "  Landing:   http://${VM_IP}:8888/"
-          echo "  Dashboard: http://${VM_IP}:8888/dashboard"
-          echo "  Chat:      http://${VM_IP}:8888/chat"
-          echo "  Auth API:  http://${VM_IP}:8888/api/auth"
-          echo "  Projects:  http://${VM_IP}:8888/api/projects"
+          echo "  Landing:   http://${VM_IP}:8889/"
+          echo "  Dashboard: http://${VM_IP}:8889/dashboard"
+          echo "  Chat:      http://${VM_IP}:8889/chat"
+          echo "  Auth API:  http://${VM_IP}:8889/api/auth"
+          echo "  Projects:  http://${VM_IP}:8889/api/projects"
 
       - name: Capture logs on failure
         if: failure()
