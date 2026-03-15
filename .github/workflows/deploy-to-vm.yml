@@ -56,7 +56,10 @@ jobs:
                 git config --global --add safe.directory \$OUTE_MAIN
 
                 cd \$OUTE_MAIN
-                git pull origin main
+                git fetch origin main
+                git checkout main 2>/dev/null || git checkout -b main origin/main
+                git reset --hard origin/main
+                git clean -fd --exclude='.env*'
                 ln -sf .env.production .env
 
                 # Clean package caches to force fresh build

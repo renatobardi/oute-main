@@ -34,8 +34,8 @@ services:
     environment:
       - NODE_ENV=production
       - DATABASE_URL=postgresql://${POSTGRES_USER:-app-user}:${POSTGRES_PASSWORD}@oute-main-postgres:5432/oute_main
-      - AUTH_SERVICE_URL=http://01_auth-profile:3001
-      - PROJECTS_SERVICE_URL=http://02_projects:3002
+      - AUTH_SERVICE_URL=http://oute-auth-profile:3001
+      - PROJECTS_SERVICE_URL=http://oute-projects:3005
     depends_on:
       oute-main-postgres:
         condition: service_healthy
@@ -67,7 +67,7 @@ services:
       - oute-mind-network
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:3001/health || exit 1"]
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:3001/auth/health || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 5
@@ -79,11 +79,11 @@ services:
       dockerfile: packages/02_projects/Dockerfile
     container_name: oute-projects
     expose:
-      - "3002"
+      - "3005"
     environment:
       - NODE_ENV=production
       - DATABASE_URL=postgresql://${POSTGRES_USER:-app-user}:${POSTGRES_PASSWORD}@oute-main-postgres:5432/oute_main
-      - AUTH_SERVICE_URL=http://01_auth-profile:3001
+      - AUTH_SERVICE_URL=http://oute-auth-profile:3001
       - JWT_SECRET=${JWT_SECRET}
     depends_on:
       oute-main-postgres:
@@ -92,7 +92,7 @@ services:
       - oute-mind-network
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:3002/health || exit 1"]
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:3005/projects/health || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 5
