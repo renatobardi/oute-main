@@ -11,8 +11,8 @@
     "lib": ["ES2020", "DOM", "DOM.Iterable"],
     "paths": {
       "@oute/shared/*": ["./shared/*"],
-      "@oute/design-system": ["./packages/design-system/src/index.ts"],
-      "@oute/design-system/*": ["./packages/design-system/src/*"]
+      "@oute/design-system": ["./packages/design-system/src/lib/index.ts"],
+      "@oute/design-system/*": ["./packages/design-system/src/lib/*"]
     },
     "baseUrl": "."
   },
