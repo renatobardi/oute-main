@@ -52,8 +52,9 @@ jobs:
 
                 cd \$OUTE_MAIN
                 git fetch origin develop
-                git checkout develop
-                git pull origin develop
+                git checkout develop 2>/dev/null || git checkout -b develop origin/develop
+                git reset --hard origin/develop
+                git clean -fd --exclude='.env*'
                 ln -sf .env.develop .env
 
                 # Criar rede se não existir
