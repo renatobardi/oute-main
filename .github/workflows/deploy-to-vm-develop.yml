@@ -1,8 +1,8 @@
-name: Deploy oute-main to VM
+name: Deploy oute-main to VM — Develop
 
 on:
   push:
-    branches: [main]
+    branches: [develop]
   workflow_dispatch:
 
 permissions:
@@ -12,7 +12,7 @@ permissions:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 25
 
     steps:
       - name: Authenticate to Google Cloud
@@ -27,11 +27,10 @@ jobs:
         with:
           project_id: oute-mind
 
-      - name: Deploy to VM
+      - name: Deploy develop stack to VM
         run: |
-          # Detect zone from running instance
           ZONE=$(gcloud compute instances list --filter="name:oute-mind" --format="value(zone)" --project=oute-mind | head -1)
-          echo "Deploying to zone: $ZONE"
+          echo "Deploying develop to zone: $ZONE"
           gcloud compute ssh oute-mind \
             --zone=$ZONE \
             --project=oute-mind \
@@ -39,16 +38,12 @@ jobs:
             --command='
               set -e
               sudo bash -c "
-                # Install docker compose v2 plugin if missing
                 if ! docker compose version &>/dev/null; then
-                  echo \"Installing docker compose v2 plugin...\"
                   mkdir -p /usr/local/lib/docker/cli-plugins
                   ARCH=\$(uname -m)
-                  if [ \"\$ARCH\" = \"aarch64\" ]; then ARCH=aarch64; fi
                   curl -fsSL \"https://github.com/docker/compose/releases/latest/download/docker-compose-linux-\$ARCH\" -o /usr/local/lib/docker/cli-plugins/docker-compose
                   chmod +x /usr/local/lib/docker/cli-plugins/docker-compose
                 fi
-                echo \"Using: \$(docker compose version)\"
 
                 OUTE_MAIN=\$(find /home -maxdepth 2 -name oute-main -type d 2>/dev/null | head -1)
                 echo \"Found oute-main at: \$OUTE_MAIN\"
@@ -56,33 +51,30 @@ jobs:
                 git config --global --add safe.directory \$OUTE_MAIN
 
                 cd \$OUTE_MAIN
-                git fetch origin main
-                git checkout main 2>/dev/null || git checkout -b main origin/main
-                git reset --hard origin/main
+                git fetch origin develop
+                git checkout develop 2>/dev/null || git checkout -b develop origin/develop
+                git reset --hard origin/develop
                 git clean -fd --exclude='.env*'
-                ln -sf .env.production .env
+                ln -sf .env.develop .env
 
-                # Clean package caches to force fresh build
-                echo \"=== Cleaning build caches ===\"
-                for pkg in packages/*/; do
-                  rm -rf \"\${pkg}node_modules\" \"\${pkg}build\" \"\${pkg}.svelte-kit\" 2>/dev/null || true
-                done
+                # Criar rede se não existir
+                docker network inspect oute-dev-network &>/dev/null || docker network create oute-dev-network
+                echo \"oute-dev-network OK\"
 
-                # Remove old oute-main images
-                echo \"=== Removing old images ===\"
-                docker compose -f docker-compose.prod.yml down 2>/dev/null || true
-                docker rmi oute-dashboard oute-auth-profile oute-projects oute-home oute-interview oute-oops 2>/dev/null || true
-                docker image prune -f
+                # Remover apenas imagens do stack de develop
+                echo \"=== Removendo imagens dev antigas ===\"
+                docker compose -f docker-compose.develop.yml down 2>/dev/null || true
+                docker rmi oute-dev-dashboard oute-dev-auth oute-dev-projects oute-dev-home oute-dev-interview oute-dev-oops 2>/dev/null || true
 
-                # Build and start
-                echo \"=== Building images ===\"
-                docker compose -f docker-compose.prod.yml build --no-cache --pull
-                docker compose -f docker-compose.prod.yml up -d
-                echo \"Containers started successfully\"
+                # Build e start
+                echo \"=== Build das imagens de develop ===\"
+                docker compose -f docker-compose.develop.yml build --no-cache --pull
+                docker compose -f docker-compose.develop.yml up -d
+                echo \"Develop stack iniciada\"
               "
             '
 
-      - name: Health checks
+      - name: Health checks — develop
         run: |
           ZONE=$(gcloud compute instances list --filter="name:oute-mind" --format="value(zone)" --project=oute-mind | head -1)
           gcloud compute ssh oute-mind \
@@ -92,33 +84,25 @@ jobs:
             --command='
               sudo bash -c "
                 FAILED=0
-                # Format: name:container:port:path
-                for svc in \"Dashboard:oute-dashboard:3000:/dashboard/health\" \"Auth:oute-auth-profile:3001:/auth/health\" \"Projects:oute-projects:3005:/projects/health\" \"Home:oute-home:3003:/health\" \"Interview:oute-interview:3002:/chat/health\" \"Oops:oute-oops:3004:/health\"; do
+                for svc in \"Dashboard:oute-dev-dashboard:3000:/dashboard/health\" \"Auth:oute-dev-auth:3001:/auth/health\" \"Projects:oute-dev-projects:3005:/projects/health\" \"Home:oute-dev-home:3003:/health\" \"Interview:oute-dev-interview:3002:/chat/health\" \"Oops:oute-dev-oops:3004:/health\"; do
                   name=\$(echo \"\$svc\" | cut -d: -f1)
                   container=\$(echo \"\$svc\" | cut -d: -f2)
                   port=\$(echo \"\$svc\" | cut -d: -f3)
                   path=\$(echo \"\$svc\" | cut -d: -f4)
                   OK=0
-                  for i in \$(seq 1 20); do
-                    # Try with wget or curl inside container
+                  for i in \$(seq 1 10); do
                     if docker exec \"\$container\" sh -c \"wget -qO- http://127.0.0.1:\${port}\${path} || curl -s http://127.0.0.1:\${port}\${path}\" > /dev/null 2>&1; then
-                      echo \"\${name} health check PASSED\"
+                      echo \"\${name} PASSED\"
                       OK=1
                       break
                     fi
-                    echo \"  \${name} attempt \${i}/20...\"
+                    echo \"  \${name} tentativa \${i}/10...\"
                     sleep 3
                   done
-                  if [ \"\$OK\" -eq 0 ]; then
-                    echo \"\${name} health check FAILED (tried 20 times, 60s total)\"
-                    FAILED=\$((FAILED+1))
-                  fi
+                  [ \"\$OK\" -eq 0 ] && echo \"\${name} FAILED\" && FAILED=\$((FAILED+1))
                 done
-                if [ \"\$FAILED\" -gt 2 ]; then
-                  echo \"Too many health checks failed (\$FAILED/6) — aborting\"
-                  exit 1
-                fi
-                echo \"Health checks: \$((6-FAILED))/6 passed\"
+                [ \"\$FAILED\" -gt 2 ] && echo \"Muitas falhas (\$FAILED/6)\" && exit 1
+                echo \"Health checks: \$((6-FAILED))/6 OK\"
               "
             '
 
@@ -127,12 +111,12 @@ jobs:
         run: |
           VM_IP=$(gcloud compute addresses describe oute-mind-ip \
             --region=us-central1 --project=oute-mind --format="get(address)")
-          echo "oute-main deployed successfully!"
-          echo "  Landing:   http://${VM_IP}/"
-          echo "  Dashboard: http://${VM_IP}/dashboard"
-          echo "  Chat:      http://${VM_IP}/chat"
-          echo "  Auth API:  http://${VM_IP}/api/auth"
-          echo "  Projects:  http://${VM_IP}/api/projects"
+          echo "oute-main develop deployed!"
+          echo "  Landing:   http://${VM_IP}:8888/"
+          echo "  Dashboard: http://${VM_IP}:8888/dashboard"
+          echo "  Chat:      http://${VM_IP}:8888/chat"
+          echo "  Auth API:  http://${VM_IP}:8888/api/auth"
+          echo "  Projects:  http://${VM_IP}:8888/api/projects"
 
       - name: Capture logs on failure
         if: failure()
@@ -147,10 +131,10 @@ jobs:
                 OUTE_MAIN=\$(find /home -maxdepth 2 -name oute-main -type d 2>/dev/null | head -1)
                 cd \$OUTE_MAIN 2>/dev/null || true
                 echo === Container Status ===
-                docker compose -f docker-compose.prod.yml ps
-                for svc in 00_dashboard 01_auth-profile 02_projects 03_interview 99_home 98_oops; do
+                docker compose -f docker-compose.develop.yml ps
+                for svc in 00_dashboard 01_auth-profile 02_projects 03_interview 99_home 98_oops caddy-dev; do
                   echo === \$svc Logs ===
-                  docker compose -f docker-compose.prod.yml logs --tail=30 \$svc 2>&1 || true
+                  docker compose -f docker-compose.develop.yml logs --tail=20 \$svc 2>&1 || true
                 done
               "
-            ' || echo "Could not connect to VM for log capture"
+            ' || echo "Não foi possível conectar à VM para capturar logs"
