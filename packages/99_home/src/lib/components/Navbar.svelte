@@ -1,5 +1,5 @@
 <script lang="ts">
-	import OuteLogo from './OuteLogo.svelte';
+	import { OuteLogo } from '@oute/design-system';
 </script>
 
 <nav class="bg-black">

@@ -18,7 +18,7 @@
     "src"
   ],
   "publishConfig": {
-    "registry": "https://us-central1-npm.pkg.dev/oute-app/npm/"
+    "registry": "https://us-central1-npm.pkg.dev/oute-mind/npm/"
   },
   "scripts": {
     "dev": "svelte-kit sync && vite dev",

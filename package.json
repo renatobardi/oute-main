@@ -19,7 +19,6 @@
     "docker:down": "docker compose down",
     "docker:logs": "docker compose logs -f",
     "storybook:design-system": "npm run dev:storybook --workspace=design-system",
-    "deploy": "echo 'See DEPLOYMENT.md for Cloud Run commands'",
     "db:migrate": "node database/migrate.mjs",
     "db:migrate:status": "node database/migrate.mjs --status",
     "db:migrate:rollback": "node database/migrate.mjs --rollback",
