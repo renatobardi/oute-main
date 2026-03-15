@@ -1,0 +1,59 @@
+# OUTE Develop Routing
+# Caddy escuta na porta 80 (interna), publicada como 8888 no host pelo docker-compose.develop.yml
+# Acesso: http://34.132.93.171:8888/
+
+:80 {
+  # Landing page (99_home)
+  @root path /
+  handle @root {
+    reverse_proxy oute-dev-home:3003 {
+      header_up X-Forwarded-For {http.request.remote}
+      header_up X-Forwarded-Proto {http.request.proto}
+      header_up X-Forwarded-Host {http.request.host}
+    }
+  }
+
+  # Chat interface (03_interview)
+  @chat path /chat*
+  handle @chat {
+    reverse_proxy oute-dev-interview:3002 {
+      header_up X-Forwarded-For {http.request.remote}
+      header_up X-Forwarded-Proto {http.request.proto}
+      header_up X-Forwarded-Host {http.request.host}
+    }
+  }
+
+  # Auth API (01_auth-profile)
+  @auth path /api/auth*
+  handle @auth {
+    reverse_proxy oute-dev-auth:3001 {
+      header_up X-Forwarded-For {http.request.remote}
+      header_up X-Forwarded-Proto {http.request.proto}
+      header_up X-Forwarded-Host {http.request.host}
+    }
+  }
+
+  # Projects API (02_projects)
+  @projects path /api/projects*
+  handle @projects {
+    reverse_proxy oute-dev-projects:3002 {
+      header_up X-Forwarded-For {http.request.remote}
+      header_up X-Forwarded-Proto {http.request.proto}
+      header_up X-Forwarded-Host {http.request.host}
+    }
+  }
+
+  # Fallback: Dashboard (00_dashboard)
+  handle {
+    reverse_proxy oute-dev-dashboard:3000 {
+      header_up X-Forwarded-For {http.request.remote}
+      header_up X-Forwarded-Proto {http.request.proto}
+      header_up X-Forwarded-Host {http.request.host}
+    }
+  }
+
+  log {
+    output stdout
+    format json
+  }
+}

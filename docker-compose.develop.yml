@@ -1,0 +1,191 @@
+# Develop compose — oute-main
+# Stack de develop isolada. Rede própria, containers oute-dev-*, postgres separado.
+# Único acesso externo: caddy-dev na porta 8888 do host.
+# Pré-condição: docker network create oute-dev-network
+# Uso: docker compose -f docker-compose.develop.yml up -d
+
+services:
+  oute-dev-postgres:
+    image: postgres:15-alpine
+    container_name: oute-dev-postgres
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-app-user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: oute_dev
+    expose:
+      - "5432"
+    volumes:
+      - postgres-dev-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-app-user} -d oute_dev"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - oute-dev-network
+    restart: unless-stopped
+
+  00_dashboard:
+    build:
+      context: .
+      dockerfile: packages/00_dashboard/Dockerfile
+    container_name: oute-dev-dashboard
+    expose:
+      - "3000"
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=postgresql://${POSTGRES_USER:-app-user}:${POSTGRES_PASSWORD}@oute-dev-postgres:5432/oute_dev
+      - AUTH_SERVICE_URL=http://oute-dev-auth:3001
+      - PROJECTS_SERVICE_URL=http://oute-dev-projects:3002
+    depends_on:
+      oute-dev-postgres:
+        condition: service_healthy
+    networks:
+      - oute-dev-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:3000/dashboard/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
+  01_auth-profile:
+    build:
+      context: .
+      dockerfile: packages/01_auth-profile/Dockerfile
+    container_name: oute-dev-auth
+    expose:
+      - "3001"
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=postgresql://${POSTGRES_USER:-app-user}:${POSTGRES_PASSWORD}@oute-dev-postgres:5432/oute_dev
+      - JWT_SECRET=${JWT_SECRET}
+    depends_on:
+      oute-dev-postgres:
+        condition: service_healthy
+    networks:
+      - oute-dev-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:3001/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
+  02_projects:
+    build:
+      context: .
+      dockerfile: packages/02_projects/Dockerfile
+    container_name: oute-dev-projects
+    expose:
+      - "3002"
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=postgresql://${POSTGRES_USER:-app-user}:${POSTGRES_PASSWORD}@oute-dev-postgres:5432/oute_dev
+      - AUTH_SERVICE_URL=http://oute-dev-auth:3001
+      - JWT_SECRET=${JWT_SECRET}
+    depends_on:
+      oute-dev-postgres:
+        condition: service_healthy
+    networks:
+      - oute-dev-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:3002/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
+  03_interview:
+    build:
+      context: .
+      dockerfile: packages/03_interview/Dockerfile
+    container_name: oute-dev-interview
+    expose:
+      - "3002"
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=postgresql://${POSTGRES_USER:-app-user}:${POSTGRES_PASSWORD}@oute-dev-postgres:5432/oute_dev
+      - VITE_AUTH_SERVICE_URL=${VITE_AUTH_SERVICE_URL:-http://34.132.93.171:8888}
+      - VITE_API_TIMEOUT=30000
+    depends_on:
+      oute-dev-postgres:
+        condition: service_healthy
+    networks:
+      - oute-dev-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:3002/chat/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
+  99_home:
+    build:
+      context: .
+      dockerfile: packages/99_home/Dockerfile
+    container_name: oute-dev-home
+    expose:
+      - "3003"
+    environment:
+      - NODE_ENV=production
+      - VITE_AUTH_SERVICE_URL=${VITE_AUTH_SERVICE_URL:-http://34.132.93.171:8888}
+      - VITE_API_TIMEOUT=30000
+    networks:
+      - oute-dev-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:3003/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
+  98_oops:
+    build:
+      context: .
+      dockerfile: packages/98_oops/Dockerfile
+    container_name: oute-dev-oops
+    expose:
+      - "3004"
+    environment:
+      - NODE_ENV=production
+    networks:
+      - oute-dev-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:3004/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
+  caddy-dev:
+    image: caddy:2-alpine
+    container_name: oute-dev-caddy
+    ports:
+      - "8888:80"
+    volumes:
+      - ./Caddyfile.develop:/etc/caddy/Caddyfile:ro
+    networks:
+      - oute-dev-network
+    restart: unless-stopped
+    depends_on:
+      - 99_home
+      - 00_dashboard
+      - 01_auth-profile
+      - 02_projects
+      - 03_interview
+      - 98_oops
+
+volumes:
+  postgres-dev-data:
+    driver: local
+
+networks:
+  oute-dev-network:
+    external: true
