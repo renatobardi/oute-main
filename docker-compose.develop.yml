@@ -1,13 +1,13 @@
 # Develop compose — oute-main
-# Stack de develop isolada. Rede própria, containers oute-dev-*, postgres separado.
-# Único acesso externo: caddy-dev na porta 8888 do host.
-# Pré-condição: docker network create oute-dev-network
+# Stack de develop isolada. Rede própria, containers oute-main-dev-*, postgres separado.
+# Único acesso externo: caddy na porta 8889 do host.
+# Pré-condição: docker network create oute-main-dev-network
 # Uso: docker compose -f docker-compose.develop.yml up -d
 
 services:
-  oute-dev-postgres:
+  oute-main-dev-postgres:
     image: postgres:15-alpine
-    container_name: oute-dev-postgres
+    container_name: oute-main-dev-postgres
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-app-user}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
@@ -22,26 +22,26 @@ services:
       timeout: 5s
       retries: 5
     networks:
-      - oute-dev-network
+      - oute-main-dev-network
     restart: unless-stopped
 
   00_dashboard:
     build:
       context: .
       dockerfile: packages/00_dashboard/Dockerfile
-    container_name: oute-dev-dashboard
+    container_name: oute-main-dev-dashboard
     expose:
       - "3000"
     environment:
       - NODE_ENV=production
-      - DATABASE_URL=postgresql://${POSTGRES_USER:-app-user}:${POSTGRES_PASSWORD}@oute-dev-postgres:5432/oute_dev
-      - AUTH_SERVICE_URL=http://oute-dev-auth:3001
-      - PROJECTS_SERVICE_URL=http://oute-dev-projects:3005
+      - DATABASE_URL=postgresql://${POSTGRES_USER:-app-user}:${POSTGRES_PASSWORD}@oute-main-dev-postgres:5432/oute_dev
+      - AUTH_SERVICE_URL=http://oute-main-dev-auth:3001
+      - PROJECTS_SERVICE_URL=http://oute-main-dev-projects:3005
     depends_on:
-      oute-dev-postgres:
+      oute-main-dev-postgres:
         condition: service_healthy
     networks:
-      - oute-dev-network
+      - oute-main-dev-network
     restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:3000/dashboard/health || exit 1"]
@@ -54,18 +54,18 @@ services:
     build:
       context: .
       dockerfile: packages/01_auth-profile/Dockerfile
-    container_name: oute-dev-auth
+    container_name: oute-main-dev-auth
     expose:
       - "3001"
     environment:
       - NODE_ENV=production
-      - DATABASE_URL=postgresql://${POSTGRES_USER:-app-user}:${POSTGRES_PASSWORD}@oute-dev-postgres:5432/oute_dev
+      - DATABASE_URL=postgresql://${POSTGRES_USER:-app-user}:${POSTGRES_PASSWORD}@oute-main-dev-postgres:5432/oute_dev
       - JWT_SECRET=${JWT_SECRET}
     depends_on:
-      oute-dev-postgres:
+      oute-main-dev-postgres:
         condition: service_healthy
     networks:
-      - oute-dev-network
+      - oute-main-dev-network
     restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:3001/auth/health || exit 1"]
@@ -78,19 +78,19 @@ services:
     build:
       context: .
       dockerfile: packages/02_projects/Dockerfile
-    container_name: oute-dev-projects
+    container_name: oute-main-dev-projects
     expose:
       - "3005"
     environment:
       - NODE_ENV=production
-      - DATABASE_URL=postgresql://${POSTGRES_USER:-app-user}:${POSTGRES_PASSWORD}@oute-dev-postgres:5432/oute_dev
-      - AUTH_SERVICE_URL=http://oute-dev-auth:3001
+      - DATABASE_URL=postgresql://${POSTGRES_USER:-app-user}:${POSTGRES_PASSWORD}@oute-main-dev-postgres:5432/oute_dev
+      - AUTH_SERVICE_URL=http://oute-main-dev-auth:3001
       - JWT_SECRET=${JWT_SECRET}
     depends_on:
-      oute-dev-postgres:
+      oute-main-dev-postgres:
         condition: service_healthy
     networks:
-      - oute-dev-network
+      - oute-main-dev-network
     restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:3005/projects/health || exit 1"]
@@ -103,19 +103,19 @@ services:
     build:
       context: .
       dockerfile: packages/03_interview/Dockerfile
-    container_name: oute-dev-interview
+    container_name: oute-main-dev-interview
     expose:
       - "3002"
     environment:
       - NODE_ENV=production
-      - DATABASE_URL=postgresql://${POSTGRES_USER:-app-user}:${POSTGRES_PASSWORD}@oute-dev-postgres:5432/oute_dev
-      - VITE_AUTH_SERVICE_URL=${VITE_AUTH_SERVICE_URL:-http://34.132.93.171:8888}
+      - DATABASE_URL=postgresql://${POSTGRES_USER:-app-user}:${POSTGRES_PASSWORD}@oute-main-dev-postgres:5432/oute_dev
+      - VITE_AUTH_SERVICE_URL=${VITE_AUTH_SERVICE_URL:-http://34.132.93.171:8889}
       - VITE_API_TIMEOUT=30000
     depends_on:
-      oute-dev-postgres:
+      oute-main-dev-postgres:
         condition: service_healthy
     networks:
-      - oute-dev-network
+      - oute-main-dev-network
     restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:3002/chat/health || exit 1"]
@@ -128,15 +128,15 @@ services:
     build:
       context: .
       dockerfile: packages/99_home/Dockerfile
-    container_name: oute-dev-home
+    container_name: oute-main-dev-home
     expose:
       - "3003"
     environment:
       - NODE_ENV=production
-      - VITE_AUTH_SERVICE_URL=${VITE_AUTH_SERVICE_URL:-http://34.132.93.171:8888}
+      - VITE_AUTH_SERVICE_URL=${VITE_AUTH_SERVICE_URL:-http://34.132.93.171:8889}
       - VITE_API_TIMEOUT=30000
     networks:
-      - oute-dev-network
+      - oute-main-dev-network
     restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:3003/health || exit 1"]
@@ -149,13 +149,13 @@ services:
     build:
       context: .
       dockerfile: packages/98_oops/Dockerfile
-    container_name: oute-dev-oops
+    container_name: oute-main-dev-oops
     expose:
       - "3004"
     environment:
       - NODE_ENV=production
     networks:
-      - oute-dev-network
+      - oute-main-dev-network
     restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:3004/health || exit 1"]
@@ -166,13 +166,13 @@ services:
 
   caddy-dev:
     image: caddy:2-alpine
-    container_name: oute-dev-caddy
+    container_name: oute-main-dev-caddy
     ports:
-      - "8888:80"
+      - "8889:80"
     volumes:
       - ./Caddyfile.develop:/etc/caddy/Caddyfile:ro
     networks:
-      - oute-dev-network
+      - oute-main-dev-network
     restart: unless-stopped
     depends_on:
       - 99_home
@@ -187,5 +187,5 @@ volumes:
     driver: local
 
 networks:
-  oute-dev-network:
+  oute-main-dev-network:
     external: true
