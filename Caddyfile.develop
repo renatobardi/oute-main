@@ -3,10 +3,10 @@
 # Acesso: http://34.132.93.171:8888/
 
 :80 {
-  # Landing page (99_home)
-  @root path /
-  handle @root {
-    reverse_proxy oute-dev-home:3003 {
+  # Dashboard (00_dashboard) — rota explícita
+  @dashboard path /dashboard*
+  handle @dashboard {
+    reverse_proxy oute-dev-dashboard:3000 {
       header_up X-Forwarded-For {http.request.remote}
       header_up X-Forwarded-Proto {http.request.proto}
       header_up X-Forwarded-Host {http.request.host}
@@ -43,9 +43,9 @@
     }
   }
 
-  # Fallback: Dashboard (00_dashboard)
+  # Fallback: 99_home — captura /, /_app/*, /assets/* e tudo mais da landing
   handle {
-    reverse_proxy oute-dev-dashboard:3000 {
+    reverse_proxy oute-dev-home:3003 {
       header_up X-Forwarded-For {http.request.remote}
       header_up X-Forwarded-Proto {http.request.proto}
       header_up X-Forwarded-Host {http.request.host}
