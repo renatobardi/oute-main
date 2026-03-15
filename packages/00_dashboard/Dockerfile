@@ -12,6 +12,10 @@ COPY shared ./shared
 # Install dependencies
 RUN npm install --legacy-peer-deps
 
+# Build design-system first (dist/ is gitignored)
+WORKDIR /app/packages/design-system
+RUN npm run build
+
 # Build
 WORKDIR /app/packages/00_dashboard
 RUN npm run build
