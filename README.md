@@ -1,280 +1,105 @@
-# OUTE - Modular Monorepo
+# oute-main
 
-OUTE é uma aplicação modular construída com **Svelte 5 + SvelteKit**, organizada como um monorepo com múltiplos domínios independentes. A arquitetura suporta escalabilidade, deployment em **GCP Cloud Run** e implementa padrões enterprise de qualidade e segurança.
+Frontend monorepo da plataforma **Oute** — interface de estimativa de software assistida por IA.
 
-## 🏗️ Arquitetura
-
-```
-packages/
-├── design-system/     ← Tailwind 4 + Componentes reutilizáveis
-├── 00_dashboard/      ← Interface principal (estimações, projetos)
-├── 01_auth-profile/   ← ✅ REFATORADO: Hexagonal Architecture + DDD + TDD
-├── 02_projects/       ← Gerenciamento de projetos
-├── 03_interview/      ← ✅ NEW: Chat interface para entrevistas com IA (3-panel layout)
-└── 99_home/           ← ✅ NEW: Marketing landing page (hero + CTA + stats)
-
-shared/               ← Tipos e utilitários compartilhados
-```
-
-### ✅ 01_auth-profile - Refatoração Completa
-
-O serviço `01_auth-profile` foi completamente refatorado seguindo:
-
-- **Hexagonal Architecture**: Domain isolado, Ports & Adapters
-- **Domain-Driven Design**: Entities, Value Objects, Aggregates
-- **Clean Code**: SOLID principles, clear naming, small functions
-- **Test-Driven Development**: 178 testes (56 unit + 28 integration + 34 app + 39 presentation + 21 E2E)
-- **Professional Standards**: Definition of Done, Definition of Ready
-- **80%+ Code Coverage**: Tested in all layers
-
-**Status**: ✅ Production-ready com documentação completa
-
-**Próximas ações**: Aplicar o mesmo padrão a 00_dashboard e 02_projects.
-Ver: [APPLYING_PATTERN_TO_OTHER_SERVICES.md](./APPLYING_PATTERN_TO_OTHER_SERVICES.md)
-
-## 🚀 Quick Start
-
-### Pré-requisitos
-
-- Node.js 20+ (LTS)
-- npm 10+
-- Docker & Docker Compose (para desenvolvimento local)
-
-### Setup Local
-
-```bash
-# Clone o repositório
-git clone https://github.com/seu-usuario/oute.git
-cd oute
-
-# Instale dependências (todos os packages)
-npm install
-
-# Inicie os serviços em Docker
-npm run docker:up
-
-# Ou, para desenvolvimento local sem Docker
-npm run dev
-```
-
-Serviços rodando:
-
-- **Home (Landing Page)**: http://localhost:3003
-- **Dashboard**: http://localhost:3000
-- **Interview (Chat)**: http://localhost:3002
-- **Auth-Profile**: http://localhost:3001
-- **Design System (Storybook)**: http://localhost:6006
-- **PostgreSQL**: localhost:5432
-
-## 📦 Packages
-
-### 1. **design-system** (packages/design-system)
-
-Sistema de design modular com Tailwind 4, componentes reutilizáveis e Storybook.
-
-```bash
-npm run dev:storybook --workspace=design-system
-```
-
-### 2. **00_dashboard** (packages/00_dashboard)
-
-Interface web principal. Acessa auth-profile e projects.
-
-### 3. **01_auth-profile** (packages/01_auth-profile)
-
-Serviço de autenticação que emite JWTs. Todos os outros serviços validam tokens aqui.
-
-### 4. **02_projects** (packages/02_projects)
-
-API de gerenciamento de projetos com CRUD completo.
-
-### 5. **03_interview** (packages/03_interview)
-
-Interface de chat para entrevistas com IA. 3-panel layout:
-- **Left Panel**: Sidebar com histórico de entrevistas
-- **Center Panel**: Chat conversation window
-- **Right Panel**: Editable notes com métricas e export
-
-Features:
-- Chat com mensagens de usuário e IA
-- Notas editáveis com save/cancel
-- Export de notas como .txt
-- Métricas de progresso (progress %, horas, orçamento)
-- Tema dark idêntico ao dashboard
-
-### 6. **99_home** (packages/99_home)
-
-Landing page de marketing pública. Primeira página que usuários veem.
-
-Features:
-- **Hero Section**: Headline grande "Olá! Sou seu Arquiteto de Software."
-- **Search Input**: Campo para descrever projetos
-- **Call-to-Action**: Botão "Entrar na Oute" + GitHub login
-- **Stats Section**: 3 métricas (57 estimações, 127 arquitetos, ∞ impacto)
-- **Navbar**: Logo, links (Docs, Pricing), signup button
-- Responsive design com tema dark idêntico ao dashboard
-
-## 📚 Documentação
-
-### 🎯 Refactoring & Arquitetura
-
-- **[EXECUTIVE_SUMMARY.md](./EXECUTIVE_SUMMARY.md)** - 📊 **LEIA PRIMEIRO**: Resumo executivo da refatoração completa
-- **[REFACTORING_COMPLETION.md](./REFACTORING_COMPLETION.md)** - 🏆 Relatório completo: Hexagonal Architecture + DDD + Clean Code + TDD
-- **[PHASE_1_SUMMARY.md](./packages/01_auth-profile/PHASE_1_SUMMARY.md)** - 📚 Domain Layer (Entities, Value Objects, Errors)
-- **[PHASE_2_SUMMARY.md](./packages/01_auth-profile/PHASE_2_SUMMARY.md)** - 🔧 Infrastructure Layer (Adapters, Repositories)
-- **[PHASE_3_SUMMARY.md](./packages/01_auth-profile/PHASE_3_SUMMARY.md)** - ⚙️ Application Layer (Use Cases, DTOs)
-- **[PHASE_4_SUMMARY.md](./packages/01_auth-profile/PHASE_4_SUMMARY.md)** - 🌐 Presentation Layer (Handlers, Routes)
-- **[PHASE_5_SUMMARY.md](./packages/01_auth-profile/PHASE_5_SUMMARY.md)** - 🧪 E2E Tests (Playwright, Test Suite)
-
-### 🚀 Implementação & Padrões
-
-- **[APPLYING_PATTERN_TO_OTHER_SERVICES.md](./APPLYING_PATTERN_TO_OTHER_SERVICES.md)** - 📋 Template para aplicar padrão a 00_dashboard e 02_projects
-- **[NEXT_STEPS_CHECKLIST.md](./NEXT_STEPS_CHECKLIST.md)** - ✅ Checklist de próximas ações e verificação
-
-### 📖 Documentação Técnica
-
-- **[ARCHITECTURE.md](./ARCHITECTURE.md)** - 🏗️ Decisões arquiteturais e fluxos de dados
-- **[DEVELOPMENT.md](./DEVELOPMENT.md)** - 💻 Setup local, debugging, scripts
-- **[DEPLOYMENT.md](./DEPLOYMENT.md)** - ☁️ Deploy em GCP Cloud Run
-- **[SUBMODULES.md](./SUBMODULES.md)** - 📦 Detalhes de cada domínio
-
-## 🔄 Workflow
-
-### Branches
-
-- **main** → Produção
-- **staging** → Pré-produção (homolog)
-- **develop** → Desenvolvimento
-- **feature/\*** → Novas features
-
-### Criar uma feature
-
-```bash
-git checkout -b feature/meu-recurso develop
-# ... faz mudanças ...
-git push origin feature/meu-recurso
-# Abre PR para develop
-```
-
-## 🛠️ Scripts Principais
-
-### Desenvolvimento
-
-```bash
-npm run dev           # Todos os packages em dev
-npm run build         # Build todos os packages
-npm run lint          # ESLint + TS check
-npm run format        # Prettier format
-```
-
-### Testing (178 tests, 80%+ coverage)
-
-```bash
-npm run test          # Rodar todos os testes
-npm run test:e2e      # E2E tests (Playwright)
-npm run test -- --watch     # Watch mode
-npm run test -- --coverage  # Coverage report
-```
-
-### Docker
-
-```bash
-npm run docker:up     # Start Docker services
-npm run docker:down   # Stop Docker services
-npm run docker:logs   # Ver logs
-```
-
-## 🔐 Segurança & Qualidade
-
-- ✅ **TypeScript strict mode**
-- ✅ **ESLint + Prettier**
-- ✅ **SonarQube** (Community Edition)
-- ✅ **Trivy** (container scanning)
-- ✅ **Dependabot** (dependency updates)
-- ✅ **Pre-commit hooks** (git-secrets, lint, format)
-
-## ☁️ Deployment
-
-### Pipeline CI/CD Automático
-
-Deploy totalmente automático em GCP Cloud Run via GitHub Actions:
-
-```
-Push → Build & Test → Docker Build → Artifact Registry → Cloud Run Deploy → Health Check → Release
-```
-
-**Pipeline por Branch:**
-
-- **PR** → Lint checks, TypeScript validation, Tests
-- **main** → Build completo + Deploy em produção + Release automático
-
-**Features do Pipeline:**
-
-- ✅ Build de imagem Docker multi-estágio
-- ✅ Push automático para Artifact Registry
-- ✅ Deploy em Cloud Run com zero downtime
-- ✅ Health check automático pós-deploy
-- ✅ Rollback automático em caso de falha
-- ✅ Rastreamento de deployments no GitHub
-- ✅ Criação automática de releases
-- ✅ Logs disponíveis em Cloud Run
-
-**Permissões do Workflow:**
-
-```yaml
-permissions:
-  contents: write # Criar releases
-  id-token: write # Autenticar com GCP (Workload Identity)
-  deployments: write # Rastrear deployments
-  statuses: write # Atualizar status
-```
-
-**Acessar Serviço em Produção:**
-
-```bash
-# Ver logs
-gcloud run logs read oute-dashboard --region=us-central1 --follow
-
-# Ver revisions
-gcloud run revisions list --service=oute-dashboard --region=us-central1
-
-# Rollback se necessário
-gcloud run services update-traffic oute-dashboard --region=us-central1 --to-revisions=<REVISION>=100
-```
-
-Ver [DEPLOYMENT.md](./DEPLOYMENT.md) para detalhes completos.
-
-## 📦 Stack Técnico
-
-- **Frontend**: Svelte 5, SvelteKit, Tailwind 4
-- **Backend**: SvelteKit API routes, Node.js
-- **Database**: PostgreSQL (centralizado)
-- **Auth**: JWT (JSON Web Token)
-- **Cloud**: GCP Cloud Run, Cloud SQL, Artifact Registry, Secret Manager
-- **CI/CD**: GitHub Actions
-- **Code Quality**: SonarQube, ESLint, TypeScript
-- **Containers**: Docker, Docker Compose
-
-## 📋 Roadmap
-
-- [ ] v1.0.0 - Setup initial
-- [ ] v1.1.0 - Dashboard features
-- [ ] v1.2.0 - Projects management
-- [ ] v2.0.0 - Real-time updates (WebSockets)
-
-## 🤝 Contributing
-
-1. Create feature branch
-2. Commit with message pattern: `type(scope): description`
-3. Open PR with description
-4. Wait for reviews + status checks
-
-Ver [contributing.md](./contributing.md) para mais detalhes.
-
-## 📝 License
-
-MIT
+Este repositório contém exclusivamente as interfaces SvelteKit. O backend, banco de dados de produção, orquestrador e IA estão no repositório [`oute-mind`](https://github.com/oute-mind/oute-mind).
 
 ---
 
-**Made with ❤️ using Svelte 5 + SvelteKit**
+## Packages
+
+| Package | Porta (dev) | Descrição |
+|---|---|---|
+| `design-system` | 6006 | Componentes base + tema Tailwind (Storybook) |
+| `99_home` | 3003 | Landing page |
+| `00_dashboard` | 3000 | Dashboard principal |
+| `01_auth-profile` | 3001 | Autenticação e perfil |
+| `02_projects` | 3005 | Gestão de projetos |
+| `03_interview` | 3002 | Chat de entrevista com IA |
+| `98_oops` | 3004 | Página de erro (fallback 404) |
+| `97_admin` | — | Painel admin (em desenvolvimento) |
+
+---
+
+## Desenvolvimento local
+
+**Pré-requisitos:** Node.js 20, npm 10+, Docker
+
+```bash
+# 1. Instalar dependências
+npm install --legacy-peer-deps
+
+# 2. Subir o banco de dados
+docker compose up -d postgres
+
+# 3. Aplicar migrations e seeds
+npm run db:migrate
+npm run db:seed
+
+# 4. Rodar todos os packages em paralelo
+npm run dev
+```
+
+Para rodar um package individualmente:
+
+```bash
+npm run dev -w packages/03_interview
+```
+
+Para rodar o stack completo em containers:
+
+```bash
+npm run docker:build
+npm run docker:up
+npm run docker:logs
+```
+
+### Banco de dados (utilitários)
+
+```bash
+npm run db:migrate          # Aplicar migrations pendentes
+npm run db:migrate:status   # Ver status das migrations
+npm run db:migrate:rollback # Reverter última migration
+npm run db:seed             # Inserir dados de desenvolvimento
+npm run db:reset            # Reset completo (cuidado)
+npm run db:validate         # Validar schema
+```
+
+---
+
+## Stack tecnológica
+
+| Camada | Tecnologia | Versão |
+|---|---|---|
+| Runtime | Node.js | 20 |
+| Framework | SvelteKit | 2 |
+| UI | Svelte | 5 |
+| Linguagem | TypeScript | 5 |
+| Estilização | Tailwind CSS | 4 |
+| Build | Vite | 5 |
+| Banco (dev) | PostgreSQL | 15 (Docker) |
+| Auth | Firebase | 11 |
+| JWT | jose / jsonwebtoken | 5 / 9 |
+| Testes unitários | Vitest | 1 |
+| Testes E2E | Playwright | 1.45 |
+| Lint / Format | ESLint + Prettier | 8 / 3 |
+
+---
+
+## CI/CD
+
+O deploy é acionado automaticamente em cada push para `main`.
+
+Pipeline: GitHub Actions → `gcloud compute ssh` via IAP → GCP VM `oute-mind` (projeto `oute-mind`) → `docker compose build --no-cache` + `docker compose up -d`.
+
+Para diagnóstico manual de produção, acione o workflow `Diagnose Production Issues` no GitHub Actions.
+
+---
+
+## Documentação
+
+```
+docs/
+├── adr/          # Decisões de arquitetura (o "porquê")
+└── architecture/ # Diagramas e fluxos (o "como")
+```

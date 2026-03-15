@@ -18,7 +18,7 @@ export default defineConfig({
     noExternal: ['@oute/design-system'],
   },
   server: {
-    port: 3001,
+    port: 3005,
     host: '0.0.0.0',
   },
   build: {
