@@ -14,9 +14,6 @@ declare global {
     interface Locals {
       user: FirebaseUser | null;
     }
-    // interface Error {}
-    // interface PageData {}
-    // interface Platform {}
   }
 }
 
