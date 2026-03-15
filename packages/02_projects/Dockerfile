@@ -12,6 +12,10 @@ COPY shared ./shared
 # Install dependencies
 RUN npm install --legacy-peer-deps
 
+# Build design-system first (dist/ is gitignored)
+WORKDIR /app/packages/design-system
+RUN npm run build
+
 # Build
 WORKDIR /app/packages/02_projects
 RUN npm run build
@@ -32,9 +36,9 @@ RUN npm ci --legacy-peer-deps --omit=dev && npm cache clean --force
 # Copy built app
 COPY --from=builder /app/packages/02_projects/build ./packages/02_projects/build
 
-EXPOSE 3002
+EXPOSE 3005
 
 ENV NODE_ENV=production
-ENV PORT=3002
+ENV PORT=3005
 
 CMD ["node", "packages/02_projects/build/index.js"]

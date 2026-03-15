@@ -1,5 +1,6 @@
 <script lang="ts">
   import { page } from '$app/stores';
+  import { OuteLogo } from '@oute/design-system';
 </script>
 
 <div class="relative flex h-screen w-full flex-col items-center justify-center overflow-hidden bg-[#0a0a0f] font-[Inter,sans-serif] text-slate-100 antialiased">
@@ -13,20 +14,7 @@
 
   <!-- Navbar -->
   <nav class="absolute top-0 w-full px-6 py-6 lg:px-12 flex justify-between items-center border-b border-slate-800/50 backdrop-blur-md z-10">
-    <!-- Oute Logo (inline, idêntico ao OuteLogo do design-system, size="sm" horizontal) -->
-    <div class="flex items-center gap-3">
-      <svg style="width:2rem;height:2rem;flex-shrink:0;" fill="none" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-          <linearGradient id="oute-logo-gradient" x1="0%" x2="100%" y1="0%" y2="100%">
-            <stop offset="0%" style="stop-color:#22D3EE" />
-            <stop offset="100%" style="stop-color:#0EA5E9" />
-          </linearGradient>
-        </defs>
-        <path d="M50 10C27.9086 10 10 27.9086 10 50C10 72.0914 27.9086 90 50 90C72.0914 90 90 72.0914 90 50" stroke="url(#oute-logo-gradient)" stroke-linecap="round" stroke-width="12" />
-        <rect fill="url(#oute-logo-gradient)" height="30" rx="8" width="16" x="42" y="35" />
-      </svg>
-      <span class="text-lg font-bold text-white">Oute</span>
-    </div>
+    <OuteLogo size="sm" showSlogan={false} horizontal={true} />
     <a
       href="/"
       class="hidden md:flex items-center gap-2 px-4 py-2 text-sm font-medium text-slate-400 hover:text-primary-500 transition-colors"
