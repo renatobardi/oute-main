@@ -1,6 +1,6 @@
 # OUTE Develop Routing
-# Caddy escuta na porta 80 (interna), publicada como 8888 no host pelo docker-compose.develop.yml
-# Acesso: http://34.132.93.171:8888/
+# Caddy escuta na porta 80 (interna), publicada como 8889 no host pelo docker-compose.develop.yml
+# Acesso: http://34.132.93.171:8889/
 # Bases SvelteKit: /auth /dashboard /projects /chat (99_home = root)
 
 :80 {
@@ -8,19 +8,19 @@
   # Cada serviço tem hashes únicos; tenta cada um até encontrar o arquivo
   @app_assets path /_app/*
   handle @app_assets {
-    reverse_proxy oute-dev-home:3003 {
+    reverse_proxy oute-main-dev-home:3003 {
       @err404 status 4xx
       handle_response @err404 {
-        reverse_proxy oute-dev-auth:3001 {
+        reverse_proxy oute-main-dev-auth:3001 {
           @err404 status 4xx
           handle_response @err404 {
-            reverse_proxy oute-dev-dashboard:3000 {
+            reverse_proxy oute-main-dev-dashboard:3000 {
               @err404 status 4xx
               handle_response @err404 {
-                reverse_proxy oute-dev-projects:3005 {
+                reverse_proxy oute-main-dev-projects:3005 {
                   @err404 status 4xx
                   handle_response @err404 {
-                    reverse_proxy oute-dev-interview:3002
+                    reverse_proxy oute-main-dev-interview:3002
                   }
                 }
               }
@@ -34,7 +34,7 @@
   # Auth — base: /auth (login, profile, api/auth, api/session...)
   @auth path /auth*
   handle @auth {
-    reverse_proxy oute-dev-auth:3001 {
+    reverse_proxy oute-main-dev-auth:3001 {
       header_up X-Forwarded-For {http.request.remote}
       header_up X-Forwarded-Proto {http.request.proto}
       header_up X-Forwarded-Host {http.request.host}
@@ -44,7 +44,7 @@
   # Dashboard — base: /dashboard
   @dashboard path /dashboard*
   handle @dashboard {
-    reverse_proxy oute-dev-dashboard:3000 {
+    reverse_proxy oute-main-dev-dashboard:3000 {
       header_up X-Forwarded-For {http.request.remote}
       header_up X-Forwarded-Proto {http.request.proto}
       header_up X-Forwarded-Host {http.request.host}
@@ -54,7 +54,7 @@
   # Projects — base: /projects
   @projects path /projects*
   handle @projects {
-    reverse_proxy oute-dev-projects:3005 {
+    reverse_proxy oute-main-dev-projects:3005 {
       header_up X-Forwarded-For {http.request.remote}
       header_up X-Forwarded-Proto {http.request.proto}
       header_up X-Forwarded-Host {http.request.host}
@@ -64,7 +64,7 @@
   # Chat — base: /chat
   @chat path /chat*
   handle @chat {
-    reverse_proxy oute-dev-interview:3002 {
+    reverse_proxy oute-main-dev-interview:3002 {
       header_up X-Forwarded-For {http.request.remote}
       header_up X-Forwarded-Proto {http.request.proto}
       header_up X-Forwarded-Host {http.request.host}
@@ -73,7 +73,7 @@
 
   # Fallback: 99_home — root sem base
   handle {
-    reverse_proxy oute-dev-home:3003 {
+    reverse_proxy oute-main-dev-home:3003 {
       header_up X-Forwarded-For {http.request.remote}
       header_up X-Forwarded-Proto {http.request.proto}
       header_up X-Forwarded-Host {http.request.host}
@@ -84,7 +84,7 @@
   handle_errors {
     @404 expression {err.status_code} == 404
     handle @404 {
-      reverse_proxy oute-dev-oops:3004
+      reverse_proxy oute-main-dev-oops:3004
     }
   }
 
